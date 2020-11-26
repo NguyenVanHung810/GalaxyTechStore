@@ -10,16 +10,19 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.GalaxyTechStore">
         <activity
+            android:theme="@style/ThemeNoActionBar"
+            android:name=".Login_Register_ResetPasswordActivity"></activity>
+        <activity
+            android:name=".SplashActivity"
             android:screenOrientation="portrait"
-            android:theme="@style/SplashTheme"
-            android:name=".SplashActivity">
+            android:theme="@style/SplashTheme">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".MainActivity"></activity>
+        <activity android:name=".MainActivity" />
     </application>
 
 </manifest>
