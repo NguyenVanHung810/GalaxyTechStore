@@ -10,8 +10,12 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.GalaxyTechStore">
         <activity
-            android:theme="@style/ThemeNoActionBar"
-            android:name=".Login_Register_ResetPasswordActivity"></activity>
+            android:name=".MainActivity"
+            android:label="@string/title_activity_main"
+            android:theme="@style/Theme.GalaxyTechStore.NoActionBar"></activity>
+        <activity
+            android:name=".Login_Register_ResetPasswordActivity"
+            android:theme="@style/ThemeNoActionBar" />
         <activity
             android:name=".SplashActivity"
             android:screenOrientation="portrait"
@@ -22,7 +26,6 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".MainActivity" />
     </application>
 
 </manifest>
