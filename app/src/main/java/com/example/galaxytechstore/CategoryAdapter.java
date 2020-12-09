@@ -4,6 +4,8 @@ import android.content.Intent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -19,6 +21,7 @@ import java.util.List;
 public class CategoryAdapter extends RecyclerView.Adapter<CategoryAdapter.ViewHolder> {
 
     private List<CategoryModel> categoryModels;
+    private int lastposition = -1;
 
     public CategoryAdapter(List<CategoryModel> categoryModels) {
         this.categoryModels = categoryModels;
@@ -36,6 +39,11 @@ public class CategoryAdapter extends RecyclerView.Adapter<CategoryAdapter.ViewHo
         CategoryModel categoryModel = categoryModels.get(position);
         holder.setCategoryName(categoryModel.getCategoryName(), position);
         holder.setCategoryImage(categoryModel.getCategoryImage());
+        if(lastposition < position) {
+            Animation animation = AnimationUtils.loadAnimation(holder.itemView.getContext(), R.anim.fade_in);
+            holder.itemView.setAnimation(animation);
+            lastposition = position;
+        }
     }
 
     @Override
@@ -56,22 +64,27 @@ public class CategoryAdapter extends RecyclerView.Adapter<CategoryAdapter.ViewHo
 
         private void setCategoryImage(String iconUrl){
             if(!iconUrl.equals("null")){
-                Glide.with(itemView.getContext()).load(iconUrl).apply(new RequestOptions().placeholder(R.drawable.cart)).into(cateImage);
+                Glide.with(itemView.getContext()).load(iconUrl).apply(new RequestOptions().placeholder(R.drawable.placeholder)).into(cateImage);
+            }
+            else {
+                cateImage.setImageResource(R.drawable.placeholder);
             }
         }
 
         private void setCategoryName(final String name, final int position){
             cateName.setText(name);
-            itemView.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    if(position != 0){
-                      /*  Intent categoryIntent = new Intent(itemView.getContext(),CategoryActivity.class);
-                        categoryIntent.putExtra("CategoryName", name);
-                        itemView.getContext().startActivity(categoryIntent);*/
+            if(!name.equals("")){
+                itemView.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        if(position != 0){
+                            Intent categoryIntent = new Intent(itemView.getContext(),CategoryActivity.class);
+                            categoryIntent.putExtra("CategoryName", name);
+                            itemView.getContext().startActivity(categoryIntent);
+                        }
                     }
-                }
-            });
+                });
+            }
         }
     }
 }
