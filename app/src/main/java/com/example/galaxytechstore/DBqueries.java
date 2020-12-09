@@ -57,4 +57,77 @@ import java.util.Map;
             });
         }
 
+        public static void loadFragmentData(RecyclerView recyclerView, final Context context, final int index, String categoryName) {
+            firebaseFirestore.collection("CATEGORIES")
+                    .document(categoryName.toUpperCase())
+                    .collection("TOP_DEALS")
+                    .orderBy("index")
+                    .get()
+                    .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                        @Override
+                        public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                            if (task.isSuccessful()) {
+                                for (QueryDocumentSnapshot documentSnapshot : task.getResult()) {
+                                    if ((long) documentSnapshot.get("view_type") == 0) {
+                                        List<SliderModel> sliderModelList = new ArrayList<>();
+                                        long no_of_banners = (long) documentSnapshot.get("number_of_banners");
+                                        for (long x = 1; x < no_of_banners + 1; x++) {
+                                            sliderModelList.add(new SliderModel(documentSnapshot.get("banner_" + x).toString(),
+                                                    documentSnapshot.get("banner_" + x + "_background").toString()));
+                                        }
+                                        lists.get(index).add(new HomePageModel(0, sliderModelList));
+                                    } else if ((long) documentSnapshot.get("view_type") == 1) {
+//                                    homePageModelList.add(new HomePageModel(1, documentSnapshot.get("strip_ad_banner").toString(),
+//                                            documentSnapshot.get("background").toString()));
+                                    } else if ((long) documentSnapshot.get("view_type") == 2) {
+                                        List<WishlistModel> viewAllProductList = new ArrayList<>();
+                                        List<HorizontalProductScrollModel> productlist = new ArrayList<>();
+                                        long no_of_banners = (long) documentSnapshot.get("no_of_products");
+                                        for (long x = 1; x < no_of_banners + 1; x++) {
+                                            productlist.add(new HorizontalProductScrollModel(
+                                                    documentSnapshot.get("product_id_" + x).toString(),
+                                                    documentSnapshot.get("product_image_" + x).toString(),
+                                                    documentSnapshot.get("product_title_" + x).toString(),
+                                                    documentSnapshot.get("product_subtitle_" + x).toString(),
+                                                    documentSnapshot.get("product_price_" + x).toString()));
+                                            viewAllProductList.add(new WishlistModel(
+                                                    documentSnapshot.get("product_id_" + x).toString(),
+                                                    documentSnapshot.get("product_image_" + x).toString(),
+                                                    documentSnapshot.get("product_full_title_" + x).toString(),
+                                                    (long) documentSnapshot.get("free_coupens_" + x),
+                                                    documentSnapshot.get("average_rating_" + x).toString(),
+                                                    (long) documentSnapshot.get("total_rating_" + x),
+                                                    documentSnapshot.get("product_price_" + x).toString(),
+                                                    documentSnapshot.get("product_cutted_price_" + x).toString(),
+                                                    (boolean) documentSnapshot.get("COD_" + x)
+                                            ));
+                                        }
+                                        lists.get(index).add(new HomePageModel(2, documentSnapshot.get("layout_title").toString(), documentSnapshot.get("layout_background").toString(), productlist, viewAllProductList));
+                                    } else if ((long) documentSnapshot.get("view_type") == 3) {
+                                        List<HorizontalProductScrollModel> productlist = new ArrayList<>();
+                                        long no_of_banners = (long) documentSnapshot.get("no_of_products");
+                                        for (long x = 1; x < no_of_banners + 1; x++) {
+                                            productlist.add(new HorizontalProductScrollModel(
+                                                    documentSnapshot.get("product_id_" + x).toString(),
+                                                    documentSnapshot.get("product_image_" + x).toString(),
+                                                    documentSnapshot.get("product_title_" + x).toString(),
+                                                    documentSnapshot.get("product_subtitle_" + x).toString(),
+                                                    documentSnapshot.get("product_price_" + x).toString()));
+                                        }
+                                        lists.get(index).add(new HomePageModel(3, documentSnapshot.get("layout_title").toString(), documentSnapshot.get("layout_background").toString(), productlist));
+                                    }
+                                }
+                                HomePageAdapter homePageAdapter = new HomePageAdapter(lists.get(index));
+                                recyclerView.setAdapter(homePageAdapter);
+                                homePageAdapter.notifyDataSetChanged();
+                                HomeFragment.swipeRefreshLayout.setRefreshing(false);
+                            } else {
+                                String error = task.getException().getMessage();
+                                Toast.makeText(context, error, Toast.LENGTH_SHORT).show();
+                            }
+                        }
+                    });
+        }
+
+
     }
