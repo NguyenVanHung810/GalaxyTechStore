@@ -1,0 +1,40 @@
+{
+  "project_info": {
+    "project_number": "659459472215",
+    "firebase_url": "https://galaxytechstoreproject.firebaseio.com",
+    "project_id": "galaxytechstoreproject",
+    "storage_bucket": "galaxytechstoreproject.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:659459472215:android:ffbb699996a8c53a3f9c12",
+        "android_client_info": {
+          "package_name": "com.example.galaxytechstore"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "659459472215-0ionkgsl0ioassvsbvfr86i5ajs45se6.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCRojVZW4A4suPJVXqKUgcy2Q54wPmUXZw"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "659459472215-0ionkgsl0ioassvsbvfr86i5ajs45se6.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
