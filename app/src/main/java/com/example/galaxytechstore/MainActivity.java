@@ -1,9 +1,11 @@
 package com.example.galaxytechstore;
 
 import android.app.Dialog;
+import android.content.Intent;
 import android.graphics.Color;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Trace;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.Menu;
@@ -16,10 +18,12 @@ import com.example.galaxytechstore.ui.home.HomeFragment;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.android.material.navigation.NavigationView;
+import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
+import androidx.core.view.GravityCompat;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentTransaction;
 import androidx.navigation.NavController;
@@ -64,6 +68,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
 
         getSupportActionBar().setDisplayShowTitleEnabled(false);
+        getSupportActionBar().setDisplayShowHomeEnabled(true);
 
 
         drawer = findViewById(R.id.drawer_layout);
@@ -71,12 +76,14 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         navigationView.setNavigationItemSelectedListener(this);
         navigationView.getMenu().getItem(0).setChecked(true);
 
+        setFragment(new HomeFragment(), Home_Fragment);
+
     }
 
     @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
     private void gotoFragment(String tt, Fragment fragment, int FragmentNo) {
         actionbar_name.setVisibility(View.GONE);
-        getSupportActionBar().setDisplayHomeAsUpEnabled(false);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setDisplayShowTitleEnabled(true);
         getSupportActionBar().setTitle(tt);
         invalidateOptionsMenu();
@@ -88,10 +95,10 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
+        getSupportActionBar().setDisplayShowTitleEnabled(false);
         getMenuInflater().inflate(R.menu.main, menu);
         return true;
     }
-
 
 
     @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
@@ -114,8 +121,24 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         }
     }
 
+    @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
     @Override
     public boolean onNavigationItemSelected(@NonNull MenuItem item) {
-        return false;
+        drawer = findViewById(R.id.drawer_layout);
+        int id = item.getItemId();
+        if (id == R.id.my_home) {
+            actionbar_name.setVisibility(View.VISIBLE);
+            invalidateOptionsMenu();
+            setFragment(new HomeFragment(), Home_Fragment);
+        } else if (id == R.id.my_orders) {
+        } else if (id == R.id.my_rewards) {
+        } else if (id == R.id.my_carts) {
+
+        } else if (id == R.id.my_wishlist) {
+        } else if (id == R.id.my_account) {
+        } else if (id == R.id.sign_out) {
+        }
+        drawer.closeDrawer(GravityCompat.START);
+        return true;
     }
 }

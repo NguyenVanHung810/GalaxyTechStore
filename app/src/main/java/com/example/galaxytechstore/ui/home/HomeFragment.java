@@ -24,7 +24,10 @@ import com.example.galaxytechstore.CategoryModel;
 import com.example.galaxytechstore.DBqueries;
 import com.example.galaxytechstore.HomePageAdapter;
 import com.example.galaxytechstore.HomePageModel;
+import com.example.galaxytechstore.HorizontalProductScrollModel;
 import com.example.galaxytechstore.R;
+import com.example.galaxytechstore.SliderModel;
+import com.example.galaxytechstore.WishlistModel;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -53,18 +56,42 @@ public class HomeFragment extends Fragment {
         layoutManager1.setOrientation(LinearLayoutManager.HORIZONTAL);
         categoryRecyclerView.setLayoutManager(layoutManager1);
 
-        LinearLayoutManager layoutManager2 = new LinearLayoutManager(getActivity());
-        layoutManager2.setOrientation(LinearLayoutManager.VERTICAL);
-        categoryRecyclerView.setLayoutManager(layoutManager2);
-
+//        LinearLayoutManager layoutManager2 = new LinearLayoutManager(getActivity());
+//        layoutManager2.setOrientation(LinearLayoutManager.VERTICAL);
+//        homepageRecyclerView.setLayoutManager(layoutManager2);
+//
         categoryModelList.add(new CategoryModel("https://www.phucanh.vn/media/news/3012_csm_4zu3_Asus_Zenbook_UX3430UQ_Teaser_7c44e97fc6Top10Laptopttnhtchochnhsanhvbintpvideonm2017.jpg", "Home"));
         categoryModelList.add(new CategoryModel("https://www.phucanh.vn/media/news/3012_csm_4zu3_Asus_Zenbook_UX3430UQ_Teaser_7c44e97fc6Top10Laptopttnhtchochnhsanhvbintpvideonm2017.jpg", "Laptop"));
         categoryModelList.add(new CategoryModel("https://www.phucanh.vn/media/news/3012_csm_4zu3_Asus_Zenbook_UX3430UQ_Teaser_7c44e97fc6Top10Laptopttnhtchochnhsanhvbintpvideonm2017.jpg", "Smartphone"));
         categoryModelList.add(new CategoryModel("https://www.phucanh.vn/media/news/3012_csm_4zu3_Asus_Zenbook_UX3430UQ_Teaser_7c44e97fc6Top10Laptopttnhtchochnhsanhvbintpvideonm2017.jpg", "Tablet"));
         categoryModelList.add(new CategoryModel("https://www.phucanh.vn/media/news/3012_csm_4zu3_Asus_Zenbook_UX3430UQ_Teaser_7c44e97fc6Top10Laptopttnhtchochnhsanhvbintpvideonm2017.jpg", "Tai nghe"));
 
+//        List<SliderModel> sliderModelList = new ArrayList<>();
+//        sliderModelList.add(new SliderModel("null", "#000000"));
+//        sliderModelList.add(new SliderModel("null", "#000000"));
+//        sliderModelList.add(new SliderModel("null", "#000000"));
+//        sliderModelList.add(new SliderModel("null", "#000000"));
+//        sliderModelList.add(new SliderModel("null", "#000000"));
+//
+//        List<HorizontalProductScrollModel> horizontalProductScrollModelList = new ArrayList<>();
+//        horizontalProductScrollModelList.add(new HorizontalProductScrollModel("","","ádasd","đâs","20.000"));
+//        horizontalProductScrollModelList.add(new HorizontalProductScrollModel("","","ádasd","đâs","20.000"));
+//        horizontalProductScrollModelList.add(new HorizontalProductScrollModel("","","ádasd","đâs","20.000"));
+//        horizontalProductScrollModelList.add(new HorizontalProductScrollModel("","","ádasd","đâs","20.000"));
+//        horizontalProductScrollModelList.add(new HorizontalProductScrollModel("","","ádasd","đâs","20.000"));
+//
+//
+//        homePageModelList.add(new HomePageModel(0, sliderModelList));
+//        homePageModelList.add(new HomePageModel(2,"trending","#dfdfdf", horizontalProductScrollModelList, new ArrayList<WishlistModel>()));
+//        homePageModelList.add(new HomePageModel(3,"trending","#dfdfdf", horizontalProductScrollModelList, new ArrayList<WishlistModel>()));
+//
+//        homePageAdapter = new HomePageAdapter(homePageModelList);
+//        homepageRecyclerView.setAdapter(homePageAdapter);
+//        homePageAdapter.notifyDataSetChanged();
+
+
         categoryAdapter = new CategoryAdapter(categoryModelList);
-        DBqueries.loadCategories(categoryRecyclerView, getContext());
+        categoryRecyclerView.setAdapter(categoryAdapter);
         categoryAdapter.notifyDataSetChanged();
 
         return root;
