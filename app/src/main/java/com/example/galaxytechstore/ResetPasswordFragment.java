@@ -16,7 +16,13 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
+import android.widget.ImageView;
+import android.widget.TextView;
 import android.widget.Toast;
+
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
+import com.google.firebase.auth.FirebaseAuth;
 
 
 public class ResetPasswordFragment extends Fragment {
@@ -24,6 +30,10 @@ public class ResetPasswordFragment extends Fragment {
     private EditText email;
     private Button send;
     private ImageButton back;
+    private ViewGroup emailIconContainer;
+    private ImageView emailIcon;
+    private TextView emailIconText;
+    private FirebaseAuth firebaseAuth;
 
     public ResetPasswordFragment() {
     }
@@ -36,6 +46,9 @@ public class ResetPasswordFragment extends Fragment {
         email = (EditText) view.findViewById(R.id.edtEmail_Registered);
         send = (Button) view.findViewById(R.id.btnSend);
         back = (ImageButton) view.findViewById(R.id.btnBack);
+
+        firebaseAuth = FirebaseAuth.getInstance();
+
         return view;
     }
 
@@ -66,6 +79,25 @@ public class ResetPasswordFragment extends Fragment {
                 setFragment(new SignInFragment());
             }
         });
+
+        send.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                send.setEnabled(false);
+                firebaseAuth.sendPasswordResetEmail(email.getText().toString()).addOnCompleteListener(new OnCompleteListener<Void>() {
+                    @Override
+                    public void onComplete(@NonNull Task<Void> task) {
+                        if(task.isSuccessful()){
+                            toastInfo("Email sent successfully !!!");
+                        }
+                        else{
+                            toastInfo(task.getException().getMessage());
+                        }
+                        send.setEnabled(true);
+                    }
+                });
+            }
+        });
     }
 
     private void checkInput() {
@@ -83,5 +115,9 @@ public class ResetPasswordFragment extends Fragment {
         fragmentTransaction.replace(R.id.login_register_resetpassword_layout, fragment);
         fragmentTransaction.addToBackStack(null);
         fragmentTransaction.commit();
+    }
+
+    private void toastInfo(String str){
+        Toast.makeText(getActivity(), str, Toast.LENGTH_LONG).show();
     }
 }
