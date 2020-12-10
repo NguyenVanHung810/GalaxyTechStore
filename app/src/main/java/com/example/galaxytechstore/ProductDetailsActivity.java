@@ -557,7 +557,7 @@ public class ProductDetailsActivity extends AppCompatActivity {
 
         Button sign_in_dialog = signInDialog.findViewById(R.id.sign_in_btn);
         Button sign_up_dialog = signInDialog.findViewById(R.id.sign_up_btn);
-        Intent registerIntent = new Intent(ProductDetailsActivity.this, RegisterActivity.class);
+        Intent registerIntent = new Intent(ProductDetailsActivity.this, Login_Register_ResetPasswordActivity.class);
 
 
         sign_in_dialog.setOnClickListener(new View.OnClickListener() {
@@ -566,7 +566,7 @@ public class ProductDetailsActivity extends AppCompatActivity {
                 SignInFragment.diableCloseBtn = true;
                 SignUpFragment.diableCloseBtn = true;
                 signInDialog.dismiss();
-                RegisterActivity.setSignUpFragment = false;
+                Login_Register_ResetPasswordActivity.setSignUpFragment = false;
                 startActivity(registerIntent);
             }
         });
@@ -577,7 +577,7 @@ public class ProductDetailsActivity extends AppCompatActivity {
                 SignInFragment.diableCloseBtn = true;
                 SignUpFragment.diableCloseBtn = true;
                 signInDialog.dismiss();
-                RegisterActivity.setSignUpFragment = true;
+                Login_Register_ResetPasswordActivity.setSignUpFragment = true;
                 startActivity(registerIntent);
             }
         });

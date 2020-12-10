@@ -5,18 +5,47 @@ import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentTransaction;
 
 import android.os.Bundle;
+import android.view.KeyEvent;
+import android.widget.FrameLayout;
 
 public class Login_Register_ResetPasswordActivity extends AppCompatActivity {
+
+    private FrameLayout frameLayout;
+    public static boolean onResetPasswordFragment = false;
+    public static boolean setSignUpFragment = false;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login__register__reset_password);
 
-        setDefaultFragment(new SignInFragment()); // gọi hàm tạo Fragment mặc định sau khi load splash page đó là Sign In Fragment.
+        frameLayout = (FrameLayout) findViewById(R.id.layout);
+        if(setSignUpFragment){
+            setSignUpFragment = false;
+            setDefaultFragment(new SignUpFragment());
+        }
+        else {
+            setDefaultFragment(new SignInFragment());
+        }
+        setDefaultFragment(new SignInFragment());
+
     }
 
-    // Hàm để tạo một Fragment mặc định sau khi load xong splash page.
-    // parameter là một fragment.
+    @Override
+    public boolean onKeyDown(int keyCode, KeyEvent event) {
+        if(keyCode == KeyEvent.KEYCODE_BACK){
+            SignUpFragment.diableCloseBtn = false;
+            SignInFragment.diableCloseBtn = false;
+            if(onResetPasswordFragment){
+                onResetPasswordFragment = false;
+                setFragment(new SignInFragment());
+                return false;
+            }
+        }
+        return super.onKeyDown(keyCode, event);
+    }
+
+
     private void setDefaultFragment(Fragment fragment) {
         FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
         fragmentTransaction.replace(R.id.login_register_resetpassword_layout,fragment);
