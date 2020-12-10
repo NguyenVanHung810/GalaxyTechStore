@@ -21,7 +21,16 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
+import com.google.firebase.auth.AuthResult;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.firestore.CollectionReference;
+import com.google.firebase.firestore.FirebaseFirestore;
+
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 
@@ -34,13 +43,20 @@ public class SignUpFragment extends Fragment {
     private ImageButton close;
     private Button signup;
 
+    public static boolean diableCloseBtn = false;
+
+
+    private FirebaseAuth firebaseAuth;
+    private FirebaseFirestore firestore;
+    private String emailPattern = "[a-zA-Z0-9._-]+@[a-z]+\\.+[a-z]+";
+
     public SignUpFragment() {
+
     }
 
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_sign_up, container, false);
         AlreadyHaveAcc = (TextView) view.findViewById(R.id.tv_have_account);
         load = (ProgressBar) view.findViewById(R.id.load);
@@ -53,6 +69,15 @@ public class SignUpFragment extends Fragment {
         close = (ImageButton) view.findViewById(R.id.btnclose);
 
         signup = (Button) view.findViewById(R.id.btn_sign_in);
+
+        firebaseAuth = FirebaseAuth.getInstance();
+        firestore = FirebaseFirestore.getInstance();
+
+        if (diableCloseBtn) {
+            close.setVisibility(View.GONE);
+        } else {
+            close.setVisibility(View.VISIBLE);
+        }
         return view;
     }
 
@@ -140,14 +165,95 @@ public class SignUpFragment extends Fragment {
         signup.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                // gửi dữ liệu người dùng mới đăng kí vô FireBase.
                 checkEmailAndPassword();
             }
         });
     }
 
     private void checkEmailAndPassword() {
-        // to do:
+        if (email.getText().toString().matches(emailPattern)) {
+            if (password.getText().toString().equals(cfpassword.getText().toString())) {
+                load.setVisibility(View.VISIBLE);
+                signup.setEnabled(false);
+                firebaseAuth.createUserWithEmailAndPassword(email.getText().toString(), password.getText().toString()).addOnCompleteListener(new OnCompleteListener<AuthResult>() {
+                    @Override
+                    public void onComplete(@NonNull Task<AuthResult> task) {
+                        if (task.isSuccessful()) {
+
+                            Map<Object, String> userData = new HashMap<>();
+                            userData.put("fullname", fullname.getText().toString());
+                            firestore.collection("USERS").document(firebaseAuth.getUid())
+                                    .set(userData)
+                                    .addOnCompleteListener(new OnCompleteListener<Void>() {
+                                        @Override
+                                        public void onComplete(@NonNull Task<Void> task) {
+                                            if (task.isSuccessful()) {
+                                                CollectionReference userDataReference = firestore.collection("USERS").document(firebaseAuth.getUid()).collection("USER_DATA");
+
+                                                Map<String, Object> wishListMap = new HashMap<>();
+                                                wishListMap.put("list_size", (long) 0);
+
+                                                Map<String, Object> ratingsMap = new HashMap<>();
+                                                ratingsMap.put("list_size", (long) 0);
+
+                                                Map<String, Object> cartMap = new HashMap<>();
+                                                cartMap.put("list_size", (long) 0);
+
+                                                Map<String, Object> myAddressMap = new HashMap<>();
+                                                myAddressMap.put("list_size", (long) 0);
+
+
+                                                List<String> documentNames = new ArrayList<>();
+                                                documentNames.add("MY_WISHLIST");
+                                                documentNames.add("MY_RATINGS");
+                                                documentNames.add("MY_CART");
+                                                documentNames.add("MY_ADDRESSES");
+
+                                                List<Map<String, Object>> documentFields = new ArrayList<>();
+                                                documentFields.add(wishListMap);
+                                                documentFields.add(ratingsMap);
+                                                documentFields.add(cartMap);
+                                                documentFields.add(myAddressMap);
+
+                                                for (int x = 0; x < documentNames.size(); x++) {
+                                                    int finalX = x;
+                                                    userDataReference.document(documentNames.get(x))
+                                                            .set(documentFields.get(x)).addOnCompleteListener(new OnCompleteListener<Void>() {
+                                                        @Override
+                                                        public void onComplete(@NonNull Task<Void> task) {
+                                                            if (task.isSuccessful()) {
+                                                                if (finalX == documentNames.size() - 1){
+                                                                    mainIntent();
+                                                                }
+                                                            } else {
+                                                                signup.setEnabled(true);
+                                                                load.setVisibility(View.INVISIBLE);
+                                                                String error = task.getException().getMessage();
+                                                                toastInfo(error);
+                                                            }
+                                                        }
+                                                    });
+                                                }
+                                            } else {
+                                                String error = task.getException().getMessage();
+                                                toastInfo(error);
+                                            }
+                                        }
+                                    });
+                        } else {
+                            signup.setEnabled(true);
+                            load.setVisibility(View.INVISIBLE);
+                            String error = task.getException().getMessage();
+                            toastInfo(error);
+                        }
+                    }
+                });
+            } else {
+                cfpassword.setError("Password doesn't matched !!!", getResources().getDrawable(R.mipmap.error_ic));
+            }
+        } else {
+            email.setError("Invalid Email", getResources().getDrawable(R.mipmap.error_ic));
+        }
     }
 
     private void setFragment(Fragment fragment) {
@@ -159,7 +265,6 @@ public class SignUpFragment extends Fragment {
     }
 
     private void checkInput() {
-        // kiểm tra email có đang rỗng không
         if(!TextUtils.isEmpty(email.getText().toString())){
             if(!TextUtils.isEmpty(fullname.getText().toString())){
                 if(!TextUtils.isEmpty(password.getText().toString()) && password.length() >= 8){
@@ -183,10 +288,14 @@ public class SignUpFragment extends Fragment {
         }
     }
 
+    private void toastInfo(String str) {
+        Toast.makeText(getActivity(), str, Toast.LENGTH_LONG).show();
+    }
 
     private void mainIntent(){
         Intent intent = new Intent(getActivity(), MainActivity.class);
         startActivity(intent);
+        diableCloseBtn = false;
         getActivity().finish();
     }
 }
