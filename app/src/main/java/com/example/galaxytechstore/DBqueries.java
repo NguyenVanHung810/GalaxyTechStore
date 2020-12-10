@@ -70,7 +70,7 @@ import java.util.Map;
                                 for (QueryDocumentSnapshot documentSnapshot : task.getResult()) {
                                     if ((long) documentSnapshot.get("view_type") == 0) {
                                         List<SliderModel> sliderModelList = new ArrayList<>();
-                                        long no_of_banners = (long) documentSnapshot.get("number_of_banners");
+                                        long no_of_banners = (long) documentSnapshot.get("no_of_banners");
                                         for (long x = 1; x < no_of_banners + 1; x++) {
                                             sliderModelList.add(new SliderModel(documentSnapshot.get("banner_" + x).toString(),
                                                     documentSnapshot.get("banner_" + x + "_background").toString()));

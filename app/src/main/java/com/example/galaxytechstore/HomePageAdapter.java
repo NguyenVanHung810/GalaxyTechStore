@@ -244,7 +244,6 @@ public class HomePageAdapter extends RecyclerView.Adapter {
                 TextView productPrice = gridProductLayout.getChildAt(x).findViewById(R.id.horizontal_scroll_item_price);
 
                 Glide.with(itemView.getContext()).load(horizontalProductScrollModelList.get(x).getProductImage()).apply(new RequestOptions()).placeholder(R.drawable.placeholder).into(productImage);
-                //Picasso.get().load(horizontalProductScrollModelList.get(x).getProductImage()).into(productImage);
                 productTitle.setText(horizontalProductScrollModelList.get(x).getProductTitle());
                 productDescription.setText(horizontalProductScrollModelList.get(x).getProductDesc());
                 productPrice.setText(horizontalProductScrollModelList.get(x).getProductPrice() + "đ");
@@ -256,9 +255,9 @@ public class HomePageAdapter extends RecyclerView.Adapter {
                     gridProductLayout.getChildAt(x).setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View v) {
-//                            Intent productDetailsIntent = new Intent(itemView.getContext(), ProductDetailsActivity.class);
-//                            productDetailsIntent.putExtra("PRODUCT_ID", horizontalProductScrollModelList.get(finalX).getProductID());
-//                            itemView.getContext().startActivity(productDetailsIntent);
+                            Intent productDetailsIntent = new Intent(itemView.getContext(), ProductDetailsActivity.class);
+                            productDetailsIntent.putExtra("PRODUCT_ID", horizontalProductScrollModelList.get(finalX).getProductID());
+                            itemView.getContext().startActivity(productDetailsIntent);
                         }
                     });
                 }

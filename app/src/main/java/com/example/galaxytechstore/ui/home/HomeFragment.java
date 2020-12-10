@@ -32,6 +32,8 @@ import com.example.galaxytechstore.WishlistModel;
 import java.util.ArrayList;
 import java.util.List;
 
+import static com.example.galaxytechstore.DBqueries.loadedCategoriesNames;
+
 public class HomeFragment extends Fragment {
 
     private ConnectivityManager connectivityManager;
@@ -50,8 +52,16 @@ public class HomeFragment extends Fragment {
     public View onCreateView(@NonNull LayoutInflater inflater,ViewGroup container, Bundle savedInstanceState) {
 
         View root = inflater.inflate(R.layout.fragment_home, container, false);
+        swipeRefreshLayout = (SwipeRefreshLayout) root.findViewById(R.id.refresh_layout);
+        noInternet = (ImageView) root.findViewById(R.id.no_internet_connection);
         categoryRecyclerView = (RecyclerView) root.findViewById(R.id.list_cate);
         homepageRecyclerView = (RecyclerView) root.findViewById(R.id.home_page_recyclerview);
+        retryBtn = (Button) root.findViewById(R.id.retry_btn);
+        noInternet.setVisibility(View.GONE);
+        retryBtn.setVisibility(View.GONE);
+
+        swipeRefreshLayout.setColorSchemeColors(getContext().getResources().getColor(R.color.md_red_500),getContext().getResources().getColor(R.color.md_green_500));
+
 
         LinearLayoutManager layoutManager1 = new LinearLayoutManager(getActivity());
         layoutManager1.setOrientation(LinearLayoutManager.HORIZONTAL);
@@ -61,43 +71,15 @@ public class HomeFragment extends Fragment {
         layoutManager2.setOrientation(LinearLayoutManager.VERTICAL);
         homepageRecyclerView.setLayoutManager(layoutManager2);
 
-        categoryModelList.add(new CategoryModel("https://www.phucanh.vn/media/news/3012_csm_4zu3_Asus_Zenbook_UX3430UQ_Teaser_7c44e97fc6Top10Laptopttnhtchochnhsanhvbintpvideonm2017.jpg", "Home"));
-        categoryModelList.add(new CategoryModel("https://www.phucanh.vn/media/news/3012_csm_4zu3_Asus_Zenbook_UX3430UQ_Teaser_7c44e97fc6Top10Laptopttnhtchochnhsanhvbintpvideonm2017.jpg", "Laptop"));
-        categoryModelList.add(new CategoryModel("https://www.phucanh.vn/media/news/3012_csm_4zu3_Asus_Zenbook_UX3430UQ_Teaser_7c44e97fc6Top10Laptopttnhtchochnhsanhvbintpvideonm2017.jpg", "Smartphone"));
-        categoryModelList.add(new CategoryModel("https://www.phucanh.vn/media/news/3012_csm_4zu3_Asus_Zenbook_UX3430UQ_Teaser_7c44e97fc6Top10Laptopttnhtchochnhsanhvbintpvideonm2017.jpg", "Tablet"));
-        categoryModelList.add(new CategoryModel("https://www.phucanh.vn/media/news/3012_csm_4zu3_Asus_Zenbook_UX3430UQ_Teaser_7c44e97fc6Top10Laptopttnhtchochnhsanhvbintpvideonm2017.jpg", "Tai nghe"));
-
-        List<SliderModel> sliderModelList = new ArrayList<>();
-        sliderModelList.add(new SliderModel("null", "#000000"));
-        sliderModelList.add(new SliderModel("null", "#000000"));
-        sliderModelList.add(new SliderModel("null", "#000000"));
-        sliderModelList.add(new SliderModel("null", "#000000"));
-        sliderModelList.add(new SliderModel("null", "#000000"));
-
-        List<HorizontalProductScrollModel> horizontalProductScrollModelList = new ArrayList<>();
-        horizontalProductScrollModelList.add(new HorizontalProductScrollModel("","","ádasd","đâs","20.000"));
-        horizontalProductScrollModelList.add(new HorizontalProductScrollModel("","","ádasd","đâs","20.000"));
-        horizontalProductScrollModelList.add(new HorizontalProductScrollModel("","","ádasd","đâs","20.000"));
-        horizontalProductScrollModelList.add(new HorizontalProductScrollModel("","","ádasd","đâs","20.000"));
-        horizontalProductScrollModelList.add(new HorizontalProductScrollModel("","","ádasd","đâs","20.000"));
-
-
-        homePageModelList.add(new HomePageModel(0, sliderModelList));
-        homePageModelList.add(new HomePageModel(2,"trending","#dfdfdf", horizontalProductScrollModelList, new ArrayList<WishlistModel>()));
-        homePageModelList.add(new HomePageModel(3,"trending","#dfdfdf", horizontalProductScrollModelList, new ArrayList<WishlistModel>()));
-
         categoryAdapter = new CategoryAdapter(categoryModelList);
-        categoryRecyclerView.setAdapter(categoryAdapter);
+        DBqueries.loadCategories(categoryRecyclerView, getContext());
         categoryRecyclerView.setAdapter(categoryAdapter);
 
         homePageAdapter = new HomePageAdapter(homePageModelList);
-        homepageRecyclerView.setAdapter(homePageAdapter);
+        loadedCategoriesNames.add("HOME");
+        DBqueries.lists.add(new ArrayList<HomePageModel>());
+        DBqueries.loadFragmentData(homepageRecyclerView, getContext(), 0, "home");
         homePageAdapter.notifyDataSetChanged();
-
-
-
-
-
 
         return root;
     }

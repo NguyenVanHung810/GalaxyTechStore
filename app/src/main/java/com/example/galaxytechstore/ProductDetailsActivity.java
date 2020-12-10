@@ -486,17 +486,17 @@ public class ProductDetailsActivity extends AppCompatActivity {
 //            });
 //        }
 
-        buynow_btn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (currentUser == null) {
-                    signInDialog.show();
-                } else {
-                    Intent deliveryIntent = new Intent(getApplicationContext(), DeliveryActivity.class);
-                    startActivity(deliveryIntent);
-                }
-            }
-        });
+//        buynow_btn.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                if (currentUser == null) {
+//                    signInDialog.show();
+//                } else {
+//                    Intent deliveryIntent = new Intent(getApplicationContext(), DeliveryActivity.class);
+//                    startActivity(deliveryIntent);
+//                }
+//            }
+//        });
 
 //        addtocart.setOnClickListener(new View.OnClickListener() {
 //            @Override
@@ -622,7 +622,7 @@ public class ProductDetailsActivity extends AppCompatActivity {
 
         if(currentUser != null){
             if (DBqueries.cartLists.size() == 0) {
-                DBqueries.loadCartList(ProductDetailsActivity.this, new Dialog(ProductDetailsActivity.this), false, badge_count);
+                //DBqueries.loadCartList(ProductDetailsActivity.this, new Dialog(ProductDetailsActivity.this), false, badge_count);
             }
             else {
                 badge_count.setVisibility(View.VISIBLE);
