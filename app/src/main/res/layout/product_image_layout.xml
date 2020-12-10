@@ -1,0 +1,198 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+    <androidx.viewpager.widget.ViewPager
+        android:id="@+id/product_images_viewpaper"
+        android:layout_width="match_parent"
+        android:layout_height="250dp"
+        android:layout_marginTop="24dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:ignore="MissingClass" />
+
+    <com.google.android.material.tabs.TabLayout
+        android:id="@+id/viewpaper_indicator"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:tabBackground="@drawable/dot_selector"
+        app:tabIndicatorHeight="0dp"
+        app:tabRippleColor="@null"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/product_images_viewpaper"/>
+
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/add_to_wishlist_btn"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginRight="8dp"
+        android:backgroundTint="#ffffff"
+        android:clickable="true"
+        android:elevation="5dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        android:src="@drawable/heart" />
+
+    <TextView
+        android:id="@+id/product_title_cart"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginLeft="16dp"
+        android:layout_marginEnd="16dp"
+        android:layout_marginRight="16dp"
+        android:text="Product Title"
+        android:textColor="#000000"
+        android:textSize="20sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/viewpaper_indicator" />
+
+    <LinearLayout
+        android:id="@+id/linearLayout2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginLeft="16dp"
+        android:layout_marginTop="16dp"
+        android:background="#01579B"
+        android:orientation="horizontal"
+        android:padding="5dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/product_title_cart">
+
+        <TextView
+            android:id="@+id/rating_wishlist_item"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="2dp"
+            android:layout_marginEnd="2dp"
+            android:text="4.5"
+            android:textColor="#FFFFFF"
+            android:textStyle="bold"></TextView>
+
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_marginLeft="8dp"
+            android:src="@drawable/star"></ImageView>
+    </LinearLayout>
+
+    <TextView
+        android:id="@+id/total_rating_miniview"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:layout_marginLeft="8dp"
+        android:text="Total Rating"
+        app:layout_constraintBottom_toBottomOf="@+id/linearLayout2"
+        app:layout_constraintStart_toEndOf="@+id/linearLayout2"
+        app:layout_constraintTop_toTopOf="@+id/linearLayout2" />
+
+    <TextView
+        android:id="@+id/product_price"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginLeft="16dp"
+        android:layout_marginTop="8dp"
+        android:text="1.900.000 đ"
+        android:textColor="#000000"
+        android:textStyle="bold"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/linearLayout2" />
+
+    <TextView
+        android:id="@+id/cutted_price_details"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginLeft="16dp"
+        android:text="2.900.000 đ"
+        android:textColor="#FF0000"
+        android:textStyle="bold"
+        app:layout_constraintBottom_toBottomOf="@+id/product_price"
+        app:layout_constraintStart_toEndOf="@+id/product_price"
+        app:layout_constraintTop_toBottomOf="@+id/linearLayout2"
+        app:layout_constraintVertical_bias="1.0" />
+
+    <View
+        android:id="@+id/divider"
+        android:layout_width="0dp"
+        android:layout_height="1dp"
+        android:background="#000000"
+        app:layout_constraintBottom_toBottomOf="@+id/cutted_price_details"
+        app:layout_constraintEnd_toEndOf="@+id/cutted_price_details"
+        app:layout_constraintStart_toStartOf="@+id/cutted_price_details"
+        app:layout_constraintTop_toTopOf="@+id/cutted_price_details" />
+
+    <ImageView
+        android:id="@+id/code_indicator"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:layout_marginEnd="16dp"
+        android:layout_marginRight="16dp"
+        android:src="@drawable/truck"
+        app:layout_constraintBottom_toBottomOf="@+id/tv_cod_indicator"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/viewpaper_indicator"
+        app:layout_constraintVertical_bias="0.407" />
+
+    <TextView
+        android:id="@+id/tv_cod_indicator"
+        android:layout_width="80dp"
+        android:layout_height="wrap_content"
+        android:text="Available"
+        android:gravity="center"
+        android:textStyle="bold"
+        android:textSize="12dp"
+        app:layout_constraintEnd_toEndOf="@+id/code_indicator"
+        app:layout_constraintStart_toStartOf="@+id/code_indicator"
+        app:layout_constraintTop_toBottomOf="@+id/code_indicator" />
+
+    <LinearLayout
+        android:id="@+id/coupen_redemption_layout"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="24dp"
+        android:background="#ff3030"
+        android:gravity="center"
+        android:orientation="horizontal"
+        android:padding="16dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/product_price"
+        app:layout_constraintVertical_bias="0.0">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:gravity="center"
+            android:text="Check price after coupen redemption"
+            android:textAlignment="center"></TextView>
+
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@drawable/border_background"
+            android:text="REDEEM"
+            android:textColor="#ffffff"
+            android:textSize="12dp">
+
+        </Button>
+    </LinearLayout>
+
+</androidx.constraintlayout.widget.ConstraintLayout>
