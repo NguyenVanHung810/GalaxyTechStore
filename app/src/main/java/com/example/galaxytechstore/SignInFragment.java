@@ -17,7 +17,14 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
+import android.widget.ProgressBar;
 import android.widget.TextView;
+import android.widget.Toast;
+
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
+import com.google.firebase.auth.AuthResult;
+import com.google.firebase.auth.FirebaseAuth;
 
 
 public class SignInFragment extends Fragment {
@@ -25,9 +32,16 @@ public class SignInFragment extends Fragment {
     private TextView noAccount, forgotpassword;
     private EditText email, password;
     private Button signin;
+    private ProgressBar load;
     private ImageButton close;
 
+    private FirebaseAuth firebaseAuth;
+    private String emailPattern = "[a-zA-Z0-9._-]+@[a-z]+\\.+[a-z]+";
+
+    public static boolean diableCloseBtn = false;
+
     public SignInFragment() {
+
     }
 
     @Override
@@ -38,20 +52,28 @@ public class SignInFragment extends Fragment {
         email = (EditText) view.findViewById(R.id.sign_in_email);
         password = (EditText) view.findViewById(R.id.sign_in_pw);
         signin = (Button) view.findViewById(R.id.btn_sign_in);
+        load = (ProgressBar) view.findViewById(R.id.load_sign_in);
         close = (ImageButton) view.findViewById(R.id.btnclose);
+        firebaseAuth = FirebaseAuth.getInstance();
+
+        if (diableCloseBtn) {
+            close.setVisibility(View.GONE);
+        } else {
+            close.setVisibility(View.VISIBLE);
+        }
+
         return view;
     }
 
-    // hàm riêng thiết lập các sự kiện.
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
-        // tạo sự kiện cho textview để chưa có tài khoản nhấn vô sang trang đăng kí tài khoản
         noAccount.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 setFragment(new SignUpFragment());
             }
         });
+
         forgotpassword.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -82,6 +104,7 @@ public class SignInFragment extends Fragment {
 
             }
         });
+
         password.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
@@ -100,7 +123,6 @@ public class SignInFragment extends Fragment {
         });
 
 
-        // Hàm viết chức năng đăng nhập
         signin.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -111,19 +133,38 @@ public class SignInFragment extends Fragment {
     }
 
     private void checkEmailAndPassword() {
-
+        if (email.getText().toString().matches(emailPattern)) {
+            if (password.length() >= 8) {
+                load.setVisibility(View.VISIBLE);
+                signin.setEnabled(false);
+                firebaseAuth.signInWithEmailAndPassword(email.getText().toString(), password.getText().toString()).addOnCompleteListener(new OnCompleteListener<AuthResult>() {
+                    @Override
+                    public void onComplete(@NonNull Task<AuthResult> task) {
+                        if (task.isSuccessful()) {
+                            mainIntent();
+                        } else {
+                            load.setVisibility(View.INVISIBLE);
+                            signin.setEnabled(false);
+                            toastInfo(task.getException().getMessage());
+                        }
+                    }
+                });
+            } else {
+                toastInfo("Incorrect Email of Password !!!");
+            }
+        } else {
+            toastInfo("Incorrect Email of Password !!!");
+        }
     }
 
     private void checkInput() {
-        if(!TextUtils.isEmpty(email.getText().toString())){
-            if(!TextUtils.isEmpty(password.getText().toString())){
+        if (!TextUtils.isEmpty(email.getText().toString())) {
+            if (!TextUtils.isEmpty(password.getText().toString())) {
                 signin.setEnabled(true);
-            }
-            else {
+            } else {
                 signin.setEnabled(false);
             }
-        }
-        else {
+        } else {
             signin.setEnabled(false);
         }
     }
@@ -137,9 +178,16 @@ public class SignInFragment extends Fragment {
         fragmentTransaction.commit();
     }
 
-    private void mainIntent(){
-        Intent intent = new Intent(getActivity(), MainActivity.class);
-        startActivity(intent);
+    private void toastInfo(String str) {
+        Toast.makeText(getActivity(), str, Toast.LENGTH_LONG).show();
+    }
+
+    private void mainIntent() {
+        if (diableCloseBtn) {
+            diableCloseBtn = false;
+        } else {
+            startActivity(new Intent(getActivity(), MainActivity.class));
+        }
         getActivity().finish();
     }
 }
