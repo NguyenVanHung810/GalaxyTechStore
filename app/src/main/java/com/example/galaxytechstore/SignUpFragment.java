@@ -62,7 +62,7 @@ public class SignUpFragment extends Fragment {
         load = (ProgressBar) view.findViewById(R.id.load);
         email = (EditText) view.findViewById(R.id.sign_in_email);
         fullname = (EditText) view.findViewById(R.id.sign_in_name);
-        phonenumber = (EditText) view.findViewById(R.id.sign_in_name);
+        phonenumber = (EditText) view.findViewById(R.id.sign_in_phone);
         password = (EditText) view.findViewById(R.id.sign_up_password);
         cfpassword = (EditText) view.findViewById(R.id.sign_up_confirm);
 
@@ -182,6 +182,7 @@ public class SignUpFragment extends Fragment {
 
                             Map<Object, String> userData = new HashMap<>();
                             userData.put("fullname", fullname.getText().toString());
+                            userData.put("phonenumber", phonenumber.getText().toString());
                             firestore.collection("USERS").document(firebaseAuth.getUid())
                                     .set(userData)
                                     .addOnCompleteListener(new OnCompleteListener<Void>() {

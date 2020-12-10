@@ -55,6 +55,7 @@ public class SignInFragment extends Fragment {
         load = (ProgressBar) view.findViewById(R.id.load_sign_in);
         close = (ImageButton) view.findViewById(R.id.btnclose);
         firebaseAuth = FirebaseAuth.getInstance();
+        load.setVisibility(View.INVISIBLE);
 
         if (diableCloseBtn) {
             close.setVisibility(View.GONE);
@@ -64,7 +65,6 @@ public class SignInFragment extends Fragment {
 
         return view;
     }
-
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         noAccount.setOnClickListener(new View.OnClickListener() {
@@ -168,7 +168,6 @@ public class SignInFragment extends Fragment {
             signin.setEnabled(false);
         }
     }
-
 
     private void setFragment(Fragment fragment) {
         FragmentTransaction fragmentTransaction = getActivity().getSupportFragmentManager().beginTransaction();
