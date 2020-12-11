@@ -31,7 +31,7 @@ import java.util.Map;
         public static List<List<HomePageModel>> lists = new ArrayList<>();
         public static List<String> loadedCategoriesNames = new ArrayList<>();
         public static List<String> wishList = new ArrayList<>();
-        //public static List<WishlistModel> wishlistModelList = new ArrayList<>();
+        public static List<WishlistModel> wishlistModelList = new ArrayList<>();
         public static List<String> myRatedIds = new ArrayList<>();
         public static List<Long> myRating = new ArrayList<>();
         public static List<String> cartLists = new ArrayList<>();
@@ -129,5 +129,11 @@ import java.util.Map;
                     });
         }
 
-
+        public static void clearData() {
+            list.clear();
+            lists.clear();
+            loadedCategoriesNames.clear();
+            wishList.clear();
+            wishlistModelList.clear();
+        }
     }

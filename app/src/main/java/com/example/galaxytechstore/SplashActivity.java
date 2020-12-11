@@ -13,7 +13,7 @@ public class SplashActivity extends AppCompatActivity {
         setContentView(R.layout.activity_splash);
 
         SystemClock.sleep(5000);
-        startActivity(new Intent(SplashActivity.this,Login_Register_ResetPasswordActivity.class));
+        startActivity(new Intent(SplashActivity.this,MainActivity.class));
         finish();
     }
 }
