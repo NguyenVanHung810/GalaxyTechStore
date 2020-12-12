@@ -304,59 +304,60 @@ public class ProductDetailsActivity extends AppCompatActivity {
         });
 
         viewPaperIndicator.setupWithViewPager(productImagesViewPaper, true);
-//        addWishList.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-//                if (currentUser == null) {
-//                    signInDialog.show();
-//                } else {
-//                    if (!running_wishlist_query) {
-//                        running_wishlist_query = true;
-//                        if (ALREADY_ADDED_TO_WISHLIST) {
-//                            int index = DBqueries.wishList.indexOf(productID);
-//                            DBqueries.removeFromWishList(index, ProductDetailsActivity.this);
-//                            ALREADY_ADDED_TO_WISHLIST = false;
-//                            addWishList.setImageResource(R.drawable.heart);
-//                        } else {
-//                            addWishList.setImageResource(R.drawable.like);
-//                            Map<String, Object> addProduct = new HashMap<>();
-//                            addProduct.put("product_ID_" + String.valueOf(DBqueries.wishList.size()), productID);
-//                            addProduct.put("list_size", (long) (DBqueries.wishList.size() + 1));
-//
-//                            firebaseFirestore.collection("USERS").document(currentUser.getUid()).collection("USER_DATA").document("MY_WISHLIST")
-//                                    .update(addProduct).addOnCompleteListener(new OnCompleteListener<Void>() {
-//                                @Override
-//                                public void onComplete(@NonNull Task<Void> task) {
-//                                    if (task.isSuccessful()) {
-//                                        if (DBqueries.wishlistModelList.size() != 0) {
-//                                            DBqueries.wishlistModelList.add(new WishlistModel(productID,
-//                                                    documentSnapshot.get("product_image_1").toString(),
-//                                                    documentSnapshot.get("product_title").toString(),
-//                                                    (long) documentSnapshot.get("free_coupens"),
-//                                                    documentSnapshot.get("average_rating").toString(),
-//                                                    (long) documentSnapshot.get("total_rating"),
-//                                                    documentSnapshot.get("product_price").toString(),
-//                                                    documentSnapshot.get("product_cutted_price").toString(),
-//                                                    (boolean) documentSnapshot.get("COD")
-//                                            ));
-//                                        }
-//                                        ALREADY_ADDED_TO_WISHLIST = true;
-//                                        addWishList.setImageResource(R.drawable.like);
-//                                        DBqueries.wishList.add(productID);
-//                                        Toast.makeText(getApplicationContext(), "Thêm sản phẩm yêu thích thành công", Toast.LENGTH_SHORT).show();
-//                                    } else {
-//                                        addWishList.setImageResource(R.drawable.heart);
-//                                        String error = task.getException().getMessage();
-//                                        Toast.makeText(getApplicationContext(), error, Toast.LENGTH_SHORT).show();
-//                                    }
-//                                    running_wishlist_query = false;
-//                                }
-//                            });
-//                        }
-//                    }
-//                }
-//            }
-//        });
+        addWishList.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (currentUser == null) {
+                    signInDialog.show();
+                } else {
+                    if (!running_wishlist_query) {
+                        running_wishlist_query = true;
+                        if (ALREADY_ADDED_TO_WISHLIST) {
+                            int index = DBqueries.wishList.indexOf(productID);
+                            DBqueries.removeFromWishList(index, ProductDetailsActivity.this);
+                            ALREADY_ADDED_TO_WISHLIST = false;
+                            addWishList.setImageResource(R.drawable.heart);
+                        } else {
+                            addWishList.setImageResource(R.drawable.like);
+                            Map<String, Object> addProduct = new HashMap<>();
+                            addProduct.put("product_ID_" + String.valueOf(DBqueries.wishList.size()), productID);
+                            addProduct.put("list_size", (long) (DBqueries.wishList.size() + 1));
+
+                            firebaseFirestore.collection("USERS").document(currentUser.getUid()).collection("USER_DATA").document("MY_WISHLIST")
+                                    .update(addProduct).addOnCompleteListener(new OnCompleteListener<Void>() {
+                                @Override
+                                public void onComplete(@NonNull Task<Void> task) {
+                                    if (task.isSuccessful()) {
+                                        if (DBqueries.wishlistModelList.size() != 0) {
+                                            DBqueries.wishlistModelList.add(new WishlistModel(productID,
+                                                    documentSnapshot.get("product_image_1").toString(),
+                                                    documentSnapshot.get("product_title").toString(),
+                                                    (long) documentSnapshot.get("free_coupens"),
+                                                    documentSnapshot.get("average_rating").toString(),
+                                                    (long) documentSnapshot.get("total_rating"),
+                                                    documentSnapshot.get("product_price").toString(),
+                                                    documentSnapshot.get("product_cutted_price").toString(),
+                                                    (boolean) documentSnapshot.get("COD"),
+                                                    (boolean) documentSnapshot.get("in_stock")
+                                            ));
+                                       }
+                                        ALREADY_ADDED_TO_WISHLIST = true;
+                                        addWishList.setImageResource(R.drawable.like);
+                                        DBqueries.wishList.add(productID);
+                                        Toast.makeText(getApplicationContext(), "Thêm sản phẩm yêu thích thành công", Toast.LENGTH_SHORT).show();
+                                    } else {
+                                        addWishList.setImageResource(R.drawable.heart);
+                                        String error = task.getException().getMessage();
+                                        Toast.makeText(getApplicationContext(), error, Toast.LENGTH_SHORT).show();
+                                    }
+                                    running_wishlist_query = false;
+                                }
+                            });
+                        }
+                    }
+                }
+            }
+        });
 
         productDetailsViewPaper.addOnPageChangeListener(new TabLayout.TabLayoutOnPageChangeListener(productDetailsTabLayout));
         productDetailsTabLayout.setOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
