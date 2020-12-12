@@ -99,7 +99,8 @@ import java.util.Map;
                                                     (long) documentSnapshot.get("total_rating_" + x),
                                                     documentSnapshot.get("product_price_" + x).toString(),
                                                     documentSnapshot.get("product_cutted_price_" + x).toString(),
-                                                    (boolean) documentSnapshot.get("COD_" + x)
+                                                    (boolean) documentSnapshot.get("COD_" + x),
+                                                    (boolean) documentSnapshot.get("in_stock_"+x)
                                             ));
                                         }
                                         lists.get(index).add(new HomePageModel(2, documentSnapshot.get("layout_title").toString(), documentSnapshot.get("layout_background").toString(), productlist, viewAllProductList));
@@ -127,6 +128,101 @@ import java.util.Map;
                             }
                         }
                     });
+        }
+
+        public static void loadWishList(Context context, Dialog dialog, final boolean loadProductData) {
+            wishList.clear();
+            firebaseFirestore.collection("USERS").document(FirebaseAuth.getInstance().getUid()).collection("USER_DATA")
+                    .document("MY_WISHLIST").get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+                @Override
+                public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                    if (task.isSuccessful()) {
+                        for (long x = 0; x < (long) task.getResult().get("list_size"); x++) {
+                            wishList.add(String.valueOf(task.getResult().get("product_ID_" + x)));
+
+                            if (DBqueries.wishList.contains(ProductDetailsActivity.productID)) {
+                                ProductDetailsActivity.ALREADY_ADDED_TO_WISHLIST = true;
+                                if (ProductDetailsActivity.addWishList != null) {
+                                    ProductDetailsActivity.addWishList.setImageResource(R.drawable.like);
+                                }
+                            } else {
+                                if (ProductDetailsActivity.addWishList != null) {
+                                    ProductDetailsActivity.addWishList.setImageResource(R.drawable.heart);
+                                }
+                                ProductDetailsActivity.ALREADY_ADDED_TO_WISHLIST = false;
+                            }
+
+                            if (loadProductData) {
+                                wishlistModelList.clear();
+                                final String productID = task.getResult().get("product_ID_" + x).toString();
+                                firebaseFirestore.collection("PRODUCTS").document(task.getResult().get("product_ID_" + x).toString())
+                                        .get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+                                    @Override
+                                    public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                                        if (task.isSuccessful()) {
+                                            wishlistModelList.add(new WishlistModel(
+                                                    productID,
+                                                    task.getResult().get("product_image_1").toString(),
+                                                    task.getResult().get("product_title").toString(),
+                                                    (long) task.getResult().get("free_coupens"),
+                                                    task.getResult().get("average").toString(),
+                                                    (long) task.getResult().get("total_ratings"),
+                                                    task.getResult().get("product_price").toString(),
+                                                    task.getResult().get("cutted_price").toString(),
+                                                    (boolean) task.getResult().get("COD")
+                                                    ,(boolean) task.getResult().get("in_stock")
+                                            ));
+                                            MyWishlistFragment.wishListAdapter.notifyDataSetChanged();
+                                        } else {
+                                            String error = task.getException().getMessage();
+                                            Toast.makeText(context, error, Toast.LENGTH_SHORT).show();
+                                        }
+                                    }
+                                });
+                            }
+                        }
+                    } else {
+                        String error = task.getException().getMessage();
+                        Toast.makeText(context, error, Toast.LENGTH_SHORT).show();
+                    }
+                    dialog.dismiss();
+                }
+            });
+        }
+
+        public static void removeFromWishList(int index, Context context) {
+            String removedProductID = wishList.get(index);
+            wishList.remove(index);
+            Map<String, Object> updateWishList = new HashMap<>();
+
+            for (int x = 0; x < wishList.size(); x++) {
+                updateWishList.put("product_ID_" + x, wishList.get(x));
+            }
+            updateWishList.put("list_size", (long) wishList.size());
+
+            firebaseFirestore.collection("USERS").document(FirebaseAuth.getInstance().getUid())
+                    .collection("USER_DATA").document("MY_WISHLIST")
+                    .set(updateWishList).addOnCompleteListener(new OnCompleteListener<Void>() {
+                @Override
+                public void onComplete(@NonNull Task<Void> task) {
+                    if (task.isSuccessful()) {
+                        if (wishlistModelList.size() != 0) {
+                            wishlistModelList.remove(index);
+                            MyWishlistFragment.wishListAdapter.notifyDataSetChanged();
+                        }
+                        ProductDetailsActivity.ALREADY_ADDED_TO_WISHLIST = false;
+                        Toast.makeText(context, "Đã xóa thành công !!!", Toast.LENGTH_SHORT).show();
+                    } else {
+                        if (ProductDetailsActivity.addWishList != null) {
+                            ProductDetailsActivity.addWishList.setImageResource(R.drawable.like);
+                        }
+                        wishList.add(index, removedProductID);
+                        String error = task.getException().getMessage();
+                        Toast.makeText(context, error, Toast.LENGTH_SHORT).show();
+                    }
+                    ProductDetailsActivity.running_wishlist_query = false;
+                }
+            });
         }
 
         public static void clearData() {

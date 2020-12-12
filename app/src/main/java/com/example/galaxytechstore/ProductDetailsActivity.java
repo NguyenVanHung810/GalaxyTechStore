@@ -115,7 +115,7 @@ public class ProductDetailsActivity extends AppCompatActivity {
                 //DBqueries.loadRatingList(ProductDetailsActivity.this);
             }
             if (DBqueries.wishList.size() == 0) {
-                //DBqueries.loadWishList(ProductDetailsActivity.this, loaddialog, false);
+                DBqueries.loadWishList(ProductDetailsActivity.this, loaddialog, false);
                 //DBqueries.loadRatingList(ProductDetailsActivity.this);
             } else {
                 loaddialog.dismiss();
