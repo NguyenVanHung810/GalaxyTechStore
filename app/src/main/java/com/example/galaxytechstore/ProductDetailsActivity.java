@@ -259,18 +259,18 @@ public class ProductDetailsActivity extends AppCompatActivity {
 
 
                     if (currentUser != null) {
-//                        if (DBqueries.myRating.size() == 0) {
-//                            DBqueries.loadRatingList(ProductDetailsActivity.this);
-//                        }
-//                        if(DBqueries.cartLists.size() == 0){
-//                            DBqueries.loadCartList(ProductDetailsActivity.this, loaddialog, false,badge_count);
-//                        }
-//                        if (DBqueries.wishList.size() == 0) {
-//                            DBqueries.loadWishList(ProductDetailsActivity.this, loaddialog, false);
-//                            DBqueries.loadRatingList(ProductDetailsActivity.this);
-//                        } else {
-//                            loaddialog.dismiss();
-//                        }
+                        if (DBqueries.myRating.size() == 0) {
+                            //DBqueries.loadRatingList(ProductDetailsActivity.this);
+                        }
+                        if(DBqueries.cartLists.size() == 0){
+                            //DBqueries.loadCartList(ProductDetailsActivity.this, loaddialog, false,badge_count);
+                        }
+                        if (DBqueries.wishList.size() == 0) {
+                            DBqueries.loadWishList(ProductDetailsActivity.this, loaddialog, false);
+                            //DBqueries.loadRatingList(ProductDetailsActivity.this);
+                        } else {
+                            loaddialog.dismiss();
+                        }
                     } else {
                         loaddialog.dismiss();
                     }

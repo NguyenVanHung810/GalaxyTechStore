@@ -24,7 +24,9 @@ import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.RequestOptions;
 import com.squareup.picasso.Picasso;
 
+import java.text.NumberFormat;
 import java.util.List;
+import java.util.Locale;
 
 public class WishListAdapter extends RecyclerView.Adapter<WishListAdapter.Viewholder> {
 
@@ -101,7 +103,6 @@ public class WishListAdapter extends RecyclerView.Adapter<WishListAdapter.Viewho
         }
         private void setData(String id, String url, String title, long freeCoupenNo, String averageRate, long tr, String pp, String cp, boolean pm, int index, boolean instock){
             Glide.with(itemView.getContext()).load(url).apply(new RequestOptions().placeholder(R.drawable.placeholder)).into(coupenIcon);
-            //Picasso.get().load(url).into(productImage);
             productTitle.setText(title);
             if(freeCoupenNo != 0 && instock){
                 coupenIcon.setVisibility(View.VISIBLE);
@@ -118,16 +119,16 @@ public class WishListAdapter extends RecyclerView.Adapter<WishListAdapter.Viewho
             }
             LinearLayout linearLayout = (LinearLayout) rating.getParent();
             if(instock) {
-                rating.setVisibility(View.INVISIBLE);
+                rating.setVisibility(View.VISIBLE);
                 totalRatings.setVisibility(View.VISIBLE);
                 productPrice.setText("Hết hàng");
                 productPrice.setTextColor(Color.parseColor("#000000"));
                 cuttedPrice.setVisibility(View.VISIBLE);
 
                 rating.setText(averageRate);
-                totalRatings.setText(tr + " ratings");
-                productPrice.setText(pp);
-                cuttedPrice.setText(cp);
+                totalRatings.setText("("+tr + " ratings)");
+                productPrice.setText(convertToVietnameseMoney(Integer.parseInt(pp)));
+                cuttedPrice.setText(convertToVietnameseMoney(Integer.parseInt(cp)));
                 if (pm) {
                     paymentMethod.setVisibility(View.VISIBLE);
                 } else {
@@ -169,6 +170,12 @@ public class WishListAdapter extends RecyclerView.Adapter<WishListAdapter.Viewho
                     itemView.getContext().startActivity(productDetailIntent);
                 }
             });
+        }
+
+        private String convertToVietnameseMoney(int t) {
+            Locale locale = new Locale("vi", "VN");
+            NumberFormat format = NumberFormat.getCurrencyInstance(locale);
+            return format.format(t);
         }
     }
 }
