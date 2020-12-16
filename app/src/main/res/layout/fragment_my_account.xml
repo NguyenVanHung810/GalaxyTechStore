@@ -13,7 +13,26 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical" >
-            
+            <include layout="@layout/profile_data_layout"></include>
+            <include layout="@layout/order_status_layout"></include>
+            <include layout="@layout/your_recent_orders_layout"></include>
+            <include layout="@layout/my_addresses_layout"></include>
+
+            <Button
+                android:id="@+id/sign_out"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Sign Out"
+                android:textColor="#ffffff"
+                android:textSize="14dp"
+                android:textStyle="bold"
+                android:layout_marginLeft="16dp"
+                android:layout_marginRight="16dp"
+                android:layout_marginBottom="16dp"
+                android:backgroundTint="@color/md_red_500"
+                tools:ignore="InvalidId">
+
+            </Button>
         </LinearLayout>
     </androidx.core.widget.NestedScrollView>
 </FrameLayout>
