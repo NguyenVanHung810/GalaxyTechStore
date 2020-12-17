@@ -1,6 +1,7 @@
 package com.example.galaxytechstore;
 
 import android.content.Intent;
+import android.graphics.Color;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
@@ -65,9 +66,7 @@ public class SignUpFragment extends Fragment {
         phonenumber = (EditText) view.findViewById(R.id.sign_in_phone);
         password = (EditText) view.findViewById(R.id.sign_up_password);
         cfpassword = (EditText) view.findViewById(R.id.sign_up_confirm);
-
         close = (ImageButton) view.findViewById(R.id.btnclose);
-
         signup = (Button) view.findViewById(R.id.btn_sign_in);
 
         firebaseAuth = FirebaseAuth.getInstance();
@@ -179,7 +178,6 @@ public class SignUpFragment extends Fragment {
                     @Override
                     public void onComplete(@NonNull Task<AuthResult> task) {
                         if (task.isSuccessful()) {
-
                             Map<Object, String> userData = new HashMap<>();
                             userData.put("fullname", fullname.getText().toString());
                             userData.put("phonenumber", phonenumber.getText().toString());
@@ -203,18 +201,23 @@ public class SignUpFragment extends Fragment {
                                                 Map<String, Object> myAddressMap = new HashMap<>();
                                                 myAddressMap.put("list_size", (long) 0);
 
+                                                Map<String,Object> notificationMap= new HashMap<>();
+                                                notificationMap.put("list_size", (long) 0);
+
 
                                                 List<String> documentNames = new ArrayList<>();
                                                 documentNames.add("MY_WISHLIST");
                                                 documentNames.add("MY_RATINGS");
                                                 documentNames.add("MY_CART");
                                                 documentNames.add("MY_ADDRESSES");
+                                                documentNames.add("MY_NOTIFICATIONS");
 
                                                 List<Map<String, Object>> documentFields = new ArrayList<>();
                                                 documentFields.add(wishListMap);
                                                 documentFields.add(ratingsMap);
                                                 documentFields.add(cartMap);
                                                 documentFields.add(myAddressMap);
+                                                documentFields.add(notificationMap);
 
                                                 for (int x = 0; x < documentNames.size(); x++) {
                                                     int finalX = x;
@@ -224,10 +227,16 @@ public class SignUpFragment extends Fragment {
                                                         public void onComplete(@NonNull Task<Void> task) {
                                                             if (task.isSuccessful()) {
                                                                 if (finalX == documentNames.size() - 1){
-                                                                    mainIntent();
+                                                                    if (diableCloseBtn) {
+                                                                        diableCloseBtn = false;
+                                                                    } else {
+                                                                        startActivity(new Intent(getActivity(), MainActivity.class));
+                                                                    }
+                                                                    getActivity().finish();
                                                                 }
                                                             } else {
                                                                 signup.setEnabled(true);
+                                                                signup.setTextColor(Color.rgb(255, 255, 255));
                                                                 load.setVisibility(View.INVISIBLE);
                                                                 String error = task.getException().getMessage();
                                                                 toastInfo(error);
@@ -243,6 +252,7 @@ public class SignUpFragment extends Fragment {
                                     });
                         } else {
                             signup.setEnabled(true);
+                            signup.setTextColor(Color.rgb(255, 255, 255));
                             load.setVisibility(View.INVISIBLE);
                             String error = task.getException().getMessage();
                             toastInfo(error);

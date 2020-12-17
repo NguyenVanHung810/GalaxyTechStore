@@ -13,8 +13,10 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.GalaxyTechStore">
-        <activity android:name=".ProductDetailsActivity"
-            android:theme="@style/ThemeNoActionBar"></activity>
+        <activity android:name=".NotificationActivity"></activity>
+        <activity
+            android:name=".ProductDetailsActivity"
+            android:theme="@style/ThemeNoActionBar" />
         <activity android:name=".ViewAllActivity" />
         <activity android:name=".CategoryActivity" />
         <activity

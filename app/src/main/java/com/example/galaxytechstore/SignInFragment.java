@@ -77,6 +77,7 @@ public class SignInFragment extends Fragment {
         forgotpassword.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                Login_Register_ResetPasswordActivity.onResetPasswordFragment = true;
                 setFragment(new ResetPasswordFragment());
             }
         });
