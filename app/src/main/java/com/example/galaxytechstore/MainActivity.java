@@ -155,28 +155,48 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         if (currentFragment == Home_Fragment) {
             getSupportActionBar().setDisplayShowTitleEnabled(false);
             getMenuInflater().inflate(R.menu.main, menu);
-            MenuItem cartItem = menu.findItem(R.id.main_cart_ic);
-            if (DBqueries.cartLists.size() > 0) {
-                cartItem.setActionView(R.layout.badge_layout);
-                ImageView badge_icon = cartItem.getActionView().findViewById(R.id.badge_icon);
-                badge_icon.setImageResource(R.drawable.cart_2);
-                badge_count = cartItem.getActionView().findViewById(R.id.badge_count);
-                badge_count.setText(String.valueOf(DBqueries.cartLists.size()));
 
-                cartItem.getActionView().setOnClickListener(new View.OnClickListener() {
-                    @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
-                    @Override
-                    public void onClick(View v) {
-                        if (currentUser == null) {
-                            signInDialog.show();
-                        } else {
-                            //gotoFragment("My Cart", new MyCartFragment(), Cart_Fragment);
-                        }
-                    }
-                });
-            } else {
-                cartItem.setActionView(null);
+            //
+            MenuItem cartItem = menu.findItem(R.id.main_cart_ic);
+            cartItem.setActionView(R.layout.badge_layout);
+            ImageView badge_icon = cartItem.getActionView().findViewById(R.id.badge_icon);
+            badge_icon.setImageResource(R.drawable.cart_2);
+            badge_count = cartItem.getActionView().findViewById(R.id.badge_count);
+            //
+
+            //
+            MenuItem notificationItem = menu.findItem(R.id.main_notification_ic);
+            notificationItem.setActionView(R.layout.badge_layout);
+            ImageView badgeIcon = notificationItem.getActionView().findViewById(R.id.badge_icon);
+            badgeIcon.setImageResource(R.drawable.notification);
+            TextView notifyCount = notificationItem.getActionView().findViewById(R.id.badge_count);
+
+            if (currentUser != null) {
+                DBqueries.checkNotifications(false, notifyCount);
             }
+
+            notificationItem.getActionView().setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    if (currentUser == null) {
+                        signInDialog.show();
+                    } else {
+                        startActivity(new Intent(MainActivity.this, NotificationActivity.class));
+                    }
+                }
+            });
+            //
+
+            cartItem.getActionView().setOnClickListener(new View.OnClickListener() {
+                @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
+                @Override
+                public void onClick(View v) {
+                    if (currentUser == null) {
+                        signInDialog.show();
+                    } else {
+                    }
+                }
+            });
         }
         return true;
     }
@@ -189,11 +209,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             case R.id.main_search_ic:
                 return true;
             case R.id.main_notification_ic:
-                if (currentUser == null) {
-                    signInDialog.show();
-                } else {
-
-                }
+                startActivity(new Intent(MainActivity.this, NotificationActivity.class));
+                return true;
             case R.id.main_cart_ic:
                 if (currentUser == null) {
                     signInDialog.show();
