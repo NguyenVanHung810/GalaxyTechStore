@@ -30,6 +30,7 @@ import java.util.Locale;
 
 public class WishListAdapter extends RecyclerView.Adapter<WishListAdapter.Viewholder> {
 
+    private boolean fromSearch;
     private List<WishlistModel> list;
     private Boolean wishlist;
     private int lastposition = -1;
@@ -37,6 +38,22 @@ public class WishListAdapter extends RecyclerView.Adapter<WishListAdapter.Viewho
     public WishListAdapter(List<WishlistModel> list, boolean wl) {
         this.list = list;
         this.wishlist = wl;
+    }
+
+    public boolean isFromSearch() {
+        return fromSearch;
+    }
+
+    public void setFromSearch(boolean fromSearch) {
+        this.fromSearch = fromSearch;
+    }
+
+    public List<WishlistModel> getList() {
+        return list;
+    }
+
+    public void setList(List<WishlistModel> list) {
+        this.list = list;
     }
 
     @NonNull

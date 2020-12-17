@@ -15,7 +15,10 @@
         android:theme="@style/Theme.GalaxyTechStore">
         <activity
             android:theme="@style/Theme.AppCompat.NoActionBar"
-            android:name=".NotificationActivity"></activity>
+            android:name=".SearchActivity"></activity>
+        <activity
+            android:name=".NotificationActivity"
+            android:theme="@style/Theme.AppCompat.NoActionBar" />
         <activity
             android:name=".ProductDetailsActivity"
             android:theme="@style/ThemeNoActionBar" />

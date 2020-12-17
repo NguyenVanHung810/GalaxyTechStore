@@ -207,6 +207,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         int id = item.getItemId();
         switch (id) {
             case R.id.main_search_ic:
+                startActivity(new Intent(MainActivity.this, SearchActivity.class));
                 return true;
             case R.id.main_notification_ic:
                 startActivity(new Intent(MainActivity.this, NotificationActivity.class));
