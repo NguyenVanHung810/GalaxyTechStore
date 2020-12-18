@@ -10,13 +10,11 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.recyclerview.widget.RecyclerView;
-import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import com.example.galaxytechstore.ui.home.HomeFragment;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
@@ -27,6 +25,7 @@ import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -49,6 +48,8 @@ import java.util.Map;
 
         public static List<String> cartLists = new ArrayList<>();
         public static List<CartItemModel> cartItemModelList = new ArrayList<>();
+
+        public static List<RewardModel> rewardModelList = new ArrayList<>();
 
         public static List<NotificationModel> notificationModelList=new ArrayList<>();
 
@@ -353,6 +354,66 @@ import java.util.Map;
                     dialog.dismiss();
                 }
             });
+        }
+
+        public static void loadRewards(final Context context, final Dialog loadingDialog, final boolean onRewardFragment){
+            rewardModelList.clear();
+            firebaseFirestore.collection("USERS").document(FirebaseAuth.getInstance().getUid()).get()
+                    .addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+                        @Override
+                        public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                            if (task.isSuccessful()) {
+                                final Date lastseendate=task.getResult().getDate("Last seen");
+                                firebaseFirestore.collection("USERS").document(FirebaseAuth.getInstance().getUid()).collection("USER_REWARDS")
+                                        .get()
+                                        .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                                            @Override
+                                            public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                                                if(task.isSuccessful()){
+
+                                                    for(QueryDocumentSnapshot documentSnapshot:task.getResult()){
+                                                        if(documentSnapshot.get("type").toString().equals("Discount") && lastseendate.before(documentSnapshot.getDate("validaty"))){
+                                                            rewardModelList.add(new RewardModel(
+                                                                    documentSnapshot.getId()
+                                                                    ,documentSnapshot.get("type").toString()
+                                                                    ,documentSnapshot.get("upper_limit").toString()
+                                                                    ,documentSnapshot.get("lower_limit").toString()
+                                                                    ,documentSnapshot.get("percentage").toString()
+                                                                    ,documentSnapshot.get("body").toString()
+                                                                    ,documentSnapshot.getTimestamp("validaty").toDate()
+                                                                    ,(boolean)documentSnapshot.get("already_used")
+                                                            ));
+                                                        }else if(documentSnapshot.get("type").toString().equals("Cashback") && lastseendate.before(documentSnapshot.getDate("validaty"))){
+                                                            rewardModelList.add(new RewardModel(
+                                                                    documentSnapshot.getId()
+                                                                    ,documentSnapshot.get("type").toString()
+                                                                    ,documentSnapshot.get("upper_limit").toString()
+                                                                    ,documentSnapshot.get("lower_limit").toString()
+                                                                    ,documentSnapshot.get("amount").toString()
+                                                                    ,documentSnapshot.get("body").toString()
+                                                                    ,documentSnapshot.getTimestamp("validaty").toDate()
+                                                                    ,(boolean)documentSnapshot.get("already_used")
+                                                            ));
+                                                        }
+                                                    }
+                                                    if(onRewardFragment) {
+                                                        MyRewardsFragment.myRewardsAdapter.notifyDataSetChanged();
+                                                    }
+                                                }else {
+                                                    String error=task.getException().getMessage();
+                                                    Toast.makeText(context,error,Toast.LENGTH_SHORT).show();
+                                                }
+                                                loadingDialog.dismiss();
+                                            }
+                                        });
+
+                            } else {
+                                loadingDialog.dismiss();
+                                String error = task.getException().getMessage();
+                                Toast.makeText(context, error, Toast.LENGTH_SHORT).show();
+                            }
+                        }
+                    });
         }
 
         public static void clearData() {
