@@ -13,9 +13,10 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.GalaxyTechStore">
+        <activity android:name=".UpdateUserInfoActivity"></activity>
         <activity
-            android:theme="@style/Theme.AppCompat.NoActionBar"
-            android:name=".SearchActivity"></activity>
+            android:name=".SearchActivity"
+            android:theme="@style/Theme.AppCompat.NoActionBar" />
         <activity
             android:name=".NotificationActivity"
             android:theme="@style/Theme.AppCompat.NoActionBar" />

@@ -31,6 +31,8 @@ import java.util.Map;
 
     public class DBqueries {
 
+
+        public static String email,fullname,profile;
         public static FirebaseFirestore firebaseFirestore = FirebaseFirestore.getInstance();
         public static List<CategoryModel> list = new ArrayList<>();
         public static List<List<HomePageModel>> lists = new ArrayList<>();
@@ -42,7 +44,6 @@ import java.util.Map;
         public static List<String> cartLists = new ArrayList<>();
         //public static List<CartItemModel> cartItemModelList = new ArrayList<>();
         public static List<NotificationModel> notificationModelList=new ArrayList<>();
-
         private static ListenerRegistration registration;
 
 
