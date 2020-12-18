@@ -32,7 +32,6 @@ import java.util.Map;
 
     public class DBqueries {
 
-
         public static String email,fullname,profile;
         public static FirebaseFirestore firebaseFirestore = FirebaseFirestore.getInstance();
         public static List<CategoryModel> list = new ArrayList<>();

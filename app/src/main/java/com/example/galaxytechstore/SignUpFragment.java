@@ -174,6 +174,7 @@ public class SignUpFragment extends Fragment {
             if (password.getText().toString().equals(cfpassword.getText().toString())) {
                 load.setVisibility(View.VISIBLE);
                 signup.setEnabled(false);
+                signup.setTextColor(Color.argb(50,255,255,255));
                 firebaseAuth.createUserWithEmailAndPassword(email.getText().toString(), password.getText().toString()).addOnCompleteListener(new OnCompleteListener<AuthResult>() {
                     @Override
                     public void onComplete(@NonNull Task<AuthResult> task) {
@@ -181,6 +182,9 @@ public class SignUpFragment extends Fragment {
                             Map<Object, String> userData = new HashMap<>();
                             userData.put("fullname", fullname.getText().toString());
                             userData.put("phonenumber", phonenumber.getText().toString());
+                            userData.put("email", email.getText().toString());
+                            userData.put("profile", "");
+
                             firestore.collection("USERS").document(firebaseAuth.getUid())
                                     .set(userData)
                                     .addOnCompleteListener(new OnCompleteListener<Void>() {
