@@ -19,6 +19,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.example.galaxytechstore.ui.home.HomeFragment;
+import com.google.android.material.appbar.AppBarLayout;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.android.material.navigation.NavigationView;
@@ -59,6 +60,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     public static DrawerLayout drawer;
     private FirebaseUser currentUser;
     private TextView badge_count;
+    private int scrollFlags;
+    private AppBarLayout.LayoutParams layoutParams;
+
 
     @Override
     protected void onStart() {
@@ -84,12 +88,15 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         window = getWindow();
         window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
 
-        getSupportActionBar().setDisplayShowTitleEnabled(false);
+        layoutParams = (AppBarLayout.LayoutParams) toolbar.getLayoutParams();
+        scrollFlags = layoutParams.getScrollFlags();
+
 
         drawer = findViewById(R.id.drawer_layout);
         navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
         navigationView.getMenu().getItem(0).setChecked(true);
+
         if (showcart) {
             drawer.setDrawerLockMode(1);
             getSupportActionBar().setDisplayShowHomeEnabled(true);
@@ -105,12 +112,10 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         signInDialog = new Dialog(MainActivity.this);
         signInDialog.setContentView(R.layout.sign_in_dialog);
         signInDialog.setCancelable(true);
-        signInDialog.setCanceledOnTouchOutside(true);
         signInDialog.getWindow().setLayout(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
 
         Button sign_in_dialog = signInDialog.findViewById(R.id.sign_in_btn);
         Button sign_up_dialog = signInDialog.findViewById(R.id.sign_up_btn);
-        Intent registerIntent = new Intent(MainActivity.this, Login_Register_ResetPasswordActivity.class);
 
 
         sign_in_dialog.setOnClickListener(new View.OnClickListener() {
@@ -120,7 +125,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 SignUpFragment.diableCloseBtn = true;
                 signInDialog.dismiss();
                 Login_Register_ResetPasswordActivity.setSignUpFragment = false;
-                startActivity(registerIntent);
+                startActivity(new Intent(MainActivity.this, Login_Register_ResetPasswordActivity.class));
             }
         });
 
@@ -131,7 +136,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 SignUpFragment.diableCloseBtn = true;
                 signInDialog.dismiss();
                 Login_Register_ResetPasswordActivity.setSignUpFragment = true;
-                startActivity(registerIntent);
+                startActivity(new Intent(MainActivity.this, Login_Register_ResetPasswordActivity.class));
             }
         });
 
@@ -140,13 +145,16 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
     private void gotoFragment(String tt, Fragment fragment, int FragmentNo) {
         actionbar_name.setVisibility(View.GONE);
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setDisplayShowTitleEnabled(true);
         getSupportActionBar().setTitle(tt);
         invalidateOptionsMenu();
         setFragment(fragment, FragmentNo);
         if (FragmentNo == Cart_Fragment) {
             navigationView.getMenu().getItem(3).setChecked(true);
+            layoutParams.setScrollFlags(0);
+        }
+        else {
+            layoutParams.setScrollFlags(scrollFlags);
         }
     }
 
