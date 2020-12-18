@@ -362,7 +362,7 @@ import java.util.Map;
             wishList.clear();
             wishlistModelList.clear();
         }
-        
+
         public static void checkNotifications(boolean remove,@Nullable final TextView notifycount){
             if(remove){
                 registration.remove();
