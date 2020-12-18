@@ -3,6 +3,7 @@ package com.example.galaxytechstore;
 import android.app.Dialog;
 import android.content.Context;
 import android.view.View;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -21,6 +22,7 @@ import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.ListenerRegistration;
+import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 
@@ -36,14 +38,20 @@ import java.util.Map;
         public static FirebaseFirestore firebaseFirestore = FirebaseFirestore.getInstance();
         public static List<CategoryModel> list = new ArrayList<>();
         public static List<List<HomePageModel>> lists = new ArrayList<>();
+
         public static List<String> loadedCategoriesNames = new ArrayList<>();
+
         public static List<String> wishList = new ArrayList<>();
         public static List<WishlistModel> wishlistModelList = new ArrayList<>();
+
         public static List<String> myRatedIds = new ArrayList<>();
         public static List<Long> myRating = new ArrayList<>();
+
         public static List<String> cartLists = new ArrayList<>();
-        //public static List<CartItemModel> cartItemModelList = new ArrayList<>();
+        public static List<CartItemModel> cartItemModelList = new ArrayList<>();
+
         public static List<NotificationModel> notificationModelList=new ArrayList<>();
+
         private static ListenerRegistration registration;
 
 
@@ -235,6 +243,118 @@ import java.util.Map;
             });
         }
 
+        public static void loadCartList(final Context context, Dialog dialog, boolean loadProductData, final TextView badge_count, final TextView cartTotal) {
+            cartLists.clear();
+            firebaseFirestore.collection("USERS").document(FirebaseAuth.getInstance().getUid()).collection("USER_DATA")
+                    .document("MY_CART").get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+                @Override
+                public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                    if (task.isSuccessful()) {
+                        for (long x = 0; x < (long) task.getResult().get("list_size"); x++) {
+                            cartLists.add(String.valueOf(task.getResult().get("product_ID_" + x).toString()));
+
+                            if (DBqueries.cartLists.contains(ProductDetailsActivity.productID)) {
+                                ProductDetailsActivity.ALREADY_ADDED_TO_CART = true;
+                            } else {
+                                ProductDetailsActivity.ALREADY_ADDED_TO_CART = false;
+                            }
+
+                            if (loadProductData) {
+                                cartItemModelList.clear();
+                                final String productID = task.getResult().get("product_ID_" + x).toString();
+                                firebaseFirestore.collection("PRODUCTS").document(productID)
+                                        .get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+                                    @Override
+                                    public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                                        if (task.isSuccessful()) {
+
+                                            final DocumentSnapshot documentSnapshot = task.getResult();
+                                            firebaseFirestore.collection("PRODUCTS").document(productID).collection("QUANTITY").orderBy("time", Query.Direction.ASCENDING).get()
+                                                    .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                                                        @Override
+                                                        public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                                                            if (task.isSuccessful()) {
+
+                                                                int index = 0;
+                                                                if (cartLists.size() >= 2) {
+                                                                    index = cartLists.size() - 2;
+                                                                }
+
+                                                                if (task.getResult().getDocuments().size() < (long) documentSnapshot.get("stock_quantity")) {
+                                                                    cartItemModelList.add(index, new CartItemModel(CartItemModel.CART_ITEM,
+                                                                            productID,
+                                                                            documentSnapshot.get("product_image_1").toString(),
+                                                                            documentSnapshot.get("product_title").toString(),
+                                                                            (long) documentSnapshot.get("free_coupens"),
+                                                                            documentSnapshot.get("product_price").toString(),
+                                                                            documentSnapshot.get("cutted_price").toString(),
+                                                                            (long) 1,
+                                                                            (long) documentSnapshot.get("offers_applied"),
+                                                                            (long) 0,
+                                                                            (long) documentSnapshot.get("max_quantity"),
+                                                                            (long) documentSnapshot.get("stock_quantity"),
+                                                                            true,
+                                                                            (boolean) documentSnapshot.get("COD")
+                                                                    ));
+                                                                } else {
+                                                                    cartItemModelList.add(index, new CartItemModel(CartItemModel.CART_ITEM,
+                                                                            productID,
+                                                                            documentSnapshot.get("product_image_1").toString(),
+                                                                            documentSnapshot.get("product_title").toString(),
+                                                                            (long) documentSnapshot.get("free_coupens"),
+                                                                            documentSnapshot.get("product_price").toString(),
+                                                                            documentSnapshot.get("cutted_price").toString(),
+                                                                            (long) 1,
+                                                                            (long) documentSnapshot.get("offers_applied"),
+                                                                            (long) 0,
+                                                                            (long) documentSnapshot.get("max_quantity"),
+                                                                            (long) documentSnapshot.get("stock_quantity"),
+                                                                            true,
+                                                                            (boolean) documentSnapshot.get("COD")
+                                                                    ));
+                                                                }
+                                                                if (cartLists.size() == 1) {
+                                                                    cartItemModelList.add(new CartItemModel(CartItemModel.TOTAL_AMOUNT));
+                                                                    LinearLayout parent = (LinearLayout) cartTotal.getParent().getParent();
+                                                                    parent.setVisibility(View.VISIBLE);
+                                                                }
+                                                                if (cartLists.size() == 0) {
+                                                                    cartItemModelList.clear();
+                                                                }
+                                                                MyCartFragment.cartAdapter.notifyDataSetChanged();
+                                                            } else {
+                                                                String error = task.getException().getMessage();
+                                                                Toast.makeText(context, error, Toast.LENGTH_SHORT).show();
+                                                            }
+                                                        }
+                                                    });
+                                        } else {
+                                            String error = task.getException().getMessage();
+                                            Toast.makeText(context, error, Toast.LENGTH_SHORT).show();
+                                        }
+                                    }
+                                });
+                            }
+                        }
+                        if (cartLists.size() != 0) {
+                            badge_count.setVisibility(View.VISIBLE);
+                        } else {
+                            badge_count.setVisibility(View.INVISIBLE);
+                        }
+                        if (DBqueries.cartLists.size() < 10) {
+                            badge_count.setText(String.valueOf(DBqueries.cartLists.size()));
+                        } else {
+                            badge_count.setText("10");
+                        }
+                    } else {
+                        String error = task.getException().getMessage();
+                        Toast.makeText(context, error, Toast.LENGTH_SHORT).show();
+                    }
+                    dialog.dismiss();
+                }
+            });
+        }
+
         public static void clearData() {
             list.clear();
             lists.clear();
@@ -242,7 +362,7 @@ import java.util.Map;
             wishList.clear();
             wishlistModelList.clear();
         }
-
+        
         public static void checkNotifications(boolean remove,@Nullable final TextView notifycount){
             if(remove){
                 registration.remove();
