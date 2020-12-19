@@ -29,6 +29,7 @@ public class MyCartFragment extends Fragment {
     private Dialog loaddialog;
     public static CartAdapter cartAdapter;
     private TextView cartTotal;
+
     private ImageView nocart_image;
     private TextView nocart_info;
     private Button continue_shopping;
@@ -38,8 +39,7 @@ public class MyCartFragment extends Fragment {
 
     @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_my_cart, container, false);
 
         // Loading dialog
@@ -54,6 +54,7 @@ public class MyCartFragment extends Fragment {
         cartItemsRecycleView = (RecyclerView) view.findViewById(R.id.cart_items_recyclerview);
         btn_continue = (Button) view.findViewById(R.id.cart_continue_btn);
         cartTotal = (TextView) view.findViewById(R.id.total_cart_amount);
+
         nocart_image = (ImageView) view.findViewById(R.id.no_cart_image);
         nocart_info = (TextView) view.findViewById(R.id.no_cart_info);
         continue_shopping = (Button) view.findViewById(R.id.btn_continue_shopping);
@@ -77,6 +78,24 @@ public class MyCartFragment extends Fragment {
             @Override
             public void onClick(View v) {
                 // thao tác trên delivery
+                DeliveryActivity.cartItemModelList = new ArrayList<>();
+                DeliveryActivity.fromCart = true;
+
+                for (int x = 0; x < DBqueries.cartItemModelList.size(); x++) {
+                    CartItemModel cartItemModel = DBqueries.cartItemModelList.get(x);
+                    if (cartItemModel.isInStock()) {
+                        DeliveryActivity.cartItemModelList.add(cartItemModel);
+                    }
+                }
+                DeliveryActivity.cartItemModelList.add(new CartItemModel(CartItemModel.TOTAL_AMOUNT));
+                loaddialog.show();
+                if (DBqueries.addressesModelList.size() == 0) {
+                    DBqueries.loadAddresses(getContext(), loaddialog, true);
+                } else {
+                    loaddialog.dismiss();
+                    Intent deliveryIntent = new Intent(getContext(), DeliveryActivity.class);
+                    startActivity(deliveryIntent);
+                }
             }
         });
 
@@ -87,13 +106,19 @@ public class MyCartFragment extends Fragment {
     public void onStart() {
         super.onStart();
         cartAdapter.notifyDataSetChanged();
+        if (DBqueries.rewardModelList.size() == 0) {
+            loaddialog.show();
+            DBqueries.loadRewards(getContext(), loaddialog, false);
+        }
         if (DBqueries.cartItemModelList.size() == 0) {
-            cartItemsRecycleView.setVisibility(View.GONE);
-            nocart_info.setVisibility(View.VISIBLE);
-            nocart_image.setVisibility(View.VISIBLE);
-            continue_shopping.setVisibility(View.VISIBLE);
             DBqueries.cartLists.clear();
             DBqueries.loadCartList(getContext(), loaddialog, true, new TextView(getContext()), cartTotal);
+            if(DBqueries.cartItemModelList.size() == 0){
+                cartItemsRecycleView.setVisibility(View.GONE);
+                nocart_info.setVisibility(View.VISIBLE);
+                nocart_image.setVisibility(View.VISIBLE);
+                continue_shopping.setVisibility(View.VISIBLE);
+            }
         } else {
             cartItemsRecycleView.setVisibility(View.VISIBLE);
             nocart_info.setVisibility(View.GONE);
@@ -110,5 +135,19 @@ public class MyCartFragment extends Fragment {
     @Override
     public void onDestroy() {
         super.onDestroy();
+        for(CartItemModel cartItemModel:DBqueries.cartItemModelList){
+            if(!TextUtils.isEmpty(cartItemModel.getSelectedCoupanID())){
+                for(RewardModel rewardModel: DBqueries.rewardModelList){
+                    if(rewardModel.getCoupenId().equals(cartItemModel.getSelectedCoupanID())){
+                        rewardModel.setAlreadyUsed(false);
+
+                    }
+                }
+                cartItemModel.setSelectedCoupanID(null);
+                if(MyRewardsFragment.myRewardsAdapter != null){
+                    MyRewardsFragment.myRewardsAdapter.notifyDataSetChanged();
+                }
+            }
+        }
     }
 }

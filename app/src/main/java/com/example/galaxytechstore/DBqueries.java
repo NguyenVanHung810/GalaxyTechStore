@@ -2,6 +2,7 @@ package com.example.galaxytechstore;
 
 import android.app.Dialog;
 import android.content.Context;
+import android.content.Intent;
 import android.view.View;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -32,6 +33,8 @@ import java.util.Map;
 
     public class DBqueries {
 
+        public static boolean addressSelected = false;
+
         public static String email,fullname,profile;
         public static FirebaseFirestore firebaseFirestore = FirebaseFirestore.getInstance();
         public static List<CategoryModel> list = new ArrayList<>();
@@ -49,6 +52,11 @@ import java.util.Map;
         public static List<CartItemModel> cartItemModelList = new ArrayList<>();
 
         public static List<RewardModel> rewardModelList = new ArrayList<>();
+
+        public static int selectedAddress = -1;
+        public static List<AddressesModel> addressesModelList = new ArrayList<>();
+
+        public static List<MyOrderItemModel> myOrderItemModelList = new ArrayList<>();
 
         public static List<NotificationModel> notificationModelList=new ArrayList<>();
 
@@ -355,6 +363,42 @@ import java.util.Map;
             });
         }
 
+        public static void removeFromCart(int index, Context context, final TextView cartTotal) {
+            final String removedProductID = cartLists.get(index);
+            cartLists.remove(index);
+            Map<String, Object> updateCartList = new HashMap<>();
+
+            for (int x = 0; x < cartLists.size(); x++) {
+                updateCartList.put("product_ID_" + x, cartLists.get(x));
+            }
+            updateCartList.put("list_size", (long) cartLists.size());
+
+            firebaseFirestore.collection("USERS").document(FirebaseAuth.getInstance().getUid())
+                    .collection("USER_DATA").document("MY_CART")
+                    .set(updateCartList).addOnCompleteListener(new OnCompleteListener<Void>() {
+                @Override
+                public void onComplete(@NonNull Task<Void> task) {
+                    if (task.isSuccessful()) {
+                        if (cartItemModelList.size() != 0) {
+                            cartItemModelList.remove(index);
+                            MyCartFragment.cartAdapter.notifyDataSetChanged();
+                        }
+                        if (cartLists.size() == 0) {
+                            LinearLayout parent = (LinearLayout) cartTotal.getParent().getParent();
+                            parent.setVisibility(View.GONE);
+                            cartItemModelList.clear();
+                        }
+                        Toast.makeText(context, "Đã xóa thành công !!!", Toast.LENGTH_SHORT).show();
+                    } else {
+                        cartLists.add(index, removedProductID);
+                        String error = task.getException().getMessage();
+                        Toast.makeText(context, error, Toast.LENGTH_SHORT).show();
+                    }
+                    ProductDetailsActivity.running_cart_query = false;
+                }
+            });
+        }
+
         public static void loadRewards(final Context context, final Dialog loadingDialog, final boolean onRewardFragment){
             rewardModelList.clear();
             firebaseFirestore.collection("USERS").document(FirebaseAuth.getInstance().getUid()).get()
@@ -415,12 +459,163 @@ import java.util.Map;
                     });
         }
 
+        public static void loadAddresses(final Context context, Dialog loadDialog, final boolean gotoDeliveryActivity) {
+            addressesModelList.clear();
+            firebaseFirestore.collection("USERS").document(FirebaseAuth.getInstance().getUid()).collection("USER_DATA")
+                    .document("MY_ADDRESSES").get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+                @Override
+                public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                    if (task.isSuccessful()) {
+                        if ((long) task.getResult().get("list_size") == 0) {
+                            context.startActivity(new Intent(context, AddAddressActivity.class).putExtra("INTENT", "deliveryIntent"));
+                        } else {
+                            for (long x = 1; x <= (long) task.getResult().get("list_size"); x++) {
+                                addressesModelList.add(new AddressesModel(
+                                        task.getResult().get("city_" + x).toString()
+                                        , task.getResult().get("locality_" + x).toString()
+                                        , task.getResult().get("flat_no_" + x).toString()
+                                        , task.getResult().get("pincode_" + x).toString()
+                                        , task.getResult().get("landmark_" + x).toString()
+                                        , task.getResult().get("name_" + x).toString()
+                                        , task.getResult().get("mobile_no_" + x).toString()
+                                        , task.getResult().get("alternate_mobile_no_" + x).toString()
+                                        , task.getResult().get("state_" + x).toString()
+                                        , (boolean) task.getResult().get("selected_" + x)
+
+                                ));
+                                if ((boolean) task.getResult().get("selected_" + x)) {
+                                    selectedAddress = Integer.parseInt(String.valueOf(x - 1));
+                                }
+                            }
+                            if (gotoDeliveryActivity) {
+                                context.startActivity(new Intent(context, DeliveryActivity.class));
+                            }
+                        }
+                    } else {
+                        String error = task.getException().getMessage();
+                        Toast.makeText(context, error, Toast.LENGTH_SHORT).show();
+                    }
+                    loadDialog.dismiss();
+                }
+            });
+
+        }
+
+        public static void loadRatingList(Context context) {
+            if (!ProductDetailsActivity.running_rating_query) {
+                ProductDetailsActivity.running_rating_query = true;
+                myRatedIds.clear();
+                myRating.clear();
+                firebaseFirestore.collection("USERS").document(FirebaseAuth.getInstance().getUid()).collection("USER_DATA")
+                        .document("MY_RATINGS").get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+                    @Override
+                    public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                        if (task.isSuccessful()) {
+                            for (long x = 0; x < (long) task.getResult().get("list_size"); x++) {
+                                myRatedIds.add(task.getResult().get("product_ID_" + x).toString());
+                                myRating.add((long) task.getResult().get("rating_" + x));
+                                if (task.getResult().get("product_ID_" + x).toString().equals(ProductDetailsActivity.productID)) {
+                                    ProductDetailsActivity.initialRating = Integer.parseInt(String.valueOf((long) task.getResult().get("rating_" + x)));
+                                    if (ProductDetailsActivity.rateNowContainer != null) {
+                                        ProductDetailsActivity.setRating(ProductDetailsActivity.initialRating);
+                                    }
+                                }
+                            }
+                        } else {
+                            String error = task.getException().getMessage();
+                            Toast.makeText(context, error, Toast.LENGTH_SHORT).show();
+                        }
+                        ProductDetailsActivity.running_rating_query = false;
+                    }
+                });
+            }
+        }
+
+        public static void loadOrders(final Context context, @Nullable final MyOrderAdapter myOrderAdapter, final Dialog loadingDialog) {
+            myOrderItemModelList.clear();
+            firebaseFirestore.collection("USERS").document(FirebaseAuth.getInstance().getUid())
+                    .collection("USER_ORDERS").orderBy("time", Query.Direction.DESCENDING).get()
+                    .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                        @Override
+                        public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                            if (!task.getResult().isEmpty()) {
+                                if (task.isSuccessful()) {
+                                    for (DocumentSnapshot documentSnapshot : task.getResult().getDocuments()) {
+                                        firebaseFirestore.collection("ORDERS").document(documentSnapshot.get("order_id").toString())
+                                                .collection("ORDER_ITEMS").get()
+                                                .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                                                    @Override
+                                                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                                                        if (task.isSuccessful()) {
+                                                            //Toasty.success(context,"order mil gya",Toasty.LENGTH_SHORT,true).show();
+                                                            for (DocumentSnapshot orderItems : task.getResult().getDocuments()) {
+
+                                                                MyOrderItemModel myOrderItemModel = new MyOrderItemModel(
+                                                                        orderItems.getString("Product_Id")
+                                                                        , orderItems.getString("Order_Status")
+                                                                        , orderItems.getString("Address")
+                                                                        , orderItems.getString("Coupan_Id")
+                                                                        , orderItems.getString("Product_Price")
+                                                                        , orderItems.getString("Cutted_Price")
+                                                                        , orderItems.getString("Discounted_Price")
+                                                                        , (Date) orderItems.getDate("Ordered_Date")
+                                                                        , (Date) orderItems.getDate("Packed_Date")
+                                                                        , (Date) orderItems.getDate("Shipped_Date")
+                                                                        , (Date) orderItems.getDate("Delivered_Date")
+                                                                        , (Date) orderItems.getDate("Cancelled_Date")
+                                                                        , orderItems.getLong("Free_Coupens")
+                                                                        , orderItems.getLong("Product_quantity")
+                                                                        , orderItems.getString("FullName")
+                                                                        , orderItems.getString("ORDER_ID")
+                                                                        , orderItems.getString("Payment_Method")
+                                                                        , orderItems.getString("Pincode")
+                                                                        , orderItems.getString("User_Id")
+                                                                        , orderItems.getString("Product Title")
+                                                                        , orderItems.getString("Product_Image")
+                                                                        , orderItems.getString("Delivery_Price")
+                                                                        , (boolean) orderItems.get("Cancellation_requested")
+
+                                                                );
+                                                                myOrderItemModelList.add(myOrderItemModel);
+                                                            }
+                                                            loadRatingList(context);
+                                                            if (myOrderAdapter != null) {
+                                                                myOrderAdapter.notifyDataSetChanged();
+                                                            }
+                                                        } else {
+                                                            String error = task.getException().getMessage();
+                                                            Toast.makeText(context, error, Toast.LENGTH_SHORT).show();
+                                                        }
+                                                        loadingDialog.dismiss();
+                                                    }
+                                                });
+                                    }
+                                } else {
+                                    loadingDialog.dismiss();
+                                    String error = task.getException().getMessage();
+                                    Toast.makeText(context, error, Toast.LENGTH_SHORT).show();
+                                }
+                            } else {
+                                loadingDialog.dismiss();
+                            }
+                        }
+                    });
+
+        }
+
         public static void clearData() {
             list.clear();
             lists.clear();
             loadedCategoriesNames.clear();
             wishList.clear();
             wishlistModelList.clear();
+            cartLists.clear();
+            cartItemModelList.clear();
+            myRatedIds.clear();
+            myRating.clear();
+            addressesModelList.clear();
+            rewardModelList.clear();
+            myOrderItemModelList.clear();
         }
 
         public static void checkNotifications(boolean remove,@Nullable final TextView notifycount){

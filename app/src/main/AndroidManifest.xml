@@ -13,7 +13,20 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.GalaxyTechStore">
-        <activity android:name=".UpdateUserInfoActivity"></activity>
+        <activity
+            android:theme="@style/Theme.AppCompat.NoActionBar"
+            android:name=".OrderDetailsActivity"></activity>
+        <activity android:name=".OrderConfirmationActivity" />
+        <activity
+            android:name=".AddAddressActivity"
+            android:theme="@style/Theme.AppCompat.NoActionBar" />
+        <activity
+            android:name=".MyAddressesActivity"
+            android:theme="@style/Theme.AppCompat.NoActionBar" />
+        <activity
+            android:name=".DeliveryActivity"
+            android:theme="@style/Theme.AppCompat.NoActionBar" />
+        <activity android:name=".UpdateUserInfoActivity" />
         <activity
             android:name=".SearchActivity"
             android:theme="@style/Theme.AppCompat.NoActionBar" />

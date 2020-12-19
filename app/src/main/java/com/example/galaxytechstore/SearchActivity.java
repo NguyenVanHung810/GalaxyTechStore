@@ -35,6 +35,7 @@ public class SearchActivity extends AppCompatActivity {
     private RecyclerView recyclerView;
     private Adapter adapter;
 
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);

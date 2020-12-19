@@ -11,4 +11,12 @@
     <string name="menu_home">Home</string>
     <string name="menu_gallery">Gallery</string>
     <string name="menu_slideshow">Slideshow</string>
+    <string-array name="city_array">
+        <item>Hồ Chí Minh</item>
+        <item>Hà Nội</item>
+        <item>Hải Phòng</item>
+        <item>Ninh Bình</item>
+        <item>An Giang</item>
+        <item>Vũng Tàu</item>
+    </string-array>
 </resources>

@@ -124,13 +124,11 @@ public class MyRewardsAdapter extends RecyclerView.Adapter<MyRewardsAdapter.View
             }
             coupanBody.setText(body);
 
-
             if(useMinilayout){
                 itemView.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
                         if(!alreadyUsed) {
-
                             if (type.equals("Discount")) {
                                 selectedcoupanTitle.setText(type);
                             } else {
