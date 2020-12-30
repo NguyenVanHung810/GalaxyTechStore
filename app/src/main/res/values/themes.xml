@@ -20,6 +20,5 @@
     </style>
 
     <style name="Theme.GalaxyTechStore.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar" />
-
     <style name="Theme.GalaxyTechStore.PopupOverlay" parent="ThemeOverlay.AppCompat.Light" />
 </resources>

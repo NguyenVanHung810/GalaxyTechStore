@@ -55,15 +55,14 @@ public class MyAddressesActivity extends AppCompatActivity {
         loaddialog.setOnDismissListener(new DialogInterface.OnDismissListener() {
             @Override
             public void onDismiss(DialogInterface dialogInterface) {
-                adddressSaved.setText(String.valueOf(DBqueries.addressesModelList.size())+" addresses");
-
+                adddressSaved.setText(String.valueOf(DBqueries.addressesModelList.size())+" địa chỉ đã được lưu.");
             }
         });
         //Loading dialog
 
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-        getSupportActionBar().setTitle("My Addresses");
+        getSupportActionBar().setTitle("Địa chỉ của tôi");
         getSupportActionBar().setDisplayShowTitleEnabled(true);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 

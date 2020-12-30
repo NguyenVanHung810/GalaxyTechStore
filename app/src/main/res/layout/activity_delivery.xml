@@ -47,40 +47,44 @@
     <LinearLayout
         android:id="@+id/linearLayout6"
         android:layout_width="0dp"
-        android:layout_height="56dp"
-        android:background="#ffffff"
+        android:layout_height="100dp"
+        android:background="#81d4fa"
         android:elevation="8dp"
-        android:orientation="horizontal"
+        android:orientation="vertical"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent">
+        app:layout_constraintStart_toStartOf="parent"
+        tools:visibility="visible">
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_weight="1"
+            android:layout_weight="2"
             android:gravity="center_vertical"
-            android:orientation="vertical"
-            android:paddingStart="16dp"
-            android:paddingLeft="16dp">
+            android:orientation="horizontal"
+            android:layout_marginTop="5dp"
+            android:paddingLeft="16dp"
+            android:paddingRight="16dp">
+
+            <TextView
+                android:layout_width="198dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:gravity="left|center"
+                android:text="Thành tiền"
+                android:textColor="#000000"
+                android:textStyle="bold" />
 
             <TextView
                 android:id="@+id/total_cart_amount"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:gravity="right|center"
                 android:text="20.000.000 đ"
                 android:textColor="#000000"
                 android:textSize="20dp"
                 android:textStyle="bold" />
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Thành tiền"
-                android:textColor="#000000"
-                android:textStyle="bold">
-
-            </TextView>
 
         </LinearLayout>
 
@@ -88,10 +92,14 @@
             android:id="@+id/cart_continue_btn"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_marginRight="5dp"
             android:layout_weight="1"
+            android:layout_marginTop="5dp"
+            android:layout_marginBottom="5dp"
+            android:layout_marginLeft="16dp"
+            android:layout_marginRight="16dp"
             android:backgroundTint="#f44336"
-            android:text="Continue"
+            android:textAllCaps="false"
+            android:text="Tiếp tục"
             android:textColor="#ffffff"
             android:textSize="16dp"
             android:textStyle="bold"></Button>
@@ -131,7 +139,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
-                android:text="Thank You"
+                android:text="Cảm ơn !!!"
                 android:textColor="#ffffff"
                 android:textSize="32sp"
                 android:textStyle="bold" />
@@ -140,7 +148,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_margin="8dp"
-                android:text="Your order has been confirmed"
+                android:text="Đơn đặt hàng của bạn đã được xác nhận"
                 android:gravity="center"
                 android:textColor="#ffffff"
                 android:textStyle="bold" />
@@ -163,39 +171,23 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/linearLayout8" />
 
-        <TextView
-            android:id="@+id/textView29"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="16dp"
-            android:layout_marginTop="16dp"
-            android:layout_marginEnd="16dp"
-            android:text="You will shortly receive your order confirmation message and email"
-            android:gravity="center"
-            android:textColor="#000000"
-            android:textSize="16sp"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/order_id" />
-
 
         <TextView
             android:id="@+id/textView31"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginStart="16dp"
-            android:layout_marginTop="8dp"
             android:layout_marginEnd="16dp"
             android:layout_marginBottom="8dp"
-            android:text="Expected delivery between 4-6 days"
             android:gravity="center"
+            android:text="Dự kiến giao hàng từ 2-3 ngày"
             android:textColor="#f44336"
             android:textSize="20sp"
             android:textStyle="bold"
             app:layout_constraintBottom_toTopOf="@+id/continue_shopping_btn"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/textView29" />
+            app:layout_constraintTop_toBottomOf="@+id/order_id" />
 
         <ImageButton
             android:id="@+id/continue_shopping_btn"
@@ -217,7 +209,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginBottom="70dp"
-            android:text="CONTINUE SHOPPING"
+            android:text="TIẾP TỤC MUA SẮM"
             android:textColor="#f44336"
             android:textStyle="bold"
             app:layout_constraintBottom_toBottomOf="parent"

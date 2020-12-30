@@ -94,8 +94,6 @@ public class WishListAdapter extends RecyclerView.Adapter<WishListAdapter.Viewho
     public class Viewholder extends RecyclerView.ViewHolder {
         private ImageView productImage;
         private TextView productTitle;
-        private TextView freeCoupens;
-        private ImageView coupenIcon;
         private TextView rating;
         private TextView totalRatings;
         private View priceCut;
@@ -108,8 +106,6 @@ public class WishListAdapter extends RecyclerView.Adapter<WishListAdapter.Viewho
             super(itemView);
             productImage = (ImageView) itemView.findViewById(R.id.product_image_wishlist_item);
             productTitle = (TextView) itemView.findViewById(R.id.product_title_wishlist_item);
-            freeCoupens = (TextView) itemView.findViewById(R.id.free_coupen);
-            coupenIcon = (ImageView) itemView.findViewById(R.id.coupen_ic);
             rating = (TextView) itemView.findViewById(R.id.rating_wishlist_item);
             totalRatings = (TextView) itemView.findViewById(R.id.total_rating_wishlist_item);
             priceCut = (View) itemView.findViewById(R.id.price_cut);
@@ -119,21 +115,8 @@ public class WishListAdapter extends RecyclerView.Adapter<WishListAdapter.Viewho
             deleteBtn = (ImageButton) itemView.findViewById(R.id.btn_del);
         }
         private void setData(String id, String url, String title, long freeCoupenNo, String averageRate, long tr, String pp, String cp, boolean pm, int index, boolean instock){
-            Glide.with(itemView.getContext()).load(url).apply(new RequestOptions().placeholder(R.drawable.placeholder)).into(coupenIcon);
+            Glide.with(itemView.getContext()).load(url).apply(new RequestOptions().placeholder(R.drawable.no_image)).into(productImage);
             productTitle.setText(title);
-            if(freeCoupenNo != 0 && instock){
-                coupenIcon.setVisibility(View.VISIBLE);
-                if(freeCoupenNo == 1){
-                    freeCoupens.setText("free "+ freeCoupenNo+" coupen");
-                }
-                else {
-                    freeCoupens.setText("free "+ freeCoupenNo+" coupen");
-                }
-            }
-            else {
-                coupenIcon.setVisibility(View.INVISIBLE);
-                freeCoupens.setVisibility(View.INVISIBLE);
-            }
             LinearLayout linearLayout = (LinearLayout) rating.getParent();
             if(instock) {
                 rating.setVisibility(View.VISIBLE);
@@ -143,7 +126,7 @@ public class WishListAdapter extends RecyclerView.Adapter<WishListAdapter.Viewho
                 cuttedPrice.setVisibility(View.VISIBLE);
 
                 rating.setText(averageRate);
-                totalRatings.setText("("+tr + " ratings)");
+                totalRatings.setText("("+tr + " đánh giá)");
                 productPrice.setText(convertToVietnameseMoney(Integer.parseInt(pp)));
                 cuttedPrice.setText(convertToVietnameseMoney(Integer.parseInt(cp)));
                 if (pm) {

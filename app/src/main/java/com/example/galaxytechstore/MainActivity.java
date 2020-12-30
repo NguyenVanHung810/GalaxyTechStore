@@ -94,8 +94,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                     @Override
                     public void onComplete(@NonNull Task<DocumentSnapshot> task) {
                         if (task.isSuccessful()) {
-                            DBqueries.fullname = task.getResult().getString("fullname");
+                            DBqueries.fullname = task.getResult().getString("name");
                             DBqueries.email = task.getResult().getString("email");
+                            DBqueries.phone = task.getResult().getString("phonenumber");
                             DBqueries.profile = task.getResult().getString("profile");
 
                             fullname.setText(DBqueries.fullname);
@@ -378,15 +379,15 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                         invalidateOptionsMenu();
                         setFragment(new HomeFragment(), Home_Fragment);
                     } else if (id == R.id.my_orders) {
-                        gotoFragment("My Orders", new MyOrdersFragment(), MyOrders_Fragment);
+                        gotoFragment("Đơn hàng của tôi", new MyOrdersFragment(), MyOrders_Fragment);
                     } else if (id == R.id.my_rewards) {
-                        gotoFragment("My Rewards", new MyRewardsFragment(), MyRewards_Fragment);
+                        gotoFragment("Phần thưởng của tôi", new MyRewardsFragment(), MyRewards_Fragment);
                     } else if (id == R.id.my_carts) {
-                        gotoFragment("My Cart", new MyCartFragment(), Cart_Fragment);
+                        gotoFragment("Giỏ hàng", new MyCartFragment(), Cart_Fragment);
                     } else if (id == R.id.my_wishlist) {
-                        gotoFragment("My Wishlist", new MyWishlistFragment(), MyWishlist_Fragment);
+                        gotoFragment("Sản phẩm yêu thích", new MyWishlistFragment(), MyWishlist_Fragment);
                     } else if (id == R.id.my_account) {
-                        gotoFragment("My Account", new MyAccountFragment(), MyAccount_Fragment);
+                        gotoFragment("Tài khoản cá nhân", new MyAccountFragment(), MyAccount_Fragment);
                     } else if (id == R.id.sign_out) {
                         FirebaseAuth.getInstance().signOut();
                         DBqueries.clearData();

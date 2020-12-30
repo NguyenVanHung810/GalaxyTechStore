@@ -17,7 +17,7 @@
         android:layout_marginStart="16dp"
         android:layout_marginLeft="16dp"
         android:layout_marginTop="16dp"
-        android:text="Ratings"
+        android:text="Chi tiết đánh giá"
         android:textColor="#000000"
         android:textSize="18dp"
         android:textStyle="bold"
@@ -52,32 +52,31 @@
             android:id="@+id/imageView6"
             android:layout_width="30dp"
             android:layout_height="30dp"
-            android:layout_margin="8dp"
+            android:layout_margin="5dp"
             android:layout_weight="1"
-            app:srcCompat="@drawable/star" />
+            android:scaleType="fitCenter"
+            app:srcCompat="@drawable/star2"
+            app:tint="@color/md_yellow_700" />
     </LinearLayout>
 
     <TextView
         android:id="@+id/total_rating"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="16dp"
-        android:layout_marginLeft="16dp"
         android:layout_marginTop="16dp"
         android:layout_marginEnd="16dp"
         android:layout_marginRight="16dp"
         android:text="27"
         android:textSize="18dp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.498"
-        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="@+id/ratings_number_container"
+        app:layout_constraintStart_toStartOf="@+id/textView"
         app:layout_constraintTop_toBottomOf="@+id/linearLayout4" />
 
     <LinearLayout
         android:id="@+id/ratings_progressbar_container"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginTop="8dp"
+        android:layout_marginTop="16dp"
         android:orientation="vertical"
         app:layout_constraintEnd_toEndOf="@+id/linearLayout4"
         app:layout_constraintStart_toStartOf="@+id/linearLayout4"
@@ -87,59 +86,64 @@
             android:id="@+id/progressBar2"
             style="?android:attr/progressBarStyleHorizontal"
             android:layout_width="match_parent"
-            android:max="100"
+            android:layout_height="wrap_content"
             android:layout_marginTop="2dp"
             android:layout_marginBottom="2dp"
-            android:progress="50"
-            android:layout_height="wrap_content"
-            android:layout_weight="1" />
+            android:layout_weight="1"
+            android:max="100"
+            android:progress="50" />
+
         <ProgressBar
             android:id="@+id/progressBar3"
             style="?android:attr/progressBarStyleHorizontal"
             android:layout_width="match_parent"
-            android:max="100"
+            android:layout_height="wrap_content"
             android:layout_marginTop="2dp"
             android:layout_marginBottom="2dp"
-            android:progress="50"
-            android:layout_height="wrap_content"
-            android:layout_weight="1" />
+            android:layout_weight="1"
+            android:max="100"
+            android:progress="50" />
+
         <ProgressBar
             android:id="@+id/progressBar4"
             style="?android:attr/progressBarStyleHorizontal"
             android:layout_width="match_parent"
-            android:max="100"
+            android:layout_height="wrap_content"
             android:layout_marginTop="2dp"
             android:layout_marginBottom="2dp"
+            android:layout_weight="1"
+            android:max="100"
             android:progress="50"
-            android:progressTint="#ffbb00"
-            android:layout_height="wrap_content"
-            android:layout_weight="1" />
+            android:progressTint="#ffbb00" />
+
         <ProgressBar
             android:id="@+id/progressBar5"
             style="?android:attr/progressBarStyleHorizontal"
             android:layout_width="match_parent"
-            android:max="100"
+            android:layout_height="wrap_content"
             android:layout_marginTop="2dp"
             android:layout_marginBottom="2dp"
+            android:layout_weight="1"
+            android:max="100"
             android:progress="50"
-            android:progressTint="#ffbb00"
-            android:layout_height="wrap_content"
-            android:layout_weight="1" />
+            android:progressTint="#ffbb00" />
+
         <ProgressBar
             android:id="@+id/progressBar6"
             style="?android:attr/progressBarStyleHorizontal"
             android:layout_width="match_parent"
-            android:max="100"
-            android:layout_marginTop="2dp"
-            android:progressTint="#FF001E"
-            android:layout_marginBottom="2dp"
-            android:progress="50"
             android:layout_height="wrap_content"
-            android:layout_weight="1" />
+            android:layout_marginTop="2dp"
+            android:layout_marginBottom="2dp"
+            android:layout_weight="1"
+            android:max="100"
+            android:progress="50"
+            android:progressTint="#FF001E" />
 
     </LinearLayout>
 
     <LinearLayout
+        android:id="@+id/linearLayout7"
         android:layout_width="wrap_content"
         android:layout_height="0dp"
         android:layout_marginEnd="8dp"
@@ -174,6 +178,7 @@
                 android:layout_marginStart="4dp"
                 android:layout_marginLeft="4dp"
                 android:layout_weight="1"
+                android:scaleType="fitCenter"
                 app:srcCompat="@drawable/star" />
         </LinearLayout>
 
@@ -199,6 +204,7 @@
                 android:layout_marginStart="4dp"
                 android:layout_marginLeft="4dp"
                 android:layout_weight="1"
+                android:scaleType="fitCenter"
                 app:srcCompat="@drawable/star" />
         </LinearLayout>
 
@@ -224,6 +230,7 @@
                 android:layout_marginStart="4dp"
                 android:layout_marginLeft="4dp"
                 android:layout_weight="1"
+                android:scaleType="fitCenter"
                 app:srcCompat="@drawable/star" />
         </LinearLayout>
 
@@ -249,6 +256,7 @@
                 android:layout_marginStart="4dp"
                 android:layout_marginLeft="4dp"
                 android:layout_weight="1"
+                android:scaleType="fitCenter"
                 app:srcCompat="@drawable/star" />
         </LinearLayout>
 
@@ -274,6 +282,7 @@
                 android:layout_marginStart="4dp"
                 android:layout_marginLeft="4dp"
                 android:layout_weight="1"
+                android:scaleType="fitCenter"
                 app:srcCompat="@drawable/star" />
         </LinearLayout>
     </LinearLayout>
@@ -340,7 +349,7 @@
         android:layout_marginStart="16dp"
         android:layout_marginLeft="16dp"
         android:layout_marginTop="16dp"
-        android:text="Your Ratings"
+        android:text="Đánh giá của bạn"
         android:textSize="14dp"
         android:textStyle="bold"
         android:textColor="#000000"
@@ -356,7 +365,9 @@
         android:layout_marginTop="8dp"
         android:layout_marginEnd="16dp"
         android:layout_marginRight="16dp"
+        android:layout_marginBottom="16dp"
         android:orientation="horizontal"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/textView12">
@@ -367,8 +378,9 @@
             android:layout_marginTop="8dp"
             android:layout_marginBottom="8dp"
             android:layout_weight="1"
-            android:tint="#bebebe"
-            app:srcCompat="@drawable/star" />
+            android:scaleType="fitCenter"
+            app:srcCompat="@drawable/star2"
+            app:tint="#bebebe" />
 
         <ImageView
             android:layout_width="match_parent"
@@ -376,8 +388,8 @@
             android:layout_marginTop="8dp"
             android:layout_marginBottom="8dp"
             android:layout_weight="1"
-            android:tint="#bebebe"
-            app:srcCompat="@drawable/star" />
+            app:srcCompat="@drawable/star2"
+            app:tint="#bebebe" />
 
         <ImageView
             android:layout_width="match_parent"
@@ -385,8 +397,8 @@
             android:layout_marginTop="8dp"
             android:layout_marginBottom="8dp"
             android:layout_weight="1"
-            android:tint="#bebebe"
-            app:srcCompat="@drawable/star" />
+            app:srcCompat="@drawable/star2"
+            app:tint="#bebebe" />
 
         <ImageView
             android:layout_width="match_parent"
@@ -394,8 +406,8 @@
             android:layout_marginTop="8dp"
             android:layout_marginBottom="8dp"
             android:layout_weight="1"
-            android:tint="#bebebe"
-            app:srcCompat="@drawable/star" />
+            app:srcCompat="@drawable/star2"
+            app:tint="#bebebe" />
 
         <ImageView
             android:layout_width="match_parent"
@@ -403,10 +415,22 @@
             android:layout_marginTop="8dp"
             android:layout_marginBottom="8dp"
             android:layout_weight="1"
-            android:tint="#bebebe"
-            app:srcCompat="@drawable/star" />
+            app:srcCompat="@drawable/star2"
+            app:tint="#bebebe" />
 
 
     </LinearLayout>
+
+    <TextView
+        android:id="@+id/textView2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:layout_marginLeft="8dp"
+        android:textSize="16dp"
+        android:text="( Lượt đánh giá )"
+        app:layout_constraintBottom_toBottomOf="@+id/total_rating"
+        app:layout_constraintStart_toEndOf="@+id/total_rating"
+        app:layout_constraintTop_toTopOf="@+id/total_rating" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

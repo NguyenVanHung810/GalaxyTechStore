@@ -3,29 +3,20 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:background="@color/white"
     android:layout_width="match_parent"
     android:layout_height="wrap_content">
 
-    <androidx.viewpager.widget.ViewPager
-        android:id="@+id/product_images_viewpaper"
+    <ImageView
+        android:id="@+id/product_images"
         android:layout_width="match_parent"
         android:layout_height="250dp"
         android:layout_marginTop="24dp"
+        android:elevation="3dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        tools:ignore="MissingClass" />
-
-    <com.google.android.material.tabs.TabLayout
-        android:id="@+id/viewpaper_indicator"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        app:tabBackground="@drawable/dot_selector"
-        app:tabIndicatorHeight="0dp"
-        app:tabRippleColor="@null"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/product_images_viewpaper"/>
+        android:src="@drawable/no_image"/>
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/add_to_wishlist_btn"
@@ -34,9 +25,10 @@
         android:layout_marginTop="8dp"
         android:layout_marginEnd="8dp"
         android:layout_marginRight="8dp"
-        android:backgroundTint="#ffffff"
+        android:backgroundTint="@color/md_green_600"
         android:clickable="true"
         android:elevation="5dp"
+        android:scaleType="fitCenter"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         android:src="@drawable/heart" />
@@ -47,6 +39,7 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
         android:layout_marginLeft="16dp"
+        android:layout_marginTop="16dp"
         android:layout_marginEnd="16dp"
         android:layout_marginRight="16dp"
         android:text="Product Title"
@@ -54,7 +47,7 @@
         android:textSize="20sp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/viewpaper_indicator" />
+        app:layout_constraintTop_toBottomOf="@+id/product_images" />
 
     <LinearLayout
         android:id="@+id/linearLayout2"
@@ -104,9 +97,10 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
         android:layout_marginLeft="16dp"
-        android:layout_marginTop="8dp"
-        android:text="1.900.000 đ"
+        android:layout_marginTop="16dp"
+        android:text="100.900.000 đ"
         android:textColor="#000000"
+        android:textSize="16dp"
         android:textStyle="bold"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/linearLayout2" />
@@ -117,7 +111,8 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
         android:layout_marginLeft="16dp"
-        android:text="2.900.000 đ"
+        android:text="200.900.000 đ"
+        android:textSize="16dp"
         android:textColor="#FF0000"
         android:textStyle="bold"
         app:layout_constraintBottom_toBottomOf="@+id/product_price"
@@ -139,20 +134,19 @@
         android:id="@+id/code_indicator"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="16dp"
         android:layout_marginEnd="16dp"
         android:layout_marginRight="16dp"
         android:src="@drawable/truck"
         app:layout_constraintBottom_toBottomOf="@+id/tv_cod_indicator"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/viewpaper_indicator"
+        app:layout_constraintTop_toBottomOf="@+id/product_title_cart"
         app:layout_constraintVertical_bias="0.407" />
 
     <TextView
         android:id="@+id/tv_cod_indicator"
         android:layout_width="80dp"
         android:layout_height="wrap_content"
-        android:text="Available"
+        android:text="Có sẵn"
         android:gravity="center"
         android:textStyle="bold"
         android:textSize="12dp"
@@ -165,7 +159,7 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginTop="24dp"
-        android:background="#ff3030"
+        android:background="@color/md_red_500"
         android:gravity="center"
         android:orientation="horizontal"
         android:padding="16dp"
@@ -181,15 +175,15 @@
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:gravity="center"
-            android:text="Check price after coupen redemption"
+            android:text="Kiểm tra giá sau khi đổi phiếu giảm giá"
             android:textAlignment="center"></TextView>
 
         <Button
             android:id="@+id/coupan_redeem_btn"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:background="@drawable/border_background"
-            android:text="REDEEM"
+            android:text="Hoàn lại"
+            android:backgroundTint="@color/md_blue_500"
             android:textColor="#ffffff"
             android:textSize="12dp">
 

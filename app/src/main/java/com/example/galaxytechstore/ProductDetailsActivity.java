@@ -28,6 +28,8 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.viewpager.widget.ViewPager;
 
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.request.RequestOptions;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
@@ -39,10 +41,13 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QuerySnapshot;
 
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import es.dmoral.toasty.Toasty;
 
 public class ProductDetailsActivity extends AppCompatActivity {
 
@@ -53,7 +58,7 @@ public class ProductDetailsActivity extends AppCompatActivity {
     private Long productPriceValue;
 
 
-    private ViewPager productImagesViewPaper;
+    private ImageView productImagesDetails;
     private TextView productTitleCart;
     private TextView averageRatingMiniView;
     private TextView ProducttotalRatings;
@@ -115,7 +120,7 @@ public class ProductDetailsActivity extends AppCompatActivity {
     public static boolean fromSearch = false;
 
     /////coupan dialog
-    private TextView coupanTitle,discountedPrice,originalPrice;
+    private TextView coupanTitle, discountedPrice, originalPrice;
     private TextView coupanExpiryDate;
     private TextView coupanBody;
     private RecyclerView coupanRecyclerview;
@@ -185,12 +190,11 @@ public class ProductDetailsActivity extends AppCompatActivity {
 
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-        getSupportActionBar().setTitle("Product Details");
-        getSupportActionBar().setDisplayShowTitleEnabled(false);
+        getSupportActionBar().setTitle("Chi tiết sản phẩm");
+        getSupportActionBar().setDisplayShowTitleEnabled(true);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
-        productImagesViewPaper = (ViewPager) findViewById(R.id.product_images_viewpaper);
-        viewPaperIndicator = (TabLayout) findViewById(R.id.viewpaper_indicator);
+        productImagesDetails = (ImageView) findViewById(R.id.product_images);
         addWishList = (FloatingActionButton) findViewById(R.id.add_to_wishlist_btn);
         productDetailsViewPaper = (ViewPager) findViewById(R.id.product_details_viewpaper);
         productDetailsTabLayout = (TabLayout) findViewById(R.id.product_details_tablayout);
@@ -249,14 +253,14 @@ public class ProductDetailsActivity extends AppCompatActivity {
         linearLayoutManager.setOrientation(RecyclerView.VERTICAL);
         coupanRecyclerview.setLayoutManager(linearLayoutManager);
 
-        MyRewardsAdapter rewardsAdapter = new MyRewardsAdapter(DBqueries.rewardModelList, true,coupanRecyclerview,selectedCoupan,productPriceValue,coupanTitle,coupanExpiryDate,coupanBody,discountedPrice);
+        MyRewardsAdapter rewardsAdapter = new MyRewardsAdapter(DBqueries.rewardModelList, true, coupanRecyclerview, selectedCoupan, productPriceValue, coupanTitle, coupanExpiryDate, coupanBody, discountedPrice);
         rewardsAdapter.notifyDataSetChanged();
         coupanRecyclerview.setAdapter(rewardsAdapter);
 
         toogleRecyclerView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                //showDialogRecyclerView();
+                showDialogRecyclerView();
             }
         });
 
@@ -268,8 +272,6 @@ public class ProductDetailsActivity extends AppCompatActivity {
         });
 
         ////// coupan redemption dialog
-
-        List<String> productImages = new ArrayList<>();
         productID = getIntent().getStringExtra("PRODUCT_ID");
         firebaseFirestore.collection("PRODUCTS").document(productID)
                 .get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
@@ -282,18 +284,13 @@ public class ProductDetailsActivity extends AppCompatActivity {
                                 @Override
                                 public void onComplete(@NonNull Task<QuerySnapshot> task) {
                                     if (task.isSuccessful()) {
-
-                                        for (long i = 1; i < (long) documentSnapshot.get("no_of_images") + 1; i++) {
-                                            productImages.add(documentSnapshot.get("product_image_" + i).toString());
-                                        }
-                                        ProductImagesAdapter adapter = new ProductImagesAdapter(productImages);
-                                        productImagesViewPaper.setAdapter(adapter);
+                                        Glide.with(getApplicationContext()).load(documentSnapshot.get("product_image")).apply(new RequestOptions().placeholder(R.drawable.placeholder)).into(productImagesDetails);
                                         productTitleCart.setText(documentSnapshot.get("product_title").toString());
-                                        averageRatingMiniView.setText(documentSnapshot.get("average").toString());
-                                        ProducttotalRatings.setText((long) documentSnapshot.get("total_ratings") + " ratings");
-                                        productPrice.setText(documentSnapshot.get("product_price").toString());
-                                        productOriginPrice= documentSnapshot.get("product_price").toString();
-                                        cuttedPrice.setText(documentSnapshot.get("cutted_price").toString());
+                                        averageRatingMiniView.setText(documentSnapshot.get("average_ratings").toString());
+                                        ProducttotalRatings.setText("("+(long) documentSnapshot.get("total_ratings") + " đánh giá)");
+                                        productPrice.setText(vnMoney(Long.parseLong(documentSnapshot.get("product_price").toString())));
+                                        productOriginPrice = documentSnapshot.get("product_price").toString();
+                                        cuttedPrice.setText(vnMoney(Long.parseLong(documentSnapshot.get("cutted_price").toString())));
                                         if ((boolean) documentSnapshot.get("COD")) {
                                             tvcodeIndicator.setVisibility(View.VISIBLE);
                                             codeIndicator.setVisibility(View.VISIBLE);
@@ -301,27 +298,8 @@ public class ProductDetailsActivity extends AppCompatActivity {
                                             tvcodeIndicator.setVisibility(View.INVISIBLE);
                                             tvcodeIndicator.setVisibility(View.INVISIBLE);
                                         }
-                                        rewardTitle.setText((long) documentSnapshot.get("free_coupens") + " " + documentSnapshot.get("free_coupen_title").toString());
-                                        rewardbody.setText(documentSnapshot.get("free_coupen_body").toString());
-                                        if ((boolean) documentSnapshot.get("use_tab_layout")) {
-                                            productDetailsTabsContainer.setVisibility(View.VISIBLE);
-                                            productDetailsOnlyContainer.setVisibility(View.GONE);
-                                            productDescription = documentSnapshot.get("product_description").toString();
-                                            productOtherDetails = documentSnapshot.get("product_other_details").toString();
-                                            list = new ArrayList<>();
 
-                                            for (long x = 1; x < (long) documentSnapshot.get("total_spec_titles") + 1; x++) {
-                                                list.add(new ProductSpecificationModel(0, documentSnapshot.get("spec_title_" + x).toString()));
-                                                for (long i = 1; i < (long) documentSnapshot.get("spec_title_" + x + "_total_fields") + 1; i++) {
-                                                    list.add(new ProductSpecificationModel(1, documentSnapshot.get("spec_title_" + x + "_fields_" + i + "_name").toString(), documentSnapshot.get("spec_title_" + x + "_fields_" + i + "_value").toString()));
-
-                                                }
-                                            }
-                                        } else {
-                                            productDetailsTabsContainer.setVisibility(View.GONE);
-                                            productDetailsOnlyContainer.setVisibility(View.VISIBLE);
-                                            productDescriptionBody.setText(documentSnapshot.get("product_description").toString());
-                                        }
+                                        productDescriptionBody.setText(documentSnapshot.get("product_description").toString());
                                         totalRating.setText((long) documentSnapshot.get("total_ratings") + "");
                                         for (int x = 0; x < 5; x++) {
                                             TextView rating = (TextView) ratingNumberContainer.getChildAt(x);
@@ -331,10 +309,8 @@ public class ProductDetailsActivity extends AppCompatActivity {
                                             progressBar.setMax(maxProgress);
                                             progressBar.setProgress(Integer.parseInt(String.valueOf((long) documentSnapshot.get((5 - x) + "_star"))));
                                         }
-                                        averageRatingMiniView.setText(documentSnapshot.get("average").toString());
-                                        averageRatings.setText(documentSnapshot.get("average").toString());
-                                        productDetailsViewPaper.setAdapter(new ProductDetailsAdapter(getSupportFragmentManager(), productDetailsTabLayout.getTabCount(), productDescription, productOtherDetails, list));
-
+                                        averageRatingMiniView.setText(documentSnapshot.get("average_ratings").toString());
+                                        averageRatings.setText(documentSnapshot.get("average_ratings").toString());
 
                                         if (currentUser != null) {
                                             if (DBqueries.myRating.size() == 0) {
@@ -345,10 +321,10 @@ public class ProductDetailsActivity extends AppCompatActivity {
                                             if (DBqueries.wishList.size() == 0) {
                                                 DBqueries.loadWishList(ProductDetailsActivity.this, loaddialog, false);
                                             }
-                                            if(DBqueries.rewardModelList.size() == 0){
+                                            if (DBqueries.rewardModelList.size() == 0) {
                                                 DBqueries.loadRewards(ProductDetailsActivity.this, loaddialog, false);
                                             }
-                                            if (DBqueries.cartLists.size() != 0 && DBqueries.wishList.size() != 0  &&  DBqueries.rewardModelList.size() != 0){
+                                            if (DBqueries.cartLists.size() != 0 && DBqueries.wishList.size() != 0 && DBqueries.rewardModelList.size() != 0) {
                                                 loaddialog.dismiss();
                                             }
 
@@ -391,7 +367,7 @@ public class ProductDetailsActivity extends AppCompatActivity {
                                                             running_cart_query = true;
                                                             if (ALREADY_ADDED_TO_CART) {
                                                                 running_cart_query = false;
-                                                                Toast.makeText(getApplicationContext(), "Đã thêm vào giỏ hàng !!!", Toast.LENGTH_SHORT).show();
+                                                                Toasty.success(getApplicationContext(), "Đã thêm vào giỏ hàng !!!", Toasty.LENGTH_SHORT).show();
                                                             } else {
                                                                 Map<String, Object> addProduct = new HashMap<>();
                                                                 addProduct.put("product_ID_" + String.valueOf(DBqueries.cartLists.size()), productID);
@@ -406,7 +382,6 @@ public class ProductDetailsActivity extends AppCompatActivity {
                                                                                         productID,
                                                                                         documentSnapshot.get("product_image_1").toString(),
                                                                                         documentSnapshot.get("product_title").toString(),
-                                                                                        (long) documentSnapshot.get("free_coupens"),
                                                                                         documentSnapshot.get("product_price").toString(),
                                                                                         documentSnapshot.get("cutted_price").toString(),
                                                                                         (long) 1,
@@ -421,7 +396,7 @@ public class ProductDetailsActivity extends AppCompatActivity {
 
                                                                             ALREADY_ADDED_TO_CART = true;
                                                                             DBqueries.cartLists.add(productID);
-                                                                            Toast.makeText(getApplicationContext(), "Thêm vào giỏ hàng thành công !", Toast.LENGTH_SHORT).show();
+                                                                            Toasty.success(getApplicationContext(), "Thêm vào giỏ hàng thành công !", Toasty.LENGTH_SHORT).show();
                                                                             invalidateOptionsMenu();
                                                                             running_cart_query = false;
                                                                         } else {
@@ -459,7 +434,6 @@ public class ProductDetailsActivity extends AppCompatActivity {
             }
         });
 
-        viewPaperIndicator.setupWithViewPager(productImagesViewPaper, true);
         addWishList.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -488,7 +462,6 @@ public class ProductDetailsActivity extends AppCompatActivity {
                                             DBqueries.wishlistModelList.add(new WishlistModel(productID,
                                                     documentSnapshot.get("product_image_1").toString(),
                                                     documentSnapshot.get("product_title").toString(),
-                                                    (long) documentSnapshot.get("free_coupens"),
                                                     documentSnapshot.get("average_rating").toString(),
                                                     (long) documentSnapshot.get("total_rating"),
                                                     documentSnapshot.get("product_price").toString(),
@@ -496,11 +469,11 @@ public class ProductDetailsActivity extends AppCompatActivity {
                                                     (boolean) documentSnapshot.get("COD"),
                                                     (boolean) documentSnapshot.get("in_stock")
                                             ));
-                                       }
+                                        }
                                         ALREADY_ADDED_TO_WISHLIST = true;
                                         addWishList.setImageResource(R.drawable.like);
                                         DBqueries.wishList.add(productID);
-                                        Toast.makeText(getApplicationContext(), "Thêm sản phẩm yêu thích thành công", Toast.LENGTH_SHORT).show();
+                                        Toasty.success(getApplicationContext(), "Thêm sản phẩm yêu thích thành công", Toasty.LENGTH_SHORT).show();
                                     } else {
                                         addWishList.setImageResource(R.drawable.heart);
                                         String error = task.getException().getMessage();
@@ -512,23 +485,6 @@ public class ProductDetailsActivity extends AppCompatActivity {
                         }
                     }
                 }
-            }
-        });
-        productDetailsViewPaper.addOnPageChangeListener(new TabLayout.TabLayoutOnPageChangeListener(productDetailsTabLayout));
-        productDetailsTabLayout.setOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
-            @Override
-            public void onTabSelected(TabLayout.Tab tab) {
-                productDetailsViewPaper.setCurrentItem(tab.getPosition());
-            }
-
-            @Override
-            public void onTabUnselected(TabLayout.Tab tab) {
-
-            }
-
-            @Override
-            public void onTabReselected(TabLayout.Tab tab) {
-
             }
         });
 
@@ -554,11 +510,11 @@ public class ProductDetailsActivity extends AppCompatActivity {
 
                                     updateRating.put(initialRating + 1 + "_star", Long.parseLong(oldRating.getText().toString()) - 1);
                                     updateRating.put(starposition + 1 + "_star", Long.parseLong(finalRating.getText().toString()) + 1);
-                                    updateRating.put("average", calculateAverageRating((long) starposition - initialRating, false));
+                                    updateRating.put("average_ratings", calculateAverageRating((long) starposition - initialRating, false));
 
                                 } else {
                                     updateRating.put((starposition + 1) + "_star", (long) documentSnapshot.get((starposition + 1) + "_star") + 1);
-                                    updateRating.put("average", calculateAverageRating((long) starposition + 1, false));
+                                    updateRating.put("average_ratings", calculateAverageRating((long) starposition + 1, false));
                                     updateRating.put("total_ratings", (long) documentSnapshot.get("total_ratings") + 1);
                                 }
                                 firebaseFirestore.collection("PRODUCTS").document(productID).update(updateRating)
@@ -599,9 +555,9 @@ public class ProductDetailsActivity extends AppCompatActivity {
                                                                     rating.setText(String.valueOf(Integer.parseInt(rating.getText().toString()) + 1));
 
                                                                     totalRating.setText(((long) documentSnapshot.get("total_ratings") + 1) + "");
-                                                                    ProducttotalRatings.setText((long) documentSnapshot.get("total_ratings") + 1 + "ratings");
+                                                                    ProducttotalRatings.setText("("+(long) documentSnapshot.get("total_ratings") + 1 + " đánh giá)");
 
-                                                                    Toast.makeText(getApplicationContext(), "Thank you for rating !!!", Toast.LENGTH_SHORT).show();
+                                                                    Toasty.success(getApplicationContext(), "Cảm ơn đã đánh giá !!!", Toasty.LENGTH_SHORT).show();
                                                                 }
                                                                 for (int x = 0; x < 5; x++) {
                                                                     TextView ratingfigure = (TextView) ratingNumberContainer.getChildAt(x);
@@ -650,22 +606,21 @@ public class ProductDetailsActivity extends AppCompatActivity {
                 } else {
                     DeliveryActivity.fromCart = false;
                     loaddialog.show();
-                    productDetailsActivity=ProductDetailsActivity.this;
+                    productDetailsActivity = ProductDetailsActivity.this;
                     DeliveryActivity.cartItemModelList = new ArrayList<>();
                     DeliveryActivity.cartItemModelList.add(new CartItemModel(CartItemModel.CART_ITEM,
                             productID,
-                            documentSnapshot.get("product_image_1").toString(),
+                            documentSnapshot.get("product_image").toString(),
                             documentSnapshot.get("product_title").toString(),
-                            (long) documentSnapshot.get("free_coupens"),
                             documentSnapshot.get("product_price").toString(),
                             documentSnapshot.get("cutted_price").toString(),
                             (long) 1,
                             (long) documentSnapshot.get("offers_applied"),
                             (long) 0,
-                            (long)documentSnapshot.get("max_quantity"),
-                            (long)documentSnapshot.get("stock_quantity"),
+                            (long) documentSnapshot.get("max_quantity"),
+                            (long) documentSnapshot.get("stock_quantity"),
                             inStock,
-                            (boolean)documentSnapshot.get("COD"))
+                            (boolean) documentSnapshot.get("COD"))
                     );
                     DeliveryActivity.cartItemModelList.add(new CartItemModel(CartItemModel.TOTAL_AMOUNT));
 
@@ -751,16 +706,14 @@ public class ProductDetailsActivity extends AppCompatActivity {
         badge_icon.setImageResource(R.drawable.cart_2);
         badge_count = cartItem.getActionView().findViewById(R.id.badge_count);
 
-        if(currentUser != null){
+        if (currentUser != null) {
             if (DBqueries.cartLists.size() == 0) {
                 DBqueries.loadCartList(ProductDetailsActivity.this, new Dialog(ProductDetailsActivity.this), false, badge_count, new TextView(ProductDetailsActivity.this));
-            }
-            else {
+            } else {
                 badge_count.setVisibility(View.VISIBLE);
-                if (DBqueries.cartLists.size() < 10){
+                if (DBqueries.cartLists.size() < 10) {
                     badge_count.setText(String.valueOf(DBqueries.cartLists.size()));
-                }
-                else {
+                } else {
                     badge_count.setText("10");
                 }
             }
@@ -790,10 +743,9 @@ public class ProductDetailsActivity extends AppCompatActivity {
             finish();
             return true;
         } else if (id == R.id.main_search_ic) {
-            if(fromSearch) {
+            if (fromSearch) {
                 finish();
-            }
-            else {
+            } else {
                 Intent searchIntent = new Intent(this, SearchActivity.class);
                 startActivity(searchIntent);
             }
@@ -831,5 +783,10 @@ public class ProductDetailsActivity extends AppCompatActivity {
     protected void onDestroy() {
         super.onDestroy();
         fromSearch = false;
+    }
+
+    private String vnMoney(Long s) {
+        DecimalFormat formatter = new DecimalFormat("###,###,###");
+        return formatter.format(s) + " đ";
     }
 }

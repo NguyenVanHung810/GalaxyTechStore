@@ -198,11 +198,11 @@ public class HomePageAdapter extends RecyclerView.Adapter {
                 viewAll.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-//                        ViewAllActivity.viewAllProduct = viewAllList;
-//                        Intent viewAllActivity = new Intent(itemView.getContext(), ViewAllActivity.class);
-//                        viewAllActivity.putExtra("layout_code", 0);
-//                        viewAllActivity.putExtra("title", title);
-//                        itemView.getContext().startActivity(viewAllActivity);
+                        ViewAllActivity.wishlistModelList = viewAllList;
+                        Intent viewAllActivity = new Intent(itemView.getContext(), ViewAllActivity.class);
+                        viewAllActivity.putExtra("layout_code", 0);
+                        viewAllActivity.putExtra("title", title);
+                        itemView.getContext().startActivity(viewAllActivity);
                     }
                 });
             } else {
@@ -266,17 +266,16 @@ public class HomePageAdapter extends RecyclerView.Adapter {
                 viewAll.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-//                        ViewAllActivity.laptopList = horizontalProductScrollModelList;
-//                        Intent viewAllActivity = new Intent(itemView.getContext(), ViewAllActivity.class);
-//                        viewAllActivity.putExtra("layout_code", 1);
-//                        viewAllActivity.putExtra("title", tt);
-//                        itemView.getContext().startActivity(viewAllActivity);
+                        ViewAllActivity.horizontalProductScrollModelList = horizontalProductScrollModelList;
+                        Intent viewAllActivity = new Intent(itemView.getContext(), ViewAllActivity.class);
+                        viewAllActivity.putExtra("layout_code", 1);
+                        viewAllActivity.putExtra("title", tt);
+                        itemView.getContext().startActivity(viewAllActivity);
                     }
                 });
             }
         }
     }
-
 
     @Override
     public int getItemViewType(int position) {

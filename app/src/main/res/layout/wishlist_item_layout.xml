@@ -15,8 +15,8 @@
         android:id="@+id/product_image_wishlist_item"
         android:layout_width="100dp"
         android:layout_height="100dp"
-        android:layout_marginStart="16dp"
-        android:layout_marginLeft="16dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginLeft="8dp"
         android:layout_marginTop="16dp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
@@ -24,54 +24,32 @@
 
     <TextView
         android:id="@+id/product_title_wishlist_item"
-        android:layout_width="wrap_content"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginStart="16dp"
-        android:layout_marginLeft="16dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginLeft="8dp"
         android:layout_marginTop="16dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginRight="8dp"
         android:text="VSmart Live"
         android:textColor="#000000"
         android:textSize="16dp"
+        app:layout_constraintEnd_toStartOf="@+id/btn_del"
         app:layout_constraintStart_toEndOf="@+id/product_image_wishlist_item"
         app:layout_constraintTop_toTopOf="parent" />
-
-    <ImageView
-        android:id="@+id/coupen_ic"
-        android:layout_width="15dp"
-        android:layout_height="15dp"
-        android:layout_marginTop="8dp"
-        android:tint="@color/md_purple_500"
-        app:layout_constraintStart_toStartOf="@+id/product_title_wishlist_item"
-        app:layout_constraintTop_toBottomOf="@+id/product_title_wishlist_item"
-        app:srcCompat="@drawable/tag"
-        tools:ignore="UseAppTint" />
-
-    <TextView
-        android:id="@+id/free_coupen"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="5dp"
-        android:layout_marginLeft="5dp"
-        android:text="Free Coupon"
-        android:textColor="@color/purple_500"
-        android:textSize="12dp"
-        app:layout_constraintBottom_toBottomOf="@+id/coupen_ic"
-        app:layout_constraintStart_toEndOf="@+id/coupen_ic"
-        app:layout_constraintTop_toTopOf="@+id/coupen_ic"
-        app:layout_constraintVertical_bias="1.0" />
 
     <LinearLayout
         android:id="@+id/linearLayout2"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="16dp"
-        android:layout_marginLeft="16dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginLeft="8dp"
         android:layout_marginTop="8dp"
         android:background="#01579B"
         android:orientation="horizontal"
         android:padding="5dp"
         app:layout_constraintStart_toEndOf="@+id/product_image_wishlist_item"
-        app:layout_constraintTop_toBottomOf="@+id/free_coupen">
+        app:layout_constraintTop_toBottomOf="@+id/product_title_wishlist_item">
 
         <TextView
             android:id="@+id/rating_wishlist_item"
@@ -93,27 +71,32 @@
 
     <TextView
         android:id="@+id/total_rating_wishlist_item"
-        android:layout_width="wrap_content"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
         android:layout_marginLeft="8dp"
-        android:text="(120) ratings"
+        android:layout_marginEnd="8dp"
+        android:layout_marginRight="8dp"
+        android:text="(120 đánh giá)"
+        android:textColor="@color/black"
         app:layout_constraintBottom_toBottomOf="@+id/linearLayout2"
+        app:layout_constraintEnd_toStartOf="@+id/btn_del"
         app:layout_constraintStart_toEndOf="@+id/linearLayout2"
         app:layout_constraintTop_toTopOf="@+id/linearLayout2" />
 
     <TextView
         android:id="@+id/product_price_wishlist_item"
-        android:layout_width="wrap_content"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
         android:layout_marginLeft="16dp"
         android:layout_marginTop="8dp"
-        android:text="1.990.000 đ"
-        android:textSize="18dp"
-        android:textStyle="bold"
+        android:text="100.990.000 đ"
         android:textColor="#000000"
-        app:layout_constraintStart_toEndOf="@+id/product_image_wishlist_item"
+        android:textSize="14dp"
+        android:textStyle="bold"
+        app:layout_constraintEnd_toStartOf="@+id/btn_del"
+        app:layout_constraintStart_toEndOf="@+id/cutted_price_wishlist_item"
         app:layout_constraintTop_toBottomOf="@+id/linearLayout2" />
 
     <TextView
@@ -122,25 +105,35 @@
         android:layout_height="0dp"
         android:layout_marginStart="8dp"
         android:layout_marginLeft="8dp"
-        android:text="2.000.000 đ"
-        android:textSize="12dp"
         android:gravity="center"
+        android:text="200.000.000 đ"
+        android:textColor="@color/md_red_500"
+        android:textSize="14dp"
+        android:textStyle="bold"
         app:layout_constraintBottom_toBottomOf="@+id/product_price_wishlist_item"
-        app:layout_constraintStart_toEndOf="@+id/product_price_wishlist_item"
+        app:layout_constraintStart_toEndOf="@+id/product_image_wishlist_item"
         app:layout_constraintTop_toTopOf="@+id/product_price_wishlist_item"
         app:layout_constraintVertical_bias="1.0" />
 
     <TextView
         android:id="@+id/shipping_method"
-        android:layout_width="wrap_content"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:layout_marginLeft="8dp"
         android:layout_marginTop="8dp"
-        android:text="Cash on delivery available"
-        app:layout_constraintStart_toStartOf="@+id/product_price_wishlist_item"
+        android:layout_marginEnd="8dp"
+        android:layout_marginRight="8dp"
+        android:text="Có thể thanh toán khi giao hàng"
+        android:textSize="12dp"
+        android:textColor="@color/black"
+        app:layout_constraintEnd_toStartOf="@+id/btn_del"
+        app:layout_constraintStart_toEndOf="@+id/product_image_wishlist_item"
         app:layout_constraintTop_toBottomOf="@+id/product_price_wishlist_item" />
 
     <ImageButton
         android:id="@+id/btn_del"
+        android:scaleType="fitCenter"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginEnd="16dp"
@@ -154,8 +147,8 @@
     <View
         android:id="@+id/price_cut"
         android:layout_width="0dp"
-        android:layout_height="3dp"
-        android:background="?android:attr/listDivider"
+        android:layout_height="1dp"
+        android:background="@color/black"
         app:layout_constraintBottom_toBottomOf="@+id/cutted_price_wishlist_item"
         app:layout_constraintEnd_toEndOf="@+id/cutted_price_wishlist_item"
         app:layout_constraintStart_toStartOf="@+id/cutted_price_wishlist_item"

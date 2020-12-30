@@ -50,16 +50,14 @@ public class AddressesAdapter extends RecyclerView.Adapter<AddressesAdapter.View
     @Override
     public void onBindViewHolder(@NonNull AddressesAdapter.Viewholder holder, int position) {
         String name=addressesModelList.get(position).getName();
-        String mobileNo=addressesModelList.get(position).getMobileNo();
-        String pincode=addressesModelList.get(position).getPincode();
-        boolean selected=addressesModelList.get(position).getSelected();
-        String flatNo=addressesModelList.get(position).getFlatNo();
-        String locality=addressesModelList.get(position).getLocality();
+        String phone=addressesModelList.get(position).getPhone();
         String city=addressesModelList.get(position).getCity();
-        String landmark=addressesModelList.get(position).getLandmark();
-        String state=addressesModelList.get(position).getState();
-        String alternateMobileNo=addressesModelList.get(position).getAlternateMobileNo();
-        holder.setdata(name,mobileNo,pincode,selected,flatNo,landmark,locality,city,state,alternateMobileNo,position);
+        String distict=addressesModelList.get(position).getDistrict();
+        String ward=addressesModelList.get(position).getWard();
+        String address=addressesModelList.get(position).getAddress();
+        boolean selected=addressesModelList.get(position).getSelected();
+
+        holder.setdata(name, phone, city, distict, ward, address, selected, position);
     }
 
     @Override
@@ -70,34 +68,28 @@ public class AddressesAdapter extends RecyclerView.Adapter<AddressesAdapter.View
     public class Viewholder extends RecyclerView.ViewHolder {
 
         private TextView fullname;
-        private TextView address;
-        private TextView pincode;
+        private TextView fulladdress;
+        private TextView phone_number;
         private ImageView icon;
         private LinearLayout optioncontainer;
+        private TextView tv_edit, tv_delete;
 
         public Viewholder(@NonNull View itemView) {
             super(itemView);
             fullname = (TextView) itemView.findViewById(R.id.name_item);
-            address = (TextView) itemView.findViewById(R.id.address_item);
-            pincode = (TextView) itemView.findViewById(R.id.pincode_item);
+            fulladdress = (TextView) itemView.findViewById(R.id.address_item);
+            phone_number = (TextView) itemView.findViewById(R.id.phonenumber_item);
             icon = (ImageView) itemView.findViewById(R.id.ic_item);
             optioncontainer = (LinearLayout) itemView.findViewById(R.id.option_container);
+            tv_edit = (TextView) itemView.findViewById(R.id.edit);
+            tv_delete = (TextView) itemView.findViewById(R.id.delete);
         }
 
-        private void setdata(String name, String mobileNo, String pincodevalue, boolean selected, String flatNo, String landmark, String locality, String city, String state, String alternateMobileNo, final int position) {
+        private void setdata(String name, String phone, String city, String district, String ward, String address, boolean selected, final int position) {
 
-            if (alternateMobileNo.equals("")) {
-                fullname.setText(name + " - " + mobileNo);
-            } else {
-                fullname.setText(name + " - " + mobileNo + " or " + alternateMobileNo);
-            }
-
-            if (landmark.equals("")) {
-                address.setText(flatNo + "," + locality + "," + city + "," + state);
-            } else {
-                address.setText(flatNo + "," + locality + "," + landmark + "," + city + "," + state);
-            }
-            pincode.setText(pincodevalue);
+            fullname.setText(name);
+            fulladdress.setText(address + "," + ward + "," + district + "," + city);
+            phone_number.setText(phone);
 
             if (MODE == DeliveryActivity.SELECT_ADDRESS) {
                 icon.setImageResource(R.drawable.check);
@@ -122,6 +114,8 @@ public class AddressesAdapter extends RecyclerView.Adapter<AddressesAdapter.View
                 });
             } else if (MODE == MANAGE_ADDRESS) {
                 optioncontainer.setVisibility(View.GONE);
+                tv_delete.setVisibility(View.GONE);
+                tv_edit.setVisibility(View.GONE);
                 optioncontainer.getChildAt(0).setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {  ////edit address
@@ -138,15 +132,13 @@ public class AddressesAdapter extends RecyclerView.Adapter<AddressesAdapter.View
                         for (int i = 0; i < addressesModelList.size(); i++) {
                             if (i != position) {
                                 x++;
-                                addresses.put("city_" + x, addressesModelList.get(i).getCity());
-                                addresses.put("locality_" + x, addressesModelList.get(i).getLocality());
-                                addresses.put("flat_no_" + x, addressesModelList.get(i).getFlatNo());
-                                addresses.put("pincode_" + x, addressesModelList.get(i).getPincode());
-                                addresses.put("landmark_" + x, addressesModelList.get(i).getLandmark());
                                 addresses.put("name_" + x, addressesModelList.get(i).getName());
-                                addresses.put("mobile_no_" + x, addressesModelList.get(i).getMobileNo());
-                                addresses.put("alternate_mobile_no_" + x, addressesModelList.get(i).getAlternateMobileNo());
-                                addresses.put("state_" + x, addressesModelList.get(i).getState());
+                                addresses.put("phone_number_" + x, addressesModelList.get(i).getPhone());
+                                addresses.put("city_" + x, addressesModelList.get(i).getCity());
+                                addresses.put("district_" + x, addressesModelList.get(i).getDistrict());
+                                addresses.put("ward_" + x, addressesModelList.get(i).getWard());
+                                addresses.put("address_" + x, addressesModelList.get(i).getAddress());
+
                                 if (addressesModelList.get(position).getSelected()) {
                                     if (position - 1 >= 0) {
                                         if (x == position) {
@@ -201,6 +193,8 @@ public class AddressesAdapter extends RecyclerView.Adapter<AddressesAdapter.View
                     @Override
                     public void onClick(View view) {
                         optioncontainer.setVisibility(View.VISIBLE);
+                        tv_edit.setVisibility(View.VISIBLE);
+                        tv_delete.setVisibility(View.VISIBLE);
                         if (refresh) {
                             refreshItem(preSelectedPosition, preSelectedPosition);
                         } else {

@@ -54,4 +54,9 @@ public class MyOrdersFragment extends Fragment {
         DBqueries.loadOrders(getContext(), myOrderAdapter, loadingDialog);
         return view;
     }
+    @Override
+    public void onStart() {
+        super.onStart();
+        myOrderAdapter.notifyDataSetChanged();
+    }
 }

@@ -34,8 +34,7 @@ import java.util.Map;
     public class DBqueries {
 
         public static boolean addressSelected = false;
-
-        public static String email,fullname,profile;
+        public static String email,fullname,profile, phone;
         public static FirebaseFirestore firebaseFirestore = FirebaseFirestore.getInstance();
         public static List<CategoryModel> list = new ArrayList<>();
         public static List<List<HomePageModel>> lists = new ArrayList<>();
@@ -57,6 +56,7 @@ import java.util.Map;
         public static List<AddressesModel> addressesModelList = new ArrayList<>();
 
         public static List<MyOrderItemModel> myOrderItemModelList = new ArrayList<>();
+        public static List<OrderItemsModel> orderItemsModelList = new ArrayList<>();
 
         public static List<NotificationModel> notificationModelList=new ArrayList<>();
 
@@ -103,8 +103,7 @@ import java.util.Map;
                                         }
                                         lists.get(index).add(new HomePageModel(0, sliderModelList));
                                     } else if ((long) documentSnapshot.get("view_type") == 1) {
-//                                    homePageModelList.add(new HomePageModel(1, documentSnapshot.get("strip_ad_banner").toString(),
-//                                            documentSnapshot.get("background").toString()));
+
                                     } else if ((long) documentSnapshot.get("view_type") == 2) {
                                         List<WishlistModel> viewAllProductList = new ArrayList<>();
                                         List<HorizontalProductScrollModel> productlist = new ArrayList<>();
@@ -120,7 +119,6 @@ import java.util.Map;
                                                     documentSnapshot.get("product_id_" + x).toString(),
                                                     documentSnapshot.get("product_image_" + x).toString(),
                                                     documentSnapshot.get("product_full_title_" + x).toString(),
-                                                    (long) documentSnapshot.get("free_coupens_" + x),
                                                     documentSnapshot.get("average_rating_" + x).toString(),
                                                     (long) documentSnapshot.get("total_rating_" + x),
                                                     documentSnapshot.get("product_price_" + x).toString(),
@@ -143,6 +141,41 @@ import java.util.Map;
                                         }
                                         lists.get(index).add(new HomePageModel(3, documentSnapshot.get("layout_title").toString(), documentSnapshot.get("layout_background").toString(), productlist));
                                     }
+                                }
+                                HomePageAdapter homePageAdapter = new HomePageAdapter(lists.get(index));
+                                recyclerView.setAdapter(homePageAdapter);
+                                homePageAdapter.notifyDataSetChanged();
+                                HomeFragment.swipeRefreshLayout.setRefreshing(false);
+                            } else {
+                                String error = task.getException().getMessage();
+                                Toast.makeText(context, error, Toast.LENGTH_SHORT).show();
+                            }
+                        }
+                    });
+        }
+
+        public static void loadCategoryActivityData(RecyclerView recyclerView, final Context context, final int index, String categoryName) {
+            firebaseFirestore.collection("CATEGORIES")
+                    .document(categoryName.toUpperCase())
+                    .collection("BRAND")
+                    .orderBy("index")
+                    .get()
+                    .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                        @Override
+                        public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                            if (task.isSuccessful()) {
+                                for (QueryDocumentSnapshot documentSnapshot : task.getResult()) {
+                                    List<HorizontalProductScrollModel> productlist = new ArrayList<>();
+                                    Long products = (long)documentSnapshot.get("no_of_products");
+                                    for (long x = 1; x < products + 1; x++) {
+                                        productlist.add(new HorizontalProductScrollModel(
+                                                documentSnapshot.get("product_id_" + x).toString(),
+                                                documentSnapshot.get("product_image_" + x).toString(),
+                                                documentSnapshot.get("product_title_" + x).toString(),
+                                                documentSnapshot.get("product_subtitle_" + x).toString(),
+                                                documentSnapshot.get("product_price_" + x).toString()));
+                                    }
+                                    lists.get(index).add(new HomePageModel(2, documentSnapshot.get("layout_title").toString(), documentSnapshot.get("layout_background").toString(), productlist));
                                 }
                                 HomePageAdapter homePageAdapter = new HomePageAdapter(lists.get(index));
                                 recyclerView.setAdapter(homePageAdapter);
@@ -188,10 +221,9 @@ import java.util.Map;
                                         if (task.isSuccessful()) {
                                             wishlistModelList.add(new WishlistModel(
                                                     productID,
-                                                    task.getResult().get("product_image_1").toString(),
+                                                    task.getResult().get("product_image").toString(),
                                                     task.getResult().get("product_title").toString(),
-                                                    (long) task.getResult().get("free_coupens"),
-                                                    task.getResult().get("average").toString(),
+                                                    task.getResult().get("average_ratings").toString(),
                                                     (long) task.getResult().get("total_ratings"),
                                                     task.getResult().get("product_price").toString(),
                                                     task.getResult().get("cutted_price").toString(),
@@ -291,9 +323,8 @@ import java.util.Map;
                                                                 if (task.getResult().getDocuments().size() < (long) documentSnapshot.get("stock_quantity")) {
                                                                     cartItemModelList.add(index, new CartItemModel(CartItemModel.CART_ITEM,
                                                                             productID,
-                                                                            documentSnapshot.get("product_image_1").toString(),
+                                                                            documentSnapshot.get("product_image").toString(),
                                                                             documentSnapshot.get("product_title").toString(),
-                                                                            (long) documentSnapshot.get("free_coupens"),
                                                                             documentSnapshot.get("product_price").toString(),
                                                                             documentSnapshot.get("cutted_price").toString(),
                                                                             (long) 1,
@@ -307,10 +338,8 @@ import java.util.Map;
                                                                 } else {
                                                                     cartItemModelList.add(index, new CartItemModel(CartItemModel.CART_ITEM,
                                                                             productID,
-                                                                            documentSnapshot.get("product_image_1").toString(),
-                                                                            documentSnapshot.get("product_title").toString(),
-                                                                            (long) documentSnapshot.get("free_coupens"),
-                                                                            documentSnapshot.get("product_price").toString(),
+                                                                            documentSnapshot.get("product_image").toString(),
+                                                                            documentSnapshot.get("product_title").toString(), documentSnapshot.get("product_price").toString(),
                                                                             documentSnapshot.get("cutted_price").toString(),
                                                                             (long) 1,
                                                                             (long) documentSnapshot.get("offers_applied"),
@@ -471,17 +500,13 @@ import java.util.Map;
                         } else {
                             for (long x = 1; x <= (long) task.getResult().get("list_size"); x++) {
                                 addressesModelList.add(new AddressesModel(
-                                        task.getResult().get("city_" + x).toString()
-                                        , task.getResult().get("locality_" + x).toString()
-                                        , task.getResult().get("flat_no_" + x).toString()
-                                        , task.getResult().get("pincode_" + x).toString()
-                                        , task.getResult().get("landmark_" + x).toString()
-                                        , task.getResult().get("name_" + x).toString()
-                                        , task.getResult().get("mobile_no_" + x).toString()
-                                        , task.getResult().get("alternate_mobile_no_" + x).toString()
-                                        , task.getResult().get("state_" + x).toString()
+                                        task.getResult().get("name_" + x).toString()
+                                        , task.getResult().get("phone_number_" + x).toString()
+                                        , task.getResult().get("city_" + x).toString()
+                                        , task.getResult().get("district_" + x).toString()
+                                        , task.getResult().get("ward_" + x).toString()
+                                        , task.getResult().get("address_" + x).toString()
                                         , (boolean) task.getResult().get("selected_" + x)
-
                                 ));
                                 if ((boolean) task.getResult().get("selected_" + x)) {
                                     selectedAddress = Integer.parseInt(String.valueOf(x - 1));
@@ -533,6 +558,7 @@ import java.util.Map;
 
         public static void loadOrders(final Context context, @Nullable final MyOrderAdapter myOrderAdapter, final Dialog loadingDialog) {
             myOrderItemModelList.clear();
+            orderItemsModelList.clear();
             firebaseFirestore.collection("USERS").document(FirebaseAuth.getInstance().getUid())
                     .collection("USER_ORDERS").orderBy("time", Query.Direction.DESCENDING).get()
                     .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
@@ -541,54 +567,61 @@ import java.util.Map;
                             if (!task.getResult().isEmpty()) {
                                 if (task.isSuccessful()) {
                                     for (DocumentSnapshot documentSnapshot : task.getResult().getDocuments()) {
-                                        firebaseFirestore.collection("ORDERS").document(documentSnapshot.get("order_id").toString())
-                                                .collection("ORDER_ITEMS").get()
-                                                .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                                        firebaseFirestore.collection("ORDERS").document(documentSnapshot.get("order_id").toString()).get()
+                                                .addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
                                                     @Override
-                                                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
-                                                        if (task.isSuccessful()) {
-                                                            //Toasty.success(context,"order mil gya",Toasty.LENGTH_SHORT,true).show();
-                                                            for (DocumentSnapshot orderItems : task.getResult().getDocuments()) {
-
-                                                                MyOrderItemModel myOrderItemModel = new MyOrderItemModel(
-                                                                        orderItems.getString("Product_Id")
-                                                                        , orderItems.getString("Order_Status")
-                                                                        , orderItems.getString("Address")
-                                                                        , orderItems.getString("Coupan_Id")
-                                                                        , orderItems.getString("Product_Price")
-                                                                        , orderItems.getString("Cutted_Price")
-                                                                        , orderItems.getString("Discounted_Price")
-                                                                        , (Date) orderItems.getDate("Ordered_Date")
-                                                                        , (Date) orderItems.getDate("Packed_Date")
-                                                                        , (Date) orderItems.getDate("Shipped_Date")
-                                                                        , (Date) orderItems.getDate("Delivered_Date")
-                                                                        , (Date) orderItems.getDate("Cancelled_Date")
-                                                                        , orderItems.getLong("Free_Coupens")
-                                                                        , orderItems.getLong("Product_quantity")
-                                                                        , orderItems.getString("FullName")
-                                                                        , orderItems.getString("ORDER_ID")
-                                                                        , orderItems.getString("Payment_Method")
-                                                                        , orderItems.getString("Pincode")
-                                                                        , orderItems.getString("User_Id")
-                                                                        , orderItems.getString("Product Title")
-                                                                        , orderItems.getString("Product_Image")
-                                                                        , orderItems.getString("Delivery_Price")
-                                                                        , (boolean) orderItems.get("Cancellation_requested")
-
-                                                                );
-                                                                myOrderItemModelList.add(myOrderItemModel);
-                                                            }
-                                                            loadRatingList(context);
-                                                            if (myOrderAdapter != null) {
-                                                                myOrderAdapter.notifyDataSetChanged();
-                                                            }
-                                                        } else {
+                                                    public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                                                        if(task.isSuccessful()){
+                                                            DocumentSnapshot snapshot = task.getResult();
+                                                            firebaseFirestore.collection("ORDERS").document(documentSnapshot.get("order_id").toString())
+                                                                    .collection("ORDER_ITEMS").orderBy("index").get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                                                                @Override
+                                                                public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                                                                    if(task.isSuccessful()) {
+                                                                        MyOrderItemModel myOrderItemModel = null;
+                                                                        for (DocumentSnapshot snapshot1 : task.getResult()) {
+                                                                            myOrderItemModel = new MyOrderItemModel(
+                                                                                    snapshot1.getString("Product_Id")
+                                                                                    , snapshot.getString("Order_Status")
+                                                                                    , snapshot.getString("Address")
+                                                                                    , snapshot1.getString("Coupan_Id")
+                                                                                    , snapshot1.getString("Product_Price")
+                                                                                    , snapshot1.getString("Cutted_Price")
+                                                                                    , snapshot1.getString("Discounted_Price")
+                                                                                    , (Date) snapshot.getDate("Ordered_Date")
+                                                                                    , (Date) snapshot.getDate("Packed_Date")
+                                                                                    , (Date) snapshot.getDate("Shipped_Date")
+                                                                                    , (Date) snapshot.getDate("Delivered_Date")
+                                                                                    , (Date) snapshot.getDate("Cancelled_Date")
+                                                                                    , snapshot.getLong("Free_Coupens")
+                                                                                    , snapshot1.getLong("Product_quantity")
+                                                                                    , snapshot.getString("FullName")
+                                                                                    , snapshot1.getString("ORDER_ID")
+                                                                                    , snapshot.getString("Payment_Method")
+                                                                                    , snapshot.getString("Pincode")
+                                                                                    , snapshot.getString("User_Id")
+                                                                                    , snapshot1.getString("Product_Title")
+                                                                                    , snapshot1.getString("Product_Image")
+                                                                                    , snapshot.getString("Delivery_Price")
+                                                                                    , (boolean) snapshot.get("Cancellation_requested"));
+                                                                        }
+                                                                        myOrderItemModelList.add(myOrderItemModel);
+                                                                        loadRatingList(context);
+                                                                        if (myOrderAdapter != null) {
+                                                                            myOrderAdapter.notifyDataSetChanged();
+                                                                        }
+                                                                    }
+                                                                }
+                                                            });
+                                                        }
+                                                        else {
                                                             String error = task.getException().getMessage();
                                                             Toast.makeText(context, error, Toast.LENGTH_SHORT).show();
                                                         }
                                                         loadingDialog.dismiss();
                                                     }
                                                 });
+
                                     }
                                 } else {
                                     loadingDialog.dismiss();

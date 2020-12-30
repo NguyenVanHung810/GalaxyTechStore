@@ -19,6 +19,7 @@ import androidx.annotation.RequiresApi;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.request.RequestOptions;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -39,7 +40,6 @@ import java.util.Map;
 public class MyOrderAdapter extends RecyclerView.Adapter<MyOrderAdapter.ViewHolder> {
 
     private List<MyOrderItemModel> myOrderItemModelList;
-    private LinearLayout rateNowContainer;
     private Dialog loadingDialog;
 
     public MyOrderAdapter(List<MyOrderItemModel> myOrderItemModelList, Dialog loadingDialog) {
@@ -69,18 +69,14 @@ public class MyOrderAdapter extends RecyclerView.Adapter<MyOrderAdapter.ViewHold
         Date shippedDate = myOrderItemModelList.get(position).getShippedDate();
         Date delveredDate = myOrderItemModelList.get(position).getDelveredDate();
         Date cancelleddate = myOrderItemModelList.get(position).getCancelleddate();
-        Long freeCoupans = myOrderItemModelList.get(position).getFreeCoupans();
         Long productQuantity = myOrderItemModelList.get(position).getProductQuantity();
         String fullName = myOrderItemModelList.get(position).getFullName();
         String orderId = myOrderItemModelList.get(position).getOrderId();
         String paymentMethod = myOrderItemModelList.get(position).getPaymentMethod();
-        String pincode = myOrderItemModelList.get(position).getPincode();
         String userId = myOrderItemModelList.get(position).getUserId();
-
         String productTitle = myOrderItemModelList.get(position).getProductTitle();
         String orderStatus = myOrderItemModelList.get(position).getOrderStatus();
         String productImage = myOrderItemModelList.get(position).getProductImage();
-
         Date date;
         switch (orderStatus) {
             case "Ordered":
@@ -104,7 +100,6 @@ public class MyOrderAdapter extends RecyclerView.Adapter<MyOrderAdapter.ViewHold
 
         }
         int rating = myOrderItemModelList.get(position).getRating();
-        //holder.setdata(productId, orderStatus, address, coupanId, productPrice, cuttedPrice, discountedPrice, orderedDate, packedDate, shippedDate, delveredDate, cancelleddate, freeCoupans, productQuantity, fullName, orderId, paymentMethod,pincode,userId,productTitle,productImage,rating);
         holder.setdata(productImage, productTitle, orderStatus, date, rating, productId, position);
     }
 
@@ -124,16 +119,14 @@ public class MyOrderAdapter extends RecyclerView.Adapter<MyOrderAdapter.ViewHold
             orderIndicator = itemView.findViewById(R.id.delivery_indicator);
             productTitle = itemView.findViewById(R.id.product_title);
             deliveryStatus = itemView.findViewById(R.id.order_delivered_date);
-            rateNowContainer = itemView.findViewById(R.id.rate_now_container);
-
         }
 
         @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
         private void setdata(String resource, String productTitleText, String orderStatus, Date date, final int rating, final String productId, final int position) {
             SimpleDateFormat simpleDateFormat = new SimpleDateFormat("EEE, dd MMM YYYY hh:mm aa");
 
+            Glide.with(itemView.getContext()).load(resource).apply(new RequestOptions().placeholder(R.drawable.no_image)).into(productImage);
             productTitle.setText(productTitleText);
-            Glide.with(itemView.getContext()).load(resource).into(productImage);
             if (orderStatus.equals("Cancelled")) {
                 orderIndicator.setImageTintList(ColorStateList.valueOf(itemView.getContext().getResources().getColor(R.color.md_red_500)));
             } else {
@@ -147,93 +140,6 @@ public class MyOrderAdapter extends RecyclerView.Adapter<MyOrderAdapter.ViewHold
                     itemView.getContext().startActivity(new Intent(itemView.getContext(), OrderDetailsActivity.class).putExtra("position", position));
                 }
             });
-
-            //////rating layout
-            setRating(rating);
-
-            for (int x = 0; x < rateNowContainer.getChildCount(); x++) {
-                final int starPosition = x;
-                rateNowContainer.getChildAt(x).setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View view) {
-                        loadingDialog.show();
-                        setRating(starPosition);
-                        final DocumentReference documentReference = FirebaseFirestore.getInstance().collection("PRODUCTS").document(productId);
-                        FirebaseFirestore.getInstance().runTransaction(new Transaction.Function<Object>() {
-                            @Nullable
-                            @Override
-                            public Object apply(@NonNull Transaction transaction) throws FirebaseFirestoreException {
-                                DocumentSnapshot documentSnapshot = transaction.get(documentReference);
-
-                                if (rating != 0) {
-                                    Long increase = documentSnapshot.getLong(starPosition + 1 + "_star") + 1;
-                                    Long decrease = documentSnapshot.getLong(rating + 1 + "_star") - 1;
-                                    transaction.update(documentReference, starPosition + 1 + "_star", increase);
-                                    transaction.update(documentReference, rating + 1 + "_star", decrease);
-                                } else {
-                                    Long increase = documentSnapshot.getLong(starPosition + 1 + "_star") + 1;
-                                    transaction.update(documentReference, starPosition + 1 + "_star", increase);
-                                }
-                                return null;
-                            }
-                        }).addOnSuccessListener(new OnSuccessListener<Object>() {
-                            @Override
-                            public void onSuccess(Object o) {
-                                Map<String, Object> myRating = new HashMap<>();
-
-                                if (DBqueries.myRatedIds.contains(productId)) {
-                                    myRating.put("rating_" + DBqueries.myRatedIds.indexOf(productId), (long) starPosition + 1);
-                                } else {
-                                    myRating.put("product_ID_" + DBqueries.myRatedIds.size(), productId);
-                                    myRating.put("rating_" + DBqueries.myRatedIds.size(), (long) starPosition + 1);
-                                    myRating.put("list_size", (long) DBqueries.myRatedIds.size() + 1);
-                                }
-
-                                FirebaseFirestore.getInstance().collection("USERS").document(FirebaseAuth.getInstance().getUid()).collection("USER_DATA").document("MY_RATINGS")
-                                        .update(myRating)
-                                        .addOnCompleteListener(new OnCompleteListener<Void>() {
-                                            @Override
-                                            public void onComplete(@NonNull Task<Void> task) {
-                                                if (task.isSuccessful()) {
-                                                    DBqueries.myOrderItemModelList.get(position).setRating(starPosition);
-                                                    if (DBqueries.myRatedIds.contains(productId)) {
-                                                        DBqueries.myRating.set(DBqueries.myRatedIds.indexOf(productId), Long.valueOf(starPosition + 1));
-                                                    } else {
-                                                        DBqueries.myRatedIds.add(productId);
-                                                        DBqueries.myRating.add(Long.valueOf(starPosition + 1));
-                                                    }
-                                                } else {
-                                                    String error = task.getException().getMessage();
-                                                    Toast.makeText(itemView.getContext(), error, Toast.LENGTH_SHORT).show();
-                                                }
-                                                loadingDialog.dismiss();
-                                            }
-                                        });
-
-                            }
-                        }).addOnFailureListener(new OnFailureListener() {
-                            @Override
-                            public void onFailure(@NonNull Exception e) {
-                                loadingDialog.dismiss();
-                            }
-                        });
-                    }
-                });
-            }
-            //////rating layout
-
         }
-
-        @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
-        private void setRating(int starPosition) {
-            for (int x = 0; x < rateNowContainer.getChildCount(); x++) {
-                ImageView starBtn = (ImageView) rateNowContainer.getChildAt(x);
-                starBtn.setImageTintList(ColorStateList.valueOf(Color.parseColor("#bebebe")));
-                if (x <= starPosition) {
-                    starBtn.setImageTintList(ColorStateList.valueOf(Color.parseColor("#ffbb00")));
-                }
-            }
-        }
-
     }
 }

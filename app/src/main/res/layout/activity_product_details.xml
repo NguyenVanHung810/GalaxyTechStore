@@ -37,10 +37,9 @@
             android:orientation="vertical">
 
             <include layout="@layout/product_image_layout"></include>
+<!--            <include layout="@layout/rewards_with_product_layout"></include>-->
 
-            <include layout="@layout/rewards_with_product_layout"></include>
-
-            <include layout="@layout/product_description_layout"></include>
+<!--            <include layout="@layout/product_description_layout"></include>-->
 
             <include layout="@layout/product_details_only_layout"></include>
 
@@ -75,7 +74,7 @@
                 android:drawableRight="@drawable/cart_ic"
                 android:drawablePadding="8dp"
                 android:gravity="center"
-                android:text="ADD TO CART"
+                android:text="Thêm vào giỏ hàng"
                 android:textColor="#485f70"
                 android:textSize="16dp"
                 android:textStyle="bold">
@@ -90,7 +89,8 @@
             android:layout_height="match_parent"
             android:layout_weight="1"
             android:backgroundTint="#f44336"
-            android:text="Buy now"
+            android:textAllCaps="false"
+            android:text="Mua ngay"
             android:textColor="#ffffff"
             android:textSize="16dp"
             android:textStyle="bold"></Button>

@@ -7,21 +7,28 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 
 import android.app.Dialog;
+import android.content.Context;
 import android.content.res.ColorStateList;
 import android.graphics.Color;
 import android.os.Build;
 import android.os.Bundle;
 import android.view.MenuItem;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.ListAdapter;
+import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.request.RequestOptions;
+import com.example.galaxytechstore.ui.Utility;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -33,7 +40,9 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.Transaction;
 
+import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -42,18 +51,22 @@ import static com.example.galaxytechstore.ProductDetailsActivity.setRating;
 public class OrderDetailsActivity extends AppCompatActivity {
 
     private SimpleDateFormat simpleDateFormat;
-    private Dialog loadingDialog,cancelDialog;
-    private int position,rating;
-    private LinearLayout rateNowcontainer;
-    private TextView title,price,qty;
-    private ImageView productImage,orderedIndicator,packedIndicator,shippedIndicator,deliveredIndicator;
-    private ProgressBar O_P_progress,P_S_progress,S_D_progress;
-    private TextView orderedTitle,packedTitle,shippedTitle,deliveredTitle;
-    private TextView orderedDate,shippedDate,packedDate,deliveredDate;
-    private TextView orderedBody,shippedBody,packedBody,deliveredBody;
-    private TextView fullname,address,pincode;
-    private TextView totalItems,totalItemsPrice,deliveryPrice,savedAmount,totalAmount;
+    private Dialog loadingDialog, cancelDialog;
+    private int position;
+    private TextView title, price, qty;
+    private ImageView orderedIndicator, packedIndicator, shippedIndicator, deliveredIndicator;
+    private ProgressBar O_P_progress, P_S_progress, S_D_progress;
+    private TextView orderedTitle, packedTitle, shippedTitle, deliveredTitle;
+    private TextView orderedDate, shippedDate, packedDate, deliveredDate;
+    private TextView orderedBody, shippedBody, packedBody, deliveredBody;
+    private TextView fullname, fullladdress, phonenumber;
+    private TextView totalItems, totalItemsPrice, deliveryPrice, savedAmount, totalAmount;
     private Button cancelOrderBtn;
+    private Button changeoradd;
+
+    private ListView listView;
+    private ArrayList<OrderItemsModel> orderItemsModels;
+    private OrderItemsAdapter adapter;
 
     @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
     @Override
@@ -64,17 +77,15 @@ public class OrderDetailsActivity extends AppCompatActivity {
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayShowTitleEnabled(true);
-        getSupportActionBar().setTitle("Order Details");
+        getSupportActionBar().setTitle("Chi tiết đơn hàng");
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
         //////////loading dialog
-
         loadingDialog = new Dialog(OrderDetailsActivity.this);
         loadingDialog.setContentView(R.layout.loading_progress_dialog);
         loadingDialog.setCancelable(false);
         loadingDialog.getWindow().setBackgroundDrawable(getDrawable(R.drawable.slider_background));
         loadingDialog.getWindow().setLayout(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
-
         //////////loading dialog
 
         //////////cancel dialog
@@ -86,64 +97,67 @@ public class OrderDetailsActivity extends AppCompatActivity {
         cancelDialog.getWindow().setLayout(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
 
         //////////cancel dialog
-        title=findViewById(R.id.product_title);
-        price=findViewById(R.id.product_price);
-        qty=findViewById(R.id.product_quantity);
-        productImage=findViewById(R.id.product_image);
+        title = findViewById(R.id.product_title);
+        price = findViewById(R.id.product_price);
+        qty = findViewById(R.id.product_quantity);
 
-        orderedIndicator=findViewById(R.id.ordered_indicator);
-        packedIndicator=findViewById(R.id.packed_indicator);
-        shippedIndicator=findViewById(R.id.shipping_indicator);
-        deliveredIndicator=findViewById(R.id.delivered_indicator);
+        orderedIndicator = findViewById(R.id.ordered_indicator);
+        packedIndicator = findViewById(R.id.packed_indicator);
+        shippedIndicator = findViewById(R.id.shipping_indicator);
+        deliveredIndicator = findViewById(R.id.delivered_indicator);
 
-        O_P_progress=findViewById(R.id.ordered_packed_progress);
-        P_S_progress=findViewById(R.id.packed_shipping_progress);
-        S_D_progress=findViewById(R.id.shipping_delivered_progress);
+        O_P_progress = findViewById(R.id.ordered_packed_progress);
+        P_S_progress = findViewById(R.id.packed_shipping_progress);
+        S_D_progress = findViewById(R.id.shipping_delivered_progress);
 
-        orderedTitle=findViewById(R.id.ordered_title);
-        packedTitle=findViewById(R.id.packed_title);
-        shippedTitle=findViewById(R.id.shipping_title);
-        deliveredTitle=findViewById(R.id.delivered_title);
+        orderedTitle = findViewById(R.id.ordered_title);
+        packedTitle = findViewById(R.id.packed_title);
+        shippedTitle = findViewById(R.id.shipping_title);
+        deliveredTitle = findViewById(R.id.delivered_title);
 
-        orderedBody=findViewById(R.id.ordered_body);
-        packedBody=findViewById(R.id.packed_body);
-        shippedBody=findViewById(R.id.shipping_body);
-        deliveredBody=findViewById(R.id.delivered_body);
+        orderedBody = findViewById(R.id.ordered_body);
+        packedBody = findViewById(R.id.packed_body);
+        shippedBody = findViewById(R.id.shipping_body);
+        deliveredBody = findViewById(R.id.delivered_body);
 
-        orderedDate=findViewById(R.id.ordered_date);
-        packedDate=findViewById(R.id.packed_date);
-        shippedDate=findViewById(R.id.shipping_date);
-        deliveredDate=findViewById(R.id.delivered_date);
+        orderedDate = findViewById(R.id.ordered_date);
+        packedDate = findViewById(R.id.packed_date);
+        shippedDate = findViewById(R.id.shipping_date);
+        deliveredDate = findViewById(R.id.delivered_date);
 
-        rateNowcontainer=findViewById(R.id.rate_now_container);
+        fullname = findViewById(R.id.fullname);
+        fullladdress = findViewById(R.id.fulladdress);
+        phonenumber = findViewById(R.id.phone_number);
+        changeoradd = findViewById(R.id.change_or_add_address);
 
-        fullname=findViewById(R.id.fullname);
-        address=findViewById(R.id.address);
-        pincode=findViewById(R.id.pincode);
+        totalItems = findViewById(R.id.total_items);
+        totalItemsPrice = findViewById(R.id.total_items_price);
+        deliveryPrice = findViewById(R.id.delivery_price);
+        savedAmount = findViewById(R.id.saved_amount);
+        totalAmount = findViewById(R.id.total_price);
+        cancelOrderBtn = findViewById(R.id.cancel_btn);
 
-        totalItems=findViewById(R.id.total_items);
-        totalItemsPrice=findViewById(R.id.total_items_price);
-        deliveryPrice=findViewById(R.id.delivery_price);
-        savedAmount=findViewById(R.id.saved_amount);
-        totalAmount=findViewById(R.id.total_price);
-        cancelOrderBtn=findViewById(R.id.cancel_btn);
+        listView = findViewById(R.id.product_list);
 
-        position=getIntent().getIntExtra("position",-1);
+        orderItemsModels = new ArrayList<>();
+        orderItemsModels.add(new OrderItemsModel("///", "Iphone 11", "12.000.000"));
+        orderItemsModels.add(new OrderItemsModel("///", "Iphone 11", "12.000.000"));
+        orderItemsModels.add(new OrderItemsModel("///", "Iphone 11", "12.000.000"));
+        orderItemsModels.add(new OrderItemsModel("///", "Iphone 11", "12.000.000"));
+        orderItemsModels.add(new OrderItemsModel("///", "Iphone 11", "12.000.000"));
+        orderItemsModels.add(new OrderItemsModel("///", "Iphone 11", "12.000.000"));
 
-        final MyOrderItemModel model=DBqueries.myOrderItemModelList.get(position);
+        adapter = new OrderItemsAdapter(getApplicationContext(), R.layout.order_items_layout, orderItemsModels);
+        listView.setAdapter(adapter);
+        adapter.notifyDataSetChanged();
+
+        position = getIntent().getIntExtra("position", -1);
+
+        final MyOrderItemModel model = DBqueries.myOrderItemModelList.get(position);
 
 
-        title.setText(model.getProductTitle());
-        if(!model.getDiscountedPrice().equals("")){
-            price.setText("Rs."+model.getDiscountedPrice()+"/-");
-        }else {
-            price.setText("Rs."+model.getProductPrice()+"/-");
-        }
-        Glide.with(this).load(model.getProductImage()).into(productImage);
-        qty.setText("Qty :"+String.valueOf(model.getProductQuantity()));
-
-        simpleDateFormat=new SimpleDateFormat("EEE, dd MMM YYYY hh:mm aa");
-        switch (model.getOrderStatus()){
+        simpleDateFormat = new SimpleDateFormat("EEE, dd MMM YYYY hh:mm aa");
+        switch (model.getOrderStatus()) {
             case "Ordered":
                 orderedIndicator.setImageTintList(ColorStateList.valueOf(getResources().getColor(R.color.md_green_500)));
                 orderedDate.setText(String.valueOf(simpleDateFormat.format(model.getOrderedDate())));
@@ -232,7 +246,7 @@ public class OrderDetailsActivity extends AppCompatActivity {
                 S_D_progress.setProgress(100);
 
                 deliveredTitle.setText("Out for Delivery");
-                deliveredBody.setText("Your order is out for delivery");
+                deliveredBody.setText("Đơn đặt hàng của bạn đã được giao");
 
                 break;
             case "Delivered":
@@ -256,14 +270,14 @@ public class OrderDetailsActivity extends AppCompatActivity {
 
             case "Cancelled":
 
-                if(model.getPackedDate().after(model.getOrderedDate())){
+                if (model.getPackedDate().after(model.getOrderedDate())) {
 
-                    if(model.getShippedDate().after(model.getPackedDate())){
+                    if (model.getShippedDate().after(model.getPackedDate())) {
 
                         deliveredIndicator.setImageTintList(ColorStateList.valueOf(getResources().getColor(R.color.md_green_500)));
                         deliveredDate.setText(String.valueOf(simpleDateFormat.format(model.getDelveredDate())));
-                        deliveredBody.setText("Your order has been cancelled.");
-                        deliveredTitle.setText("Cancelled");
+                        deliveredBody.setText("Đơn hàng của bạn đã được hủy.");
+                        deliveredTitle.setText("Đã hủy");
 
                         shippedIndicator.setImageTintList(ColorStateList.valueOf(getResources().getColor(R.color.md_green_500)));
                         shippedDate.setText(String.valueOf(simpleDateFormat.format(model.getShippedDate())));
@@ -278,11 +292,11 @@ public class OrderDetailsActivity extends AppCompatActivity {
                         P_S_progress.setProgress(100);
                         S_D_progress.setProgress(100);
 
-                    }else {
+                    } else {
                         shippedIndicator.setImageTintList(ColorStateList.valueOf(getResources().getColor(R.color.md_green_500)));
                         shippedDate.setText(String.valueOf(simpleDateFormat.format(model.getShippedDate())));
-                        shippedBody.setText("Your order has been cancelled.");
-                        shippedTitle.setText("Cancelled");
+                        shippedBody.setText("Đơn hàng của bạn đã được hủy.");
+                        shippedTitle.setText("Đã hủy");
 
                         orderedIndicator.setImageTintList(ColorStateList.valueOf(getResources().getColor(R.color.md_green_500)));
                         orderedDate.setText(String.valueOf(simpleDateFormat.format(model.getOrderedDate())));
@@ -300,14 +314,14 @@ public class OrderDetailsActivity extends AppCompatActivity {
                         deliveredDate.setVisibility(View.GONE);
                     }
 
-                }else {
+                } else {
                     orderedIndicator.setImageTintList(ColorStateList.valueOf(getResources().getColor(R.color.md_green_500)));
                     orderedDate.setText(String.valueOf(simpleDateFormat.format(model.getOrderedDate())));
 
                     packedIndicator.setImageTintList(ColorStateList.valueOf(getResources().getColor(R.color.md_green_500)));
                     packedDate.setText(String.valueOf(simpleDateFormat.format(model.getPackedDate())));
-                    packedBody.setText("Your order has been cancelled.");
-                    packedTitle.setText("Cancelled");
+                    packedBody.setText("Đơn hàng của bạn đã được hủy.");
+                    packedTitle.setText("Đã hủy");
 
                     O_P_progress.setProgress(100);
 
@@ -328,88 +342,15 @@ public class OrderDetailsActivity extends AppCompatActivity {
                 break;
         }
 
-        //////rating layout
-        rating=model.getRating();
-        final String productId=model.getProductId();
-        setRating(rating);
 
-        for(int x=0;x<rateNowcontainer.getChildCount();x++){
-            final int starPosition= x;
-            rateNowcontainer.getChildAt(x).setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    loadingDialog.show();
-                    setRating(starPosition);
-                    final DocumentReference documentReference= FirebaseFirestore.getInstance().collection("PRODUCTS").document(productId);
-                    FirebaseFirestore.getInstance().runTransaction(new Transaction.Function<Object>() {
-                        @Nullable
-                        @Override
-                        public Object apply(@NonNull Transaction transaction) throws FirebaseFirestoreException {
-                            DocumentSnapshot documentSnapshot=transaction.get(documentReference);
-
-                            if(rating != 0){
-                                Long increase=documentSnapshot.getLong(starPosition+1+"_star")+1;
-                                Long decrease=documentSnapshot.getLong(rating+1+"_star")-1;
-                                transaction.update(documentReference,starPosition+1+"_star",increase);
-                                transaction.update(documentReference,rating+1+"_star",decrease);
-                            }else {
-                                Long increase=documentSnapshot.getLong(starPosition+1+"_star")+1;
-                                transaction.update(documentReference,starPosition+1+"_star",increase);
-                            }
-                            return null;
-                        }
-                    }).addOnSuccessListener(new OnSuccessListener<Object>() {
-                        @Override
-                        public void onSuccess(Object o) {
-                            Map<String, Object> myRating = new HashMap<>();
-
-                            if (DBqueries.myRatedIds.contains(productId)) {
-                                myRating.put("rating_" + DBqueries.myRatedIds.indexOf(productId), (long) starPosition + 1);
-                            } else {
-                                myRating.put("product_ID_" + DBqueries.myRatedIds.size(), productId);
-                                myRating.put("rating_" + DBqueries.myRatedIds.size(), (long) starPosition + 1);
-                                myRating.put("list_size", (long) DBqueries.myRatedIds.size() + 1);
-                            }
-
-                            FirebaseFirestore.getInstance().collection("USERS").document(FirebaseAuth.getInstance().getUid()).collection("USER_DATA").document("MY_RATINGS")
-                                    .update(myRating)
-                                    .addOnCompleteListener(new OnCompleteListener<Void>() {
-                                        @Override
-                                        public void onComplete(@NonNull Task<Void> task) {
-                                            if (task.isSuccessful()) {
-                                                DBqueries.myOrderItemModelList.get(position).setRating(starPosition);
-                                                if(DBqueries.myRatedIds.contains(productId)){
-                                                    DBqueries.myRating.set(DBqueries.myRatedIds.indexOf(productId), Long.valueOf(starPosition+1));
-                                                }else {
-                                                    DBqueries.myRatedIds.add(productId);
-                                                    DBqueries.myRating.add(Long.valueOf(starPosition+1));
-                                                }
-                                            }else {
-                                                String error=task.getException().getMessage();
-                                                Toast.makeText(OrderDetailsActivity.this,error,Toast.LENGTH_SHORT).show();
-                                            }
-                                            loadingDialog.dismiss();
-                                        }
-                                    });
-                        }
-                    }).addOnFailureListener(new OnFailureListener() {
-                        @Override
-                        public void onFailure(@NonNull Exception e) {
-                            loadingDialog.dismiss();
-                        }
-                    });
-                }
-            });
-        }
-
-        if(model.isCancellationrequested()){
+        if (model.isCancellationrequested()) {
             cancelOrderBtn.setVisibility(View.VISIBLE);
             cancelOrderBtn.setEnabled(false);
-            cancelOrderBtn.setText("Cancellation in process");
+            cancelOrderBtn.setText("Đang hủy bỏ");
             cancelOrderBtn.setTextColor(getResources().getColor(R.color.colorPrimary));
             cancelOrderBtn.setBackgroundTintList(ColorStateList.valueOf(Color.parseColor("#ffffff")));
-        }else {
-            if(model.getOrderStatus().equals("Ordered") || model.getOrderStatus().equals("Packed")){
+        } else {
+            if (model.getOrderStatus().equals("Ordered") || model.getOrderStatus().equals("Packed")) {
                 cancelOrderBtn.setVisibility(View.VISIBLE);
                 cancelOrderBtn.setOnClickListener(new View.OnClickListener() {
                     @Override
@@ -426,37 +367,37 @@ public class OrderDetailsActivity extends AppCompatActivity {
                             public void onClick(View view) {
                                 cancelDialog.dismiss();
                                 loadingDialog.show();
-                                Map<String, Object> map=new HashMap<>();
-                                map.put("Order Id",model.getOrderId());
-                                map.put("Product Id",model.getProductId());
-                                map.put("Order Cancelled",false);
-                                FirebaseFirestore.getInstance().collection("CANCELLED ORDERS").document(model.getOrderId()).set(map)
+                                Map<String, Object> map = new HashMap<>();
+                                map.put("Order_Id", model.getOrderId());
+                                map.put("Product_Id", model.getProductId());
+                                map.put("Order_Cancelled", false);
+                                FirebaseFirestore.getInstance().collection("CANCELLED_ORDERS").document(model.getOrderId()).set(map)
                                         .addOnCompleteListener(new OnCompleteListener<Void>() {
                                             @Override
                                             public void onComplete(@NonNull Task<Void> task) {
-                                                if(task.isSuccessful()){
-                                                    FirebaseFirestore.getInstance().collection("ORDERS").document(model.getOrderId()).collection("ORDER_ITEMS").document(model.getProductId()).update("Cancellation requested",true)
+                                                if (task.isSuccessful()) {
+                                                    FirebaseFirestore.getInstance().collection("ORDERS").document(model.getOrderId()).collection("ORDER_ITEMS").document(model.getProductId()).update("Cancellation_requested", true)
                                                             .addOnCompleteListener(new OnCompleteListener<Void>() {
                                                                 @Override
                                                                 public void onComplete(@NonNull Task<Void> task) {
-                                                                    if(task.isSuccessful()){
+                                                                    if (task.isSuccessful()) {
                                                                         model.setCancellationrequested(true);
                                                                         cancelOrderBtn.setEnabled(false);
-                                                                        cancelOrderBtn.setText("Cancellation in process");
+                                                                        cancelOrderBtn.setText("Đang hủy bỏ");
                                                                         cancelOrderBtn.setTextColor(getResources().getColor(R.color.colorPrimary));
                                                                         cancelOrderBtn.setBackgroundTintList(ColorStateList.valueOf(Color.parseColor("#ffffff")));
-                                                                    }else {
-                                                                        String error=task.getException().getMessage();
-                                                                        Toast.makeText(OrderDetailsActivity.this,error,Toast.LENGTH_SHORT).show();
+                                                                    } else {
+                                                                        String error = task.getException().getMessage();
+                                                                        Toast.makeText(OrderDetailsActivity.this, error, Toast.LENGTH_SHORT).show();
                                                                     }
                                                                     loadingDialog.dismiss();
                                                                 }
                                                             });
 
-                                                }else {
+                                                } else {
                                                     loadingDialog.dismiss();
-                                                    String error=task.getException().getMessage();
-                                                    Toast.makeText(OrderDetailsActivity.this,error,Toast.LENGTH_SHORT).show();
+                                                    String error = task.getException().getMessage();
+                                                    Toast.makeText(OrderDetailsActivity.this, error, Toast.LENGTH_SHORT).show();
                                                 }
                                             }
                                         });
@@ -470,38 +411,40 @@ public class OrderDetailsActivity extends AppCompatActivity {
         }
 
         fullname.setText(model.getFullName());
-        address.setText(model.getAddress());
-        pincode.setText(model.getPincode());
+        fullladdress.setText(model.getAddress());
+        phonenumber.setText(model.getPincode());
+        changeoradd.setVisibility(View.GONE);
 
         Long totalPrice;
 
-        totalItems.setText("Price("+model.getProductQuantity()+" items)");
-        if(model.getDiscountedPrice().equals("")){
-            totalPrice=Long.valueOf(model.getProductPrice())*model.getProductQuantity();
-            totalItemsPrice.setText("Rs."+ String.valueOf(totalPrice) +"/-");
-        }else {
-            totalPrice=Long.valueOf(model.getDiscountedPrice())*model.getProductQuantity();
-            totalItemsPrice.setText("Rs."+ String.valueOf(totalPrice)+"/-");
+        totalItems.setText("Giá (" + model.getProductQuantity() + " sản phẩm)");
+        if (model.getDiscountedPrice().equals("")) {
+            totalPrice = Long.valueOf(model.getProductPrice()) * model.getProductQuantity();
+            totalItemsPrice.setText(vnMoney(Long.parseLong(String.valueOf(totalPrice))));
+        } else {
+            totalPrice = Long.valueOf(model.getDiscountedPrice()) * model.getProductQuantity();
+            totalItemsPrice.setText(vnMoney(Long.parseLong(String.valueOf(totalPrice))));
         }
-        if(model.getDeliveryPrice().equals("FREE")){
+
+        if (model.getDeliveryPrice().equals("FREE")) {
             deliveryPrice.setText("FREE");
-            totalAmount.setText("Rs."+ totalPrice +"/-");
-        }else {
-            deliveryPrice.setText("Rs."+model.getDeliveryPrice()+"/-");
-            totalAmount.setText("Rs."+String.valueOf(totalPrice+Long.valueOf(model.getDeliveryPrice()))+"/-");
+            totalAmount.setText(vnMoney(totalPrice));
+        } else {
+            deliveryPrice.setText(vnMoney(Long.parseLong(model.getDeliveryPrice())));
+            totalAmount.setText(vnMoney(Long.parseLong(String.valueOf(totalPrice + Long.valueOf(model.getDeliveryPrice())))));
         }
 
 
-        if(!model.getCuttedPrice().equals("")){
-            if(!model.getDiscountedPrice().equals("")){
-                savedAmount.setText("You saved Rs."+ (model.getProductQuantity())*(Long.valueOf(model.getCuttedPrice()) - Long.valueOf(model.getDiscountedPrice())) +"/- on this order.");
-            }else {
-                savedAmount.setText("You saved Rs."+ (model.getProductQuantity())*(Long.valueOf(model.getCuttedPrice()) - Long.valueOf(model.getProductPrice())) +"/- on this order.");
+        if (!model.getCuttedPrice().equals("")) {
+            if (!model.getDiscountedPrice().equals("")) {
+                savedAmount.setText("You saved Rs." + (model.getProductQuantity()) * (Long.valueOf(model.getCuttedPrice()) - Long.valueOf(model.getDiscountedPrice())) + "/- on this order.");
+            } else {
+                savedAmount.setText("You saved Rs." + (model.getProductQuantity()) * (Long.valueOf(model.getCuttedPrice()) - Long.valueOf(model.getProductPrice())) + "/- on this order.");
             }
-        }else {
-            if(!model.getDiscountedPrice().equals("")){
-                savedAmount.setText("You saved Rs."+ (model.getProductQuantity())*(Long.valueOf(model.getProductPrice()) - Long.valueOf(model.getDiscountedPrice())) +"/- on this order.");
-            }else {
+        } else {
+            if (!model.getDiscountedPrice().equals("")) {
+                savedAmount.setText("You saved Rs." + (model.getProductQuantity()) * (Long.valueOf(model.getProductPrice()) - Long.valueOf(model.getDiscountedPrice())) + "/- on this order.");
+            } else {
                 savedAmount.setText("You saved Rs.0/- on this order.");
             }
         }
@@ -509,23 +452,19 @@ public class OrderDetailsActivity extends AppCompatActivity {
 
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
-    private void setRating(int starPosition) {
-        for(int x=0;x<rateNowcontainer.getChildCount();x++){
-            ImageView starBtn=(ImageView)rateNowcontainer.getChildAt(x);
-            starBtn.setImageTintList(ColorStateList.valueOf(Color.parseColor("#bebebe")));
-            if(x<=starPosition){
-                starBtn.setImageTintList(ColorStateList.valueOf(Color.parseColor("#ffbb00")));
-            }
-        }
+    private String vnMoney(Long s) {
+        DecimalFormat formatter = new DecimalFormat("###,###,###");
+        return formatter.format(s) + " đ";
     }
 
     @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
-        if(item.getItemId() == android.R.id.home){
+        if (item.getItemId() == android.R.id.home) {
             finish();
             return true;
         }
         return super.onOptionsItemSelected(item);
     }
+
+
 }

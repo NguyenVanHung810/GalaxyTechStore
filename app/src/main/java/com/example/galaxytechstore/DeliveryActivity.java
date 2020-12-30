@@ -42,14 +42,13 @@ public class DeliveryActivity extends AppCompatActivity {
 
     public static List<CartItemModel> cartItemModelList;
     private Toolbar toolbar;
-    public static boolean ordered=false;  //my code
-    public int hi = 1;
+    public static boolean ordered=false;
     private RecyclerView deliveryRecyclerView;
     private Button changeOrAddAddress;
     private TextView cartTotalAmount;
     private TextView fullname;
     private TextView fulladdress;
-    private TextView pincode;
+    private TextView phonenumber;
     private Button continueBtn;
     public static CartAdapter cartAdapter;
     public static Dialog loaddialog;
@@ -105,8 +104,8 @@ public class DeliveryActivity extends AppCompatActivity {
 
         cartTotalAmount = findViewById(R.id.total_cart_amount);
         fullname = (TextView) findViewById(R.id.fullname);
-        fulladdress = (TextView) findViewById(R.id.address);
-        pincode = (TextView) findViewById(R.id.pincode);
+        fulladdress = (TextView) findViewById(R.id.fulladdress);
+        phonenumber = (TextView) findViewById(R.id.phone_number);
         continueBtn = findViewById(R.id.cart_continue_btn);
         orderConfirmationLayout = findViewById(R.id.order_confirmation_layout);
         continueShoppingBtn = findViewById(R.id.continue_shopping_btn);
@@ -114,7 +113,7 @@ public class DeliveryActivity extends AppCompatActivity {
 
         toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-        getSupportActionBar().setTitle("Delivery");
+        getSupportActionBar().setTitle("Chi tiết vận chuyển");
         getSupportActionBar().setDisplayShowTitleEnabled(true);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
@@ -250,25 +249,18 @@ public class DeliveryActivity extends AppCompatActivity {
             getQtyIDs = true;
         }
         name = DBqueries.addressesModelList.get(DBqueries.selectedAddress).getName();
-        mobileNo = DBqueries.addressesModelList.get(DBqueries.selectedAddress).getMobileNo();
-        if (DBqueries.addressesModelList.get(DBqueries.selectedAddress).getAlternateMobileNo().equals("")) {
-            fullname.setText(name + " - " + mobileNo);
-        } else {
-            fullname.setText(name + " - " + mobileNo + " or " + DBqueries.addressesModelList.get(DBqueries.selectedAddress).getAlternateMobileNo());
-        }
+        mobileNo = DBqueries.addressesModelList.get(DBqueries.selectedAddress).getPhone();
+        fullname.setText(name);
 
-        String flatNo = DBqueries.addressesModelList.get(DBqueries.selectedAddress).getFlatNo();
+
         String city = DBqueries.addressesModelList.get(DBqueries.selectedAddress).getCity();
-        String locality = DBqueries.addressesModelList.get(DBqueries.selectedAddress).getLocality();
-        String landmark = DBqueries.addressesModelList.get(DBqueries.selectedAddress).getLandmark();
-        String state = DBqueries.addressesModelList.get(DBqueries.selectedAddress).getState();
+        String district = DBqueries.addressesModelList.get(DBqueries.selectedAddress).getDistrict();
+        String ward = DBqueries.addressesModelList.get(DBqueries.selectedAddress).getWard();
+        String address = DBqueries.addressesModelList.get(DBqueries.selectedAddress).getAddress();
 
-        if (landmark.equals("")) {
-            fulladdress.setText(flatNo + "," + locality + "," + city + "," + state);
-        } else {
-            fulladdress.setText(flatNo + "," + locality + "," + landmark + "," + city + "," + state);
-        }
-        pincode.setText(DBqueries.addressesModelList.get(DBqueries.selectedAddress).getPincode());
+        fulladdress.setText(address + ", " + ward + ", " + district + ", " + city+".");
+
+        phonenumber.setText(mobileNo);
 
         if (codOrderConfirmed) {
             showConfirmationLayout();
@@ -322,11 +314,8 @@ public class DeliveryActivity extends AppCompatActivity {
                         @Override
                         public void onComplete(@NonNull Task<Void> task) {
                             if (task.isSuccessful()) {
-                                for (int x = 0; x < indexList.size(); x++) {
-                                    DBqueries.cartLists.remove(indexList.get(x).intValue());
-                                    DBqueries.cartItemModelList.remove(indexList.get(x).intValue());
-                                    DBqueries.cartItemModelList.remove(DBqueries.cartItemModelList.size() - 1);
-                                }
+                                DBqueries.cartLists.clear();
+                                DBqueries.cartItemModelList.clear();
                             } else {
                                 String error = task.getException().getMessage();
                                 Toast.makeText(DeliveryActivity.this, error, Toast.LENGTH_SHORT).show();
@@ -407,7 +396,6 @@ public class DeliveryActivity extends AppCompatActivity {
                 orderDetails.put("Product_Id", cartItemModel.getProductID());
                 orderDetails.put("Product_Image", cartItemModel.getProductImage());
                 orderDetails.put("Product_Title", cartItemModel.getProductTitle());
-                orderDetails.put("User_Id", userId);
                 orderDetails.put("Product_quantity", cartItemModel.getProductQuantity());
                 if (cartItemModel.getCuttedPrice() != null) {
                     orderDetails.put("Cutted_Price", cartItemModel.getCuttedPrice());
@@ -425,19 +413,6 @@ public class DeliveryActivity extends AppCompatActivity {
                 } else {
                     orderDetails.put("Discounted_Price", "");
                 }
-                orderDetails.put("Ordered_Date", FieldValue.serverTimestamp());
-                orderDetails.put("Shipped_Date", FieldValue.serverTimestamp());
-                orderDetails.put("Packed_Date", FieldValue.serverTimestamp());
-                orderDetails.put("Delivered_Date", FieldValue.serverTimestamp());
-                orderDetails.put("Cancelled_Date", FieldValue.serverTimestamp());
-                orderDetails.put("Order_Status", "Ordered");
-                orderDetails.put("Payment_Method", paymentMethod);
-                orderDetails.put("Address", fulladdress.getText().toString());
-                orderDetails.put("FullName", fullname.getText().toString());
-                orderDetails.put("Pincode", pincode.getText().toString());
-                orderDetails.put("Free_Coupens", cartItemModel.getFreeCoupen());
-                orderDetails.put("Delivery_Price", cartItemModelList.get(cartItemModelList.size() - 1).getDeliveryPrice());
-                orderDetails.put("Cancellation_requested", false);
 
                 firebaseFirestore.collection("ORDERS").document(order_id).collection("ORDER_ITEMS").document(cartItemModel.getProductID())
                         .set(orderDetails)
@@ -458,8 +433,18 @@ public class DeliveryActivity extends AppCompatActivity {
                 orderDetails.put("Delivery_Price", cartItemModel.getDeliveryPrice());
                 orderDetails.put("Total_Amount", cartItemModel.getTotalAmount());
                 orderDetails.put("Saved_Amount", cartItemModel.getSavedAmount());
-                orderDetails.put("Payment_status", "not paid");
+                orderDetails.put("Payment_status", "Chưa thanh toán");
                 orderDetails.put("Order_Status", "Cancelled");
+                orderDetails.put("User_Id", userId);
+                orderDetails.put("Ordered_Date", FieldValue.serverTimestamp());
+                orderDetails.put("Shipped_Date", FieldValue.serverTimestamp());
+                orderDetails.put("Packed_Date", FieldValue.serverTimestamp());
+                orderDetails.put("Delivered_Date", FieldValue.serverTimestamp());
+                orderDetails.put("Cancelled_Date", FieldValue.serverTimestamp());
+                orderDetails.put("Payment_Method", "Thanh toán khi giao hàng");
+                orderDetails.put("Address", fulladdress.getText().toString());
+                orderDetails.put("FullName", fullname.getText().toString());
+                orderDetails.put("Cancellation_requested", false);
 
                 firebaseFirestore.collection("ORDERS").document(order_id)
                         .set(orderDetails)

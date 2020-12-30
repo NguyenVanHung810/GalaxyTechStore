@@ -45,19 +45,23 @@
             android:drawablePadding="16dp"
             android:drawableTint="@color/md_red_500"
             android:padding="16dp"
-            android:text="Add a new address"
+            android:text="Thêm mới một địa chỉ"
             android:textColor="@color/md_red_500"
             android:textSize="16dp" />
     </LinearLayout>
 
     <TextView
         android:id="@+id/addresses_saved"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="0dp"
+        android:layout_height="19dp"
         android:layout_marginStart="16dp"
         android:layout_marginLeft="16dp"
         android:layout_marginTop="16dp"
+        android:layout_marginEnd="16dp"
+        android:layout_marginRight="16dp"
         android:text="2 addresses saved"
+        android:textColor="@color/md_red_500"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/add_new_address_btn" />
 
@@ -65,22 +69,25 @@
         android:id="@+id/addresses_recyclerview"
         android:layout_width="0dp"
         android:layout_height="0dp"
-        android:layout_marginTop="8dp"
+        android:layout_marginTop="16dp"
         app:layout_constraintBottom_toTopOf="@+id/deliver_here_btn"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/addresses_saved" />
+        app:layout_constraintTop_toBottomOf="@+id/addresses_saved"
+        app:layout_constraintVertical_bias="0.0" />
 
     <Button
         android:id="@+id/deliver_here_btn"
         android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:text="Deliver Here"
-        android:textAllCaps="false"
+        android:layout_height="60dp"
+        android:text="Đổi địa chỉ mặc định"
         android:textStyle="bold"
         android:textSize="16dp"
         android:elevation="6dp"
+        android:visibility="gone"
         android:stateListAnimator="@null"
+        android:backgroundTint="@color/md_red_500"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent" />

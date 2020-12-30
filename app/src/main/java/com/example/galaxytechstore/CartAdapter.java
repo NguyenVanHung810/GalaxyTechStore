@@ -42,6 +42,8 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.UUID;
 
+import es.dmoral.toasty.Toasty;
+
 public class CartAdapter extends RecyclerView.Adapter {
 
     /////coupan dialog
@@ -102,7 +104,6 @@ public class CartAdapter extends RecyclerView.Adapter {
                 String productID = cartItemModelList.get(position).getProductID();
                 String resource = cartItemModelList.get(position).getProductImage();
                 String title = cartItemModelList.get(position).getProductTitle();
-                Long freecoupans = cartItemModelList.get(position).getFreeCoupen();
                 String productprice = cartItemModelList.get(position).getProductPrice();
                 String cuttedPrice = cartItemModelList.get(position).getCuttedPrice();
                 Long offersApplied = cartItemModelList.get(position).getOffersApplied();
@@ -114,7 +115,7 @@ public class CartAdapter extends RecyclerView.Adapter {
                 boolean qtyError = cartItemModelList.get(position).isQtyError();
                 List<String> qtyIDs = cartItemModelList.get(position).getQtyIDs();
 
-                ((CartItemViewholder) holder).setItemDetails(productID, resource, title, freecoupans, productprice, cuttedPrice, offersApplied, position, inStock, productQty, maxQty, qtyError, qtyIDs, stockQty, codAvailable);
+                ((CartItemViewholder) holder).setItemDetails(productID, resource, title, productprice, cuttedPrice, offersApplied, position, inStock, productQty, maxQty, qtyError, qtyIDs, stockQty, codAvailable);
                 break;
             case CartItemModel.TOTAL_AMOUNT:
 
@@ -183,9 +184,7 @@ public class CartAdapter extends RecyclerView.Adapter {
         public CartItemViewholder(@NonNull View itemView) {
             super(itemView);
             productImage = itemView.findViewById(R.id.product_image);
-            freeCoupanIcon = itemView.findViewById(R.id.free_coupen_icon);
-            productTitle = (TextView) itemView.findViewById(R.id.product_title_cart);
-            freeCoupans = itemView.findViewById(R.id.tv_free_coupen);
+            productTitle = itemView.findViewById(R.id.product_title_cart);
             productPrice = itemView.findViewById(R.id.product_price_cart);
             cuttedPrice = itemView.findViewById(R.id.cutted_price);
             offersApplied = itemView.findViewById(R.id.offers_applied);
@@ -199,8 +198,8 @@ public class CartAdapter extends RecyclerView.Adapter {
         }
 
         @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
-        private void setItemDetails(final String productID, final String resource, final String title, final Long freecoupansNo, final String productPriceText, final String cuttedPriceText, Long offersAppliedNo, final int position, boolean inStock, final Long productQty, final Long maxQty, boolean qtyError, final List<String> qtyIDs, final long stockQty, boolean codAvaiiable) {
-            Glide.with(itemView.getContext()).load(resource).apply(new RequestOptions()).placeholder(R.drawable.placeholder).into(productImage);
+        private void setItemDetails(final String productID, final String resource, final String title, final String productPriceText, final String cuttedPriceText, Long offersAppliedNo, final int position, boolean inStock, final Long productQty, final Long maxQty, boolean qtyError, final List<String> qtyIDs, final long stockQty, boolean codAvaiiable) {
+            Glide.with(itemView.getContext()).load(resource).placeholder(R.drawable.placeholder).dontAnimate().into(productImage);
             productTitle.setText(title);
 
             final Dialog checkCoupanPricedialog = new Dialog(itemView.getContext());
@@ -215,20 +214,6 @@ public class CartAdapter extends RecyclerView.Adapter {
             }
 
             if (inStock) {
-
-                if (freecoupansNo > 0) {
-                    freeCoupans.setVisibility(View.VISIBLE);
-                    freeCoupanIcon.setVisibility(View.VISIBLE);
-                    if (freecoupansNo == 1) {
-                        freeCoupans.setText("Free " + freecoupansNo + " Coupen");
-                    } else {
-                        freeCoupans.setText("Free " + freecoupansNo + " Coupens");
-                    }
-                } else {
-                    freeCoupans.setVisibility(View.INVISIBLE);
-                    freeCoupanIcon.setVisibility(View.INVISIBLE);
-                }
-
                 productPrice.setText(convertToVietnameseMoney(Integer.parseInt(productPriceText)));
                 productPrice.setTextColor(Color.parseColor("#000000"));
                 cuttedPrice.setText(convertToVietnameseMoney(Integer.parseInt(cuttedPriceText)));
@@ -314,7 +299,7 @@ public class CartAdapter extends RecyclerView.Adapter {
                     }
                 });
 
-                productQuantity.setText("Qty: " + String.valueOf(productQty));
+                productQuantity.setText("SL: " + String.valueOf(productQty));
 
                  if (!TextUtils.isEmpty(cartItemModelList.get(position).getSelectedCoupanID())) {
                     for (RewardModel rewardModel : DBqueries.rewardModelList) {
@@ -389,7 +374,7 @@ public class CartAdapter extends RecyclerView.Adapter {
                                                 DeliveryActivity.cartItemModelList.get(position).setProductQuantity(Long.valueOf(quantityNo.getText().toString()));
                                             }
                                         }
-                                        productQuantity.setText("Qty: " + quantityNo.getText().toString());
+                                        productQuantity.setText("SL: " + quantityNo.getText().toString());
                                         notifyItemChanged(cartItemModelList.size() - 1);
 
                                         if (!showDeleteBtn) {
@@ -468,7 +453,7 @@ public class CartAdapter extends RecyclerView.Adapter {
                                         }
 
                                     } else {
-                                        Toast.makeText(itemView.getContext(), "Product quantity must be less than or equal to " + maxQty, Toast.LENGTH_SHORT).show();
+                                        Toasty.error(itemView.getContext(), "Số lượng sản phẩm phải ít hơn hoặc bằng " + maxQty, Toasty.LENGTH_SHORT).show();
                                     }
                                 }
                                 quantityDialog.dismiss();
@@ -557,7 +542,7 @@ public class CartAdapter extends RecyclerView.Adapter {
             totalItems.setText("Giá (" + totalItemText + " sản phẩm)");
             totalItemsPrice.setText(convertToVietnameseMoney(totalItemPriceText));
             if (deliveryPriceText.equals("FREE")) {
-                deliveryPrice.setText(deliveryPriceText);
+                deliveryPrice.setText("FREE");
             } else {
                 deliveryPrice.setText(convertToVietnameseMoney(Integer.parseInt(deliveryPriceText)));
             }

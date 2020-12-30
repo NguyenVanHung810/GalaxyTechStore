@@ -59,7 +59,6 @@ public class MyCartFragment extends Fragment {
         nocart_info = (TextView) view.findViewById(R.id.no_cart_info);
         continue_shopping = (Button) view.findViewById(R.id.btn_continue_shopping);
 
-
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getContext());
         linearLayoutManager.setOrientation(LinearLayoutManager.VERTICAL);
         cartItemsRecycleView.setLayoutManager(linearLayoutManager);
@@ -113,17 +112,7 @@ public class MyCartFragment extends Fragment {
         if (DBqueries.cartItemModelList.size() == 0) {
             DBqueries.cartLists.clear();
             DBqueries.loadCartList(getContext(), loaddialog, true, new TextView(getContext()), cartTotal);
-            if(DBqueries.cartItemModelList.size() == 0){
-                cartItemsRecycleView.setVisibility(View.GONE);
-                nocart_info.setVisibility(View.VISIBLE);
-                nocart_image.setVisibility(View.VISIBLE);
-                continue_shopping.setVisibility(View.VISIBLE);
-            }
         } else {
-            cartItemsRecycleView.setVisibility(View.VISIBLE);
-            nocart_info.setVisibility(View.GONE);
-            nocart_image.setVisibility(View.GONE);
-            continue_shopping.setVisibility(View.GONE);
             if (DBqueries.cartItemModelList.get(DBqueries.cartItemModelList.size() - 1).getType() == CartItemModel.TOTAL_AMOUNT) {
                 LinearLayout parent = (LinearLayout) cartTotal.getParent().getParent();
                 parent.setVisibility(View.VISIBLE);

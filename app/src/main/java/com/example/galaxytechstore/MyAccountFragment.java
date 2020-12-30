@@ -38,7 +38,7 @@ public class MyAccountFragment extends Fragment {
     public final static int MANAGE_ADDRESS = 1;
     private Button viewAllAddressButton, signOutBtn;
     private CircleImageView profileView, currentOrderImage;
-    private TextView name, email, currentOrderstatus, recentOrdersTitle, addressname, address, pincode;
+    private TextView name, email, currentOrderstatus, recentOrdersTitle, fullname, fulladdress, phonenumber;
     private LinearLayout layoutContainer, recentOrdersContainer;
     private Dialog loadingDialog;
     private ImageView orderedIndicator, packedIndicator, shippedIndicator, deliveredIndicator;
@@ -72,9 +72,9 @@ public class MyAccountFragment extends Fragment {
         recentOrdersTitle=root.findViewById(R.id.your_recent_orders_title);
         recentOrdersContainer=root.findViewById(R.id.recent_orders_container);
 
-        addressname=root.findViewById(R.id.name);
-        address=root.findViewById(R.id.address);
-        pincode=root.findViewById(R.id.pincode);
+        fullname=root.findViewById(R.id.name);
+        fulladdress=root.findViewById(R.id.address);
+        phonenumber=root.findViewById(R.id.phonenumber);
         signOutBtn=root.findViewById(R.id.sign_out);
         settingsBtn=root.findViewById(R.id.setting_btn);
         // init
@@ -141,7 +141,7 @@ public class MyAccountFragment extends Fragment {
                     }
                 }
                 if(i==0){
-                    recentOrdersTitle.setText("No recent Orders");
+                    recentOrdersTitle.setText("Không có đơn hàng nào gần đây");
                 }
                 if(i<3){
                     for (int x=i ; x<4;x++){
@@ -154,9 +154,9 @@ public class MyAccountFragment extends Fragment {
                     public void onDismiss(DialogInterface dialogInterface) {
                         loadingDialog.setOnDismissListener(null);
                         if(DBqueries.addressesModelList.size() == 0){
-                            addressname.setText("No Address");
-                            address.setText("-");
-                            pincode.setText("-");
+                            fullname.setText("Không có địa chỉ");
+                            fulladdress.setText("-");
+                            phonenumber.setText("-");
                         }else {
                             setAddress();
                         }
@@ -173,7 +173,7 @@ public class MyAccountFragment extends Fragment {
             @Override
             public void onClick(View v) {
                 Intent myAddressActivity = new Intent(getContext(), MyAddressesActivity.class);
-                myAddressActivity.putExtra("MODE", DeliveryActivity.SELECT_ADDRESS);
+                myAddressActivity.putExtra("MODE", MANAGE_ADDRESS);
                 startActivity(myAddressActivity);
             }
         });
@@ -195,6 +195,7 @@ public class MyAccountFragment extends Fragment {
                 Intent updateUserInfo = new Intent(getContext(), UpdateUserInfoActivity.class);
                 updateUserInfo.putExtra("Name",name.getText());
                 updateUserInfo.putExtra("Email",email.getText());
+                updateUserInfo.putExtra("Phone", DBqueries.phone);
                 updateUserInfo.putExtra("Photo",DBqueries.profile);
                 startActivity(updateUserInfo);
             }
@@ -217,9 +218,9 @@ public class MyAccountFragment extends Fragment {
 
         if(!loadingDialog.isShowing()){
             if(DBqueries.addressesModelList.size() == 0){
-                addressname.setText("No Address");
-                address.setText("-");
-                pincode.setText("-");
+                fullname.setText("Không có địa chỉ");
+                fulladdress.setText("-");
+                phonenumber.setText("-");
             }else {
                 setAddress();
             }
@@ -227,26 +228,18 @@ public class MyAccountFragment extends Fragment {
     }
 
     private void setAddress() {
-        String nametext,mobileNo;
+        String nametext, mobileNo;
         nametext = DBqueries.addressesModelList.get(DBqueries.selectedAddress).getName();
-        mobileNo = DBqueries.addressesModelList.get(DBqueries.selectedAddress).getMobileNo();
-        if(DBqueries.addressesModelList.get(DBqueries.selectedAddress).getAlternateMobileNo().equals("")){
-            addressname.setText(nametext + " - " + mobileNo);
-        }else {
-            addressname.setText(nametext + " - " + mobileNo+" or "+DBqueries.addressesModelList.get(DBqueries.selectedAddress).getAlternateMobileNo());
-        }
+        mobileNo = DBqueries.addressesModelList.get(DBqueries.selectedAddress).getPhone();
+        fullname.setText(nametext);
+        phonenumber.setText(mobileNo);
 
-        String flatNo = DBqueries.addressesModelList.get(DBqueries.selectedAddress).getFlatNo();
         String city = DBqueries.addressesModelList.get(DBqueries.selectedAddress).getCity();
-        String locality = DBqueries.addressesModelList.get(DBqueries.selectedAddress).getLocality();
-        String landmark = DBqueries.addressesModelList.get(DBqueries.selectedAddress).getLandmark();
-        String state = DBqueries.addressesModelList.get(DBqueries.selectedAddress).getState();
+        String district = DBqueries.addressesModelList.get(DBqueries.selectedAddress).getDistrict();
+        String ward = DBqueries.addressesModelList.get(DBqueries.selectedAddress).getWard();
+        String address = DBqueries.addressesModelList.get(DBqueries.selectedAddress).getAddress();
 
-        if(landmark.equals("")){
-            address.setText(flatNo+","+locality+","+city+","+state);
-        }else {
-            address.setText(flatNo+","+locality+","+landmark+","+city+","+state);
-        }
-        pincode.setText(DBqueries.addressesModelList.get(DBqueries.selectedAddress).getPincode());
+        fulladdress.setText(address+", "+ward+", "+district+", "+city+".");
+
     }
 }

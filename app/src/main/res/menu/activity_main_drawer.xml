@@ -3,34 +3,45 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     tools:showIn="navigation_view">
-    <group>
+    <group android:checkableBehavior="single">
         <item
+            android:checkable="true"
             android:id="@+id/my_home"
             android:icon="@drawable/home"
-            android:title="Home" />
+            android:title="Trang chủ" />
         <item
+            android:checkable="true"
             android:id="@+id/my_orders"
             android:icon="@drawable/shopping_bag"
-            android:title="My Orders" />
+            android:title="Đơn hàng" />
         <item
+            android:checkable="true"
             android:id="@+id/my_rewards"
-            android:icon="@drawable/gift"
-            android:title="My Rewards" />
+            android:icon="@drawable/voucher"
+            android:title="Phần thưởng" />
         <item
+            android:checkable="true"
             android:id="@+id/my_carts"
             android:icon="@drawable/cart"
-            android:title="My Cart" />
+            android:title="Giỏ hàng" />
         <item
+            android:checkable="true"
             android:id="@+id/my_wishlist"
             android:icon="@drawable/wishlist"
-            android:title="My Wishlist" />
+            android:title="Sản phẩm yêu thích" />
         <item
+            android:checkable="true"
             android:id="@+id/my_account"
-            android:icon="@drawable/user"
-            android:title="My Account" />
-        <item
-            android:id="@+id/sign_out"
-            android:icon="@drawable/logout"
-            android:title="Sign Out" />
+            android:icon="@drawable/ac"
+            android:title="Thông tin tài khoản" />
     </group>
+    <item android:title="Chức năng khác">
+        <menu>
+            <item
+                android:checkable="true"
+                android:id="@+id/sign_out"
+                android:icon="@drawable/logout"
+                android:title="Đăng xuất" />
+        </menu>
+    </item>
 </menu>

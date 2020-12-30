@@ -77,7 +77,6 @@ public class SearchActivity extends AppCompatActivity {
                                             documentSnapshot.getId()
                                             , documentSnapshot.get("product_image_1").toString()
                                             , documentSnapshot.get("product_title").toString()
-                                            , (long) documentSnapshot.get("free_coupens")
                                             , documentSnapshot.get("average").toString()
                                             , (long) documentSnapshot.get("total_ratings")
                                             , documentSnapshot.get("product_price").toString()

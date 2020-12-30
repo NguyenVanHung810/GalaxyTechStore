@@ -23,7 +23,6 @@ public class CartItemModel {
     private String productID;
     private String productImage;
     private String productTitle;
-    private Long freeCoupen;
     private String productPrice;
     private String cuttedPrice;
     private Long productQuantity;
@@ -38,13 +37,11 @@ public class CartItemModel {
     private boolean COD;
     private List<String> qtyIDs;
 
-
-    public CartItemModel(int type, String productID, String productImage, String productTitle, Long freeCoupen, String productPrice, String cuttedPrice, Long productQuantity, Long offersApplied, Long coupenApplied, Long maxQuantity, Long stockQuantity, boolean inStock, boolean COD) {
+    public CartItemModel(int type, String productID, String productImage, String productTitle, String productPrice, String cuttedPrice, Long productQuantity, Long offersApplied, Long coupenApplied, Long maxQuantity, Long stockQuantity, boolean inStock, boolean COD) {
         this.type = type;
         this.productID = productID;
         this.productImage = productImage;
         this.productTitle = productTitle;
-        this.freeCoupen = freeCoupen;
         this.productPrice = productPrice;
         this.cuttedPrice = cuttedPrice;
         this.productQuantity = productQuantity;
@@ -80,14 +77,6 @@ public class CartItemModel {
 
     public void setProductTitle(String productTitle) {
         this.productTitle = productTitle;
-    }
-
-    public Long getFreeCoupen() {
-        return freeCoupen;
-    }
-
-    public void setFreeCoupen(Long freeCoupen) {
-        this.freeCoupen = freeCoupen;
     }
 
     public String getProductPrice() {

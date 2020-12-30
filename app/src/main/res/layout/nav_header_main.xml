@@ -3,8 +3,8 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="@dimen/nav_header_height"
-    android:background="#ef5350"
+    android:layout_height="200dp"
+    android:background="@drawable/bg"
     android:gravity="bottom"
     android:orientation="vertical"
     android:paddingLeft="@dimen/activity_horizontal_margin"
@@ -14,13 +14,13 @@
 
     <de.hdodenhof.circleimageview.CircleImageView
         android:id="@+id/main_profile_pic"
-        android:layout_width="80dp"
-        android:layout_height="70dp"
+        android:layout_width="100dp"
+        android:layout_height="100dp"
+        android:layout_marginTop="24dp"
         android:contentDescription="@string/nav_header_desc"
         android:src="@drawable/user_1"
-        android:layout_marginTop="40dp"
         app:civ_border_color="@color/md_red_500"
-        app:civ_border_width="5dp"
+        app:civ_border_width="4dp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
@@ -28,19 +28,21 @@
         android:id="@+id/main_name"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
         android:text="Not Signed In"
         android:textAppearance="@style/TextAppearance.AppCompat.Body1"
         android:textColor="#ffffff"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="@+id/main_profile_pic"
         app:layout_constraintTop_toBottomOf="@+id/main_profile_pic" />
 
     <TextView
         android:id="@+id/main_email"
-        android:layout_width="wrap_content"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:text="Email address:"
-        android:layout_marginBottom="8dp"
         android:textColor="#ffffff"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="@+id/main_name"
         app:layout_constraintTop_toBottomOf="@+id/main_name" />
 
@@ -48,8 +50,6 @@
         android:id="@+id/add_profile_image_icon"
         android:layout_width="30dp"
         android:layout_height="30dp"
-        android:layout_marginRight="0dp"
-        android:layout_marginBottom="0dp"
         android:elevation="3dp"
         android:tint="#000000"
         app:layout_constraintBottom_toBottomOf="@+id/main_profile_pic"

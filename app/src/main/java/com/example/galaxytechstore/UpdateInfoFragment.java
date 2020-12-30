@@ -48,8 +48,8 @@ import es.dmoral.toasty.Toasty;
 
 public class UpdateInfoFragment extends Fragment {
 
-    private String pattern = "[a-zA-Z0-9._-]+@[a-z]+.[a-z]+", user_name, user_email, user_photo;
-    private EditText email, name, password;
+    private String pattern = "[a-zA-Z0-9._-]+@[a-z]+.[a-z]+", user_name, user_email, user_photo, user_phone;
+    private EditText email, name, password, phone;
     private CircleImageView photo;
     private Button changePhotoBtn, removePhotoBtn, updateUserInfoBtn, doneBtn;
     private Dialog loadingDialog, passwordDialog;
@@ -68,6 +68,7 @@ public class UpdateInfoFragment extends Fragment {
         photo = view.findViewById(R.id.profile_photo);
         name = view.findViewById(R.id.name_et);
         email = view.findViewById(R.id.email_et);
+        phone = view.findViewById(R.id.sdt);
         changePhotoBtn = view.findViewById(R.id.change_pic_btn);
         removePhotoBtn = view.findViewById(R.id.remove_pic_btn);
         updateUserInfoBtn = view.findViewById(R.id.update_info_button);
@@ -97,12 +98,15 @@ public class UpdateInfoFragment extends Fragment {
         user_name = getArguments().getString("Name");
         user_email = getArguments().getString("Email");
         user_photo = getArguments().getString("Photo");
+        user_phone = getArguments().getString("Phone");
+
 
         Glide.with(getContext()).load(user_photo).into(photo);
         name.setText(user_name);
         email.setText(user_email);
+        phone.setText(user_phone);
 
-        changePhotoBtn.setOnClickListener(new View.OnClickListener() {
+        removePhotoBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
@@ -123,14 +127,14 @@ public class UpdateInfoFragment extends Fragment {
             }
         });
 
-        removePhotoBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                uri = null;
-                updatePhoto = true;
-                Glide.with(getContext()).load(R.drawable.user).into(photo);
-            }
-        });
+//        removePhotoBtn.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View view) {
+//                uri = null;
+//                updatePhoto = true;
+//                Glide.with(getContext()).load(R.drawable.user_1).into(photo);
+//            }
+//        });
 
         email.addTextChangedListener(new TextWatcher() {
             @Override
@@ -266,6 +270,7 @@ public class UpdateInfoFragment extends Fragment {
                                                 Map<String, Object> userdata = new HashMap<>();
                                                 userdata.put("name", name.getText().toString());
                                                 userdata.put("email", email.getText().toString());
+                                                userdata.put("phonenumber", phone.getText().toString());
                                                 userdata.put("profile", DBqueries.profile);
                                                 updateFields(user, userdata);
                                             } else {
@@ -305,6 +310,7 @@ public class UpdateInfoFragment extends Fragment {
                             Map<String, Object> userdata = new HashMap<>();
                             userdata.put("name", name.getText().toString());
                             userdata.put("email", email.getText().toString());
+                            userdata.put("phonenumber", phone.getText().toString());
                             userdata.put("profile", "");
 
                             updateFields(user, userdata);
@@ -319,7 +325,8 @@ public class UpdateInfoFragment extends Fragment {
         } else {
             Map<String, Object> userdata = new HashMap<>();
             userdata.put("name", name.getText().toString());
-            userdata.put("email", email.getText().toString());   /////my code
+            userdata.put("email", email.getText().toString());
+            userdata.put("phonenumber", phone.getText().toString());
             updateFields(user, userdata);
         }
     }
@@ -335,10 +342,10 @@ public class UpdateInfoFragment extends Fragment {
                         DBqueries.fullname=name.getText().toString().trim();
                     }else {
                         DBqueries.fullname=name.getText().toString().trim();
-                        DBqueries.email=email.getText().toString();  ///my code updation
+                        DBqueries.email=email.getText().toString();
                     }
                     getActivity().finish();
-                    Toasty.success(getContext(), "Successfully updated !", Toast.LENGTH_SHORT, true).show();
+                    Toasty.success(getContext(), "Đã cập nhật thành công !!!", Toast.LENGTH_SHORT, true).show();
                 }else {
                     String error=task.getException().getMessage();
                     Toast.makeText(getContext(), error,Toast.LENGTH_SHORT).show();
@@ -369,7 +376,6 @@ public class UpdateInfoFragment extends Fragment {
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-
         if(requestCode == 2){
             if(grantResults[0] == PackageManager.PERMISSION_GRANTED){
                 Intent galleryIntent = new Intent(Intent.ACTION_PICK);

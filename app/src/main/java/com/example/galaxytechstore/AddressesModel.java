@@ -1,60 +1,17 @@
 package com.example.galaxytechstore;
 
 public class AddressesModel {
-    private String city, locality, flatNo, pincode, landmark, name, mobileNo, alternateMobileNo, state;
+    private String name, phone, city, district, ward, address;
     private Boolean selected;
 
-    public AddressesModel(String city, String locality, String flatNo, String pincode, String landmark, String name, String mobileNo, String alternateMobileNo, String state, Boolean selected) {
-        this.city = city;
-        this.locality = locality;
-        this.flatNo = flatNo;
-        this.pincode = pincode;
-        this.landmark = landmark;
+    public AddressesModel(String name, String phone, String city, String district, String ward, String address, Boolean selected) {
         this.name = name;
-        this.mobileNo = mobileNo;
-        this.alternateMobileNo = alternateMobileNo;
-        this.state = state;
-        this.selected = selected;
-    }
-
-    public String getCity() {
-        return city;
-    }
-
-    public void setCity(String city) {
+        this.phone = phone;
         this.city = city;
-    }
-
-    public String getLocality() {
-        return locality;
-    }
-
-    public void setLocality(String locality) {
-        this.locality = locality;
-    }
-
-    public String getFlatNo() {
-        return flatNo;
-    }
-
-    public void setFlatNo(String flatNo) {
-        this.flatNo = flatNo;
-    }
-
-    public String getPincode() {
-        return pincode;
-    }
-
-    public void setPincode(String pincode) {
-        this.pincode = pincode;
-    }
-
-    public String getLandmark() {
-        return landmark;
-    }
-
-    public void setLandmark(String landmark) {
-        this.landmark = landmark;
+        this.district = district;
+        this.ward = ward;
+        this.address = address;
+        this.selected = selected;
     }
 
     public String getName() {
@@ -65,28 +22,44 @@ public class AddressesModel {
         this.name = name;
     }
 
-    public String getMobileNo() {
-        return mobileNo;
+    public String getPhone() {
+        return phone;
     }
 
-    public void setMobileNo(String mobileNo) {
-        this.mobileNo = mobileNo;
+    public void setPhone(String phone) {
+        this.phone = phone;
     }
 
-    public String getAlternateMobileNo() {
-        return alternateMobileNo;
+    public String getCity() {
+        return city;
     }
 
-    public void setAlternateMobileNo(String alternateMobileNo) {
-        this.alternateMobileNo = alternateMobileNo;
+    public void setCity(String city) {
+        this.city = city;
     }
 
-    public String getState() {
-        return state;
+    public String getDistrict() {
+        return district;
     }
 
-    public void setState(String state) {
-        this.state = state;
+    public void setDistrict(String district) {
+        this.district = district;
+    }
+
+    public String getWard() {
+        return ward;
+    }
+
+    public void setWard(String ward) {
+        this.ward = ward;
+    }
+
+    public String getAddress() {
+        return address;
+    }
+
+    public void setAddress(String address) {
+        this.address = address;
     }
 
     public Boolean getSelected() {

@@ -2,6 +2,7 @@
 <androidx.constraintlayout.widget.ConstraintLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:background="#FFFFFF"
     android:elevation="3dp"
     android:layout_marginBottom="4dp"
@@ -36,47 +37,22 @@
         app:layout_constraintStart_toEndOf="@+id/product_image"
         app:layout_constraintTop_toTopOf="parent" />
 
-    <ImageView
-        android:id="@+id/free_coupen_icon"
-        android:layout_width="15dp"
-        android:layout_height="15dp"
-        android:layout_marginTop="8dp"
-        app:layout_constraintStart_toStartOf="@+id/product_title_cart"
-        app:layout_constraintTop_toBottomOf="@+id/product_title_cart"
-        app:srcCompat="@drawable/tag"
-        app:tint="@color/purple_500" />
-
-    <TextView
-        android:id="@+id/tv_free_coupen"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="4dp"
-        android:layout_marginLeft="4dp"
-        android:text="Free 2 coupen"
-        android:textColor="#8000ff"
-        android:textSize="10dp"
-        app:layout_constraintBottom_toBottomOf="@+id/free_coupen_icon"
-        app:layout_constraintStart_toEndOf="@+id/free_coupen_icon"
-        app:layout_constraintTop_toTopOf="@+id/free_coupen_icon"
-        app:layout_constraintVertical_bias="0.0" />
-
     <TextView
         android:id="@+id/product_price_cart"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
         android:layout_marginLeft="8dp"
-        android:layout_marginTop="8dp"
+        android:layout_marginTop="16dp"
         android:layout_marginEnd="16dp"
         android:layout_marginRight="16dp"
-        android:text="20.000.000 đ"
-        android:gravity="right"
+        android:text="200.000.000 đ"
         android:textColor="#000000"
-        android:textSize="18dp"
+        android:textSize="14dp"
         android:textStyle="bold"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@+id/cutted_price"
-        app:layout_constraintTop_toBottomOf="@+id/tv_free_coupen" />
+        app:layout_constraintTop_toBottomOf="@+id/product_title_cart" />
 
     <TextView
         android:id="@+id/cutted_price"
@@ -84,7 +60,10 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
         android:layout_marginLeft="8dp"
-        android:text="30.000.000 đ"
+        android:textSize="14dp"
+        android:text="300.000.000 đ"
+        android:textStyle="bold"
+        android:textColor="@color/md_red_500"
         app:layout_constraintBottom_toBottomOf="@+id/product_price_cart"
         app:layout_constraintStart_toEndOf="@+id/product_image"
         app:layout_constraintTop_toTopOf="@+id/product_price_cart" />
@@ -105,7 +84,7 @@
         android:id="@+id/offers_applied"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginTop="8dp"
+        android:layout_marginTop="16dp"
         android:layout_marginEnd="16dp"
         android:layout_marginRight="16dp"
         android:gravity="right"
@@ -141,7 +120,7 @@
         android:drawableRight="@drawable/down_arrow"
         android:drawablePadding="8dp"
         android:padding="3dp"
-        android:text="Qty: 1"
+        android:text="SL: 1"
         android:textColor="#000000"
         android:textSize="12dp"
         app:layout_constraintBottom_toBottomOf="@+id/coupen_applied"
@@ -168,15 +147,15 @@
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:gravity="center"
-            android:text="Apply your coupen here"
+            android:text="Áp dụng phiếu giảm giá của bạn tại đây"
             android:textAlignment="center"></TextView>
 
         <Button
             android:id="@+id/coupan_redemption_btn"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:background="@drawable/border_background"
-            android:text="REDEEM"
+            android:text="Hoàn lại"
+            android:backgroundTint="@color/md_blue_500"
             android:textColor="#ffffff"
             android:textSize="12dp">
 
@@ -202,7 +181,7 @@
             android:drawableLeft="@drawable/rubbish"
             android:drawablePadding="4dp"
             android:gravity="center"
-            android:text="Remove item">
+            android:text="Xóa sản phẩm">
 
         </TextView>
 
