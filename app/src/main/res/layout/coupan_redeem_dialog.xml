@@ -2,6 +2,7 @@
 <androidx.constraintlayout.widget.ConstraintLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:background="@color/white"
     android:layout_width="match_parent"
     android:layout_height="wrap_content">
 
@@ -12,7 +13,7 @@
         android:layout_marginLeft="8dp"
         android:layout_marginTop="8dp"
         android:layout_marginBottom="8dp"
-        android:text="Your Coupan"
+        android:text="Phiếu giảm giá của bạn"
         android:textColor="#000000"
         android:textStyle="bold"
         app:layout_constraintBottom_toTopOf="@+id/coupans_recyclerView"
@@ -26,8 +27,8 @@
         android:padding="8dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:srcCompat="@drawable/award"
-        app:tint="#3F51B5" />
+        app:srcCompat="@drawable/menu"
+        app:tint="@color/black" />
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/coupans_recyclerView"
@@ -65,18 +66,19 @@
         app:layout_constraintHorizontal_bias="0.51"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/selected_coupan"
-        app:srcCompat="@drawable/user" />
+        app:srcCompat="@drawable/discount" />
 
     <TextView
         android:id="@+id/textView22"
-        android:layout_width="wrap_content"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
         android:layout_marginTop="8dp"
         android:layout_marginEnd="8dp"
-        android:text="Original Price"
+        android:text="Giá gốc"
+        android:gravity="center"
         android:textColor="#000000"
-        android:textSize="14sp"
+        android:textSize="12dp"
         android:textStyle="bold"
         app:layout_constraintEnd_toStartOf="@+id/imageView5"
         app:layout_constraintStart_toStartOf="parent"
@@ -84,15 +86,15 @@
 
     <TextView
         android:id="@+id/textView23"
-        android:layout_width="120dp"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
         android:layout_marginTop="8dp"
         android:layout_marginEnd="8dp"
-        android:text="Price after coupan redemption *"
         android:gravity="center"
+        android:text="Giá sau khi đổi phiếu*"
         android:textColor="#000000"
-        android:textSize="12sp"
+        android:textSize="12dp"
         android:textStyle="bold"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@+id/imageView5"
@@ -100,13 +102,14 @@
 
     <TextView
         android:id="@+id/original_price"
-        android:layout_width="wrap_content"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
         android:layout_marginEnd="8dp"
         android:textColor="#000000"
-        android:textSize="20sp"
+        android:textSize="14dp"
         android:textStyle="bold"
+        android:gravity="center"
         app:layout_constraintBottom_toBottomOf="@+id/discounted_price"
         app:layout_constraintEnd_toStartOf="@+id/imageView5"
         app:layout_constraintStart_toStartOf="parent"
@@ -114,13 +117,14 @@
 
     <TextView
         android:id="@+id/discounted_price"
-        android:layout_width="wrap_content"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
         android:layout_marginTop="8dp"
         android:layout_marginEnd="8dp"
         android:textColor="#000000"
-        android:textSize="20sp"
+        android:textSize="14dp"
+        android:gravity="center"
         android:textStyle="bold"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@+id/imageView5"
@@ -131,8 +135,8 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginLeft="8dp"
-        android:layout_marginTop="8dp"
-        android:text="* Make sure to apply the coupan in your cart."
+        android:layout_marginTop="16dp"
+        android:text="* Đảm bảo áp dụng phiếu giảm giá trong giỏ hàng của bạn."
         android:textColor="#000000"
         android:textSize="10sp"
         android:textStyle="bold"

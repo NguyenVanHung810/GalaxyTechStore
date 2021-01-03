@@ -1,13 +1,13 @@
 package com.example.galaxytechstore;
 
-public class OrderItemsModel {
+public class ProductsInOrderModel {
     private String productImage;
     private String productTitle;
     private String productPrice;
     private Long productQuantity;
     private String cuttedPrice;
 
-    public OrderItemsModel(String productImage, String productTitle, String productPrice, Long productQuantity, String cuttedPrice) {
+    public ProductsInOrderModel(String productImage, String productTitle, String productPrice, Long productQuantity, String cuttedPrice) {
         this.productImage = productImage;
         this.productTitle = productTitle;
         this.productPrice = productPrice;
@@ -55,3 +55,4 @@ public class OrderItemsModel {
         this.cuttedPrice = cuttedPrice;
     }
 }
+

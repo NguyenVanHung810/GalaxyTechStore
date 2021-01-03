@@ -38,6 +38,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
+import es.dmoral.toasty.Toasty;
+
 public class DeliveryActivity extends AppCompatActivity {
 
     public static List<CartItemModel> cartItemModelList;
@@ -58,7 +60,7 @@ public class DeliveryActivity extends AppCompatActivity {
     private TextView codBtnTitle;
     private String order_id;
     private ConstraintLayout orderConfirmationLayout;
-    private ImageButton continueShoppingBtn;
+    private Button continueShoppingBtn;
     private TextView orderId;
     private String name, mobileNo,paymentMethod;
     private View divider;
@@ -173,6 +175,13 @@ public class DeliveryActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 placeOrderDetails();
+            }
+        });
+
+        paytm.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Toasty.error(getApplicationContext(), "Rất tiếc, không thể thực hiện hoạt động này!!!", Toasty.LENGTH_SHORT).show();
             }
         });
     }
@@ -328,7 +337,7 @@ public class DeliveryActivity extends AppCompatActivity {
         continueBtn.setEnabled(false);
         changeOrAddAddress.setEnabled(false);
         getSupportActionBar().setDisplayHomeAsUpEnabled(false);
-        orderId.setText("Order_ID " + order_id);
+        orderId.setText("Mã đơn hàng: " + order_id);
         orderConfirmationLayout.setVisibility(View.VISIBLE);
         continueShoppingBtn.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -390,7 +399,6 @@ public class DeliveryActivity extends AppCompatActivity {
         loaddialog.show();
         for (CartItemModel cartItemModel : cartItemModelList) {
             if (cartItemModel.getType() == CartItemModel.CART_ITEM) {
-
                 Map<String, Object> orderDetails = new HashMap<>();
                 orderDetails.put("ORDER_ID", order_id);
                 orderDetails.put("Product_Id", cartItemModel.getProductID());
@@ -408,11 +416,11 @@ public class DeliveryActivity extends AppCompatActivity {
                 } else {
                     orderDetails.put("Coupan_Id", "");
                 }
-                if (cartItemModel.getDiscountedPrice() != null) {
-                    orderDetails.put("Discounted_Price", cartItemModel.getDiscountedPrice());
-                } else {
-                    orderDetails.put("Discounted_Price", "");
-                }
+//                if (cartItemModel.getDiscountedPrice() != null) {
+//                    orderDetails.put("Discounted_Price", cartItemModel.getDiscountedPrice());
+//                } else {
+//                    orderDetails.put("Discounted_Price", "");
+//                }
 
                 firebaseFirestore.collection("ORDERS").document(order_id).collection("ORDER_ITEMS").document(cartItemModel.getProductID())
                         .set(orderDetails)
@@ -444,7 +452,8 @@ public class DeliveryActivity extends AppCompatActivity {
                 orderDetails.put("Payment_Method", "Thanh toán khi giao hàng");
                 orderDetails.put("Address", fulladdress.getText().toString());
                 orderDetails.put("FullName", fullname.getText().toString());
-                orderDetails.put("Cancellation_requested", false);
+                orderDetails.put("Phone_Number", phonenumber.getText().toString());
+                orderDetails.put("Discounted_Price", "");
 
                 firebaseFirestore.collection("ORDERS").document(order_id)
                         .set(orderDetails)

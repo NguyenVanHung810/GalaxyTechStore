@@ -11,11 +11,15 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
 
+import es.dmoral.toasty.Toasty;
+
 public class MyRewardsAdapter extends RecyclerView.Adapter<MyRewardsAdapter.Viewholder>{
+
     private List<RewardModel> rewardModelList;
     private List<CartItemModel> cartItemModelList;
     private Boolean useMinilayout = false;
@@ -105,14 +109,14 @@ public class MyRewardsAdapter extends RecyclerView.Adapter<MyRewardsAdapter.View
 
         public void setData(final String type, final String upperLimit, final String lowerLimit, final String method, final String body, final Date validity, final boolean alreadyUsed, final String coupanId) {
             if(type.equals("Discount")){
-                coupanTitle.setText(type);
+                coupanTitle.setText("Giảm giá");
             }else {
-                coupanTitle.setText("FLAT Rs."+method+" OFF");
+                coupanTitle.setText("Hoàn "+ vnMoney(Long.parseLong(method)));
             }
-            final SimpleDateFormat simpleDateFormat = new SimpleDateFormat("dd MMMM YYYY");
+            final SimpleDateFormat simpleDateFormat = new SimpleDateFormat("dd/MMMM/YYYY");
 
             if(alreadyUsed){
-                coupanExpiryDate.setText("Already Used");
+                coupanExpiryDate.setText("Đã sử dụng");
                 coupanExpiryDate.setTextColor(itemView.getContext().getResources().getColor(R.color.md_red_500));
                 coupanBody.setTextColor(Color.parseColor("#50ffffff"));
                 coupanTitle.setTextColor(Color.parseColor("#50ffffff"));
@@ -120,7 +124,7 @@ public class MyRewardsAdapter extends RecyclerView.Adapter<MyRewardsAdapter.View
                 coupanBody.setTextColor(Color.parseColor("#ffffff"));
                 coupanTitle.setTextColor(Color.parseColor("#ffffff"));
                 coupanExpiryDate.setTextColor(itemView.getContext().getResources().getColor(R.color.purple_500));
-                coupanExpiryDate.setText("till " + simpleDateFormat.format(validity));
+                coupanExpiryDate.setText("Hạn đến " + simpleDateFormat.format(validity));
             }
             coupanBody.setText(body);
 
@@ -129,20 +133,19 @@ public class MyRewardsAdapter extends RecyclerView.Adapter<MyRewardsAdapter.View
                     @Override
                     public void onClick(View view) {
                         if(!alreadyUsed) {
-                            if (type.equals("Discount")) {
-                                selectedcoupanTitle.setText(type);
-                            } else {
-                                selectedcoupanTitle.setText("FLAT Rs." + method + " OFF");
+                            if(type.equals("Discount")){
+                                coupanTitle.setText("Giảm giá");
+                            }else {
+                                coupanTitle.setText("Hoàn "+ vnMoney(Long.parseLong(method)));
                             }
-                            selectedcoupanExpiryDate.setText("till " + simpleDateFormat.format(validity));
+                            selectedcoupanExpiryDate.setText("Hạn đến " + simpleDateFormat.format(validity));
                             selectedcoupanBody.setText(body);
-
                             if (productOriginalPrice > Long.valueOf(lowerLimit) && productOriginalPrice < Long.valueOf(upperLimit)) {
                                 if (type.equals("Discount")) {
                                     Long discountAmount = productOriginalPrice * Long.valueOf(method) / 100;
-                                    discountedPrice.setText("Rs." + String.valueOf(productOriginalPrice - discountAmount) + "/-");
+                                    discountedPrice.setText(String.valueOf(productOriginalPrice - discountAmount));
                                 } else {
-                                    discountedPrice.setText("Rs." + String.valueOf(productOriginalPrice - Long.valueOf(method)) + "/-");
+                                    discountedPrice.setText(String.valueOf(productOriginalPrice - Long.valueOf(method)));
 
                                 }
                                 if(position != -1) {
@@ -152,7 +155,7 @@ public class MyRewardsAdapter extends RecyclerView.Adapter<MyRewardsAdapter.View
                                 if(position != -1) {
                                     cartItemModelList.get(position).setSelectedCoupanID(null);
                                 }
-                                Toast.makeText(itemView.getContext(), "Product doesn't matches Coupan terms.", Toast.LENGTH_SHORT).show();
+                                Toasty.error(itemView.getContext(), "Sản phẩm không phù hợp với các điều khoản của phiếu giảm giá.", Toasty.LENGTH_SHORT).show();
                             }
 
                             if (coupanRecyclerview.getVisibility() == View.GONE) {
@@ -166,6 +169,11 @@ public class MyRewardsAdapter extends RecyclerView.Adapter<MyRewardsAdapter.View
                     }
                 });
             }
+        }
+
+        private String vnMoney(Long s) {
+            DecimalFormat formatter = new DecimalFormat("###,###,###");
+            return formatter.format(s) + " đ";
         }
     }
 }

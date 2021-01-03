@@ -17,7 +17,7 @@ public class MyOrdersFragment extends Fragment {
 
 
     private Dialog loadingDialog;
-    private MyOrderAdapter myOrderAdapter;
+    public static MyOrderAdapter myOrderAdapter;
     private RecyclerView MyOrdersRecyclerView;
 
 
@@ -50,13 +50,21 @@ public class MyOrdersFragment extends Fragment {
 
         myOrderAdapter = new MyOrderAdapter(DBqueries.myOrderItemModelList, loadingDialog);
         MyOrdersRecyclerView.setAdapter(myOrderAdapter);
+        myOrderAdapter.notifyDataSetChanged();
 
-        DBqueries.loadOrders(getContext(), myOrderAdapter, loadingDialog);
         return view;
     }
     @Override
     public void onStart() {
         super.onStart();
         myOrderAdapter.notifyDataSetChanged();
+        loadingDialog.show();
+        DBqueries.orderItemsModelList.clear();
+        if(DBqueries.orderItemsModelList.size() ==0){
+            DBqueries.loadOrders(getContext(), myOrderAdapter, loadingDialog);
+        }
+        else {
+            loadingDialog.dismiss();
+        }
     }
 }

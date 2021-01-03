@@ -69,8 +69,8 @@ public class UpdateInfoFragment extends Fragment {
         name = view.findViewById(R.id.name_et);
         email = view.findViewById(R.id.email_et);
         phone = view.findViewById(R.id.sdt);
-        changePhotoBtn = view.findViewById(R.id.change_pic_btn);
-        removePhotoBtn = view.findViewById(R.id.remove_pic_btn);
+        changePhotoBtn = (Button) view.findViewById(R.id.change_pic_btn);
+        removePhotoBtn = (Button) view.findViewById(R.id.remove_pic_btn);
         updateUserInfoBtn = view.findViewById(R.id.update_info_button);
 
         //////////loading dialog
@@ -106,16 +106,15 @@ public class UpdateInfoFragment extends Fragment {
         email.setText(user_email);
         phone.setText(user_phone);
 
-        removePhotoBtn.setOnClickListener(new View.OnClickListener() {
+        changePhotoBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                Toasty.success(getContext(), "làm việc", Toasty.LENGTH_SHORT).show();
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
                     if (getContext().checkSelfPermission(Manifest.permission.READ_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED) {
-
                         Intent galleryIntent = new Intent(Intent.ACTION_PICK);
                         galleryIntent.setType("image/*");
                         startActivityForResult(galleryIntent, 1);
-
                     } else {
                         getActivity().requestPermissions(new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}, 2);
                     }
@@ -127,14 +126,14 @@ public class UpdateInfoFragment extends Fragment {
             }
         });
 
-//        removePhotoBtn.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View view) {
-//                uri = null;
-//                updatePhoto = true;
-//                Glide.with(getContext()).load(R.drawable.user_1).into(photo);
-//            }
-//        });
+        removePhotoBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                uri = null;
+                updatePhoto = true;
+                Glide.with(getContext()).load(R.drawable.user_1).into(photo);
+            }
+        });
 
         email.addTextChangedListener(new TextWatcher() {
             @Override

@@ -10,13 +10,13 @@
     <ImageView
         android:id="@+id/product_images"
         android:layout_width="match_parent"
-        android:layout_height="250dp"
-        android:layout_marginTop="24dp"
+        android:layout_height="300dp"
         android:elevation="3dp"
+        android:scaleType="fitCenter"
+        android:src="@drawable/no_image"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        android:src="@drawable/no_image"/>
+        app:layout_constraintTop_toTopOf="parent" />
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/add_to_wishlist_btn"
@@ -174,15 +174,16 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:gravity="center"
-            android:text="Kiểm tra giá sau khi đổi phiếu giảm giá"
-            android:textAlignment="center"></TextView>
+            android:text="Kiểm tra giá sau khi áp dụng phiếu."
+            >
+
+        </TextView>
 
         <Button
             android:id="@+id/coupan_redeem_btn"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Hoàn lại"
+            android:text="áp dụng"
             android:backgroundTint="@color/md_blue_500"
             android:textColor="#ffffff"
             android:textSize="12dp">

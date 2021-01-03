@@ -75,9 +75,9 @@ public class SearchActivity extends AppCompatActivity {
                                 for (DocumentSnapshot documentSnapshot : task.getResult().getDocuments()) {
                                     WishlistModel model = new WishlistModel(
                                             documentSnapshot.getId()
-                                            , documentSnapshot.get("product_image_1").toString()
+                                            , documentSnapshot.get("product_image").toString()
                                             , documentSnapshot.get("product_title").toString()
-                                            , documentSnapshot.get("average").toString()
+                                            , documentSnapshot.get("average_ratings").toString()
                                             , (long) documentSnapshot.get("total_ratings")
                                             , documentSnapshot.get("product_price").toString()
                                             , documentSnapshot.get("cutted_price").toString()

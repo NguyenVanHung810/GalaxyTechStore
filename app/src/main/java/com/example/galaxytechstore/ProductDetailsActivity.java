@@ -6,6 +6,7 @@ import android.app.Dialog;
 import android.content.Intent;
 import android.content.res.ColorStateList;
 import android.graphics.Color;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.view.Menu;
@@ -243,9 +244,9 @@ public class ProductDetailsActivity extends AppCompatActivity {
         selectedCoupan = checkCoupanPricedialog.findViewById(R.id.selected_coupan);
         originalPrice = checkCoupanPricedialog.findViewById(R.id.original_price);
         discountedPrice = checkCoupanPricedialog.findViewById(R.id.discounted_price);
-        coupanTitle = checkCoupanPricedialog.findViewById(R.id.coupan_title);
-        coupanExpiryDate = checkCoupanPricedialog.findViewById(R.id.coupan_validity);
-        coupanBody = checkCoupanPricedialog.findViewById(R.id.coupan_body);
+        coupanTitle = checkCoupanPricedialog.findViewById(R.id.coupen_title);
+        coupanExpiryDate = checkCoupanPricedialog.findViewById(R.id.coupen_validity);
+        coupanBody = checkCoupanPricedialog.findViewById(R.id.rewards_body);
 
         originalPrice.setText(productPrice.getText());
 
@@ -264,14 +265,6 @@ public class ProductDetailsActivity extends AppCompatActivity {
             }
         });
 
-        coupanRedeemButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                checkCoupanPricedialog.show();
-            }
-        });
-
-        ////// coupan redemption dialog
         productID = getIntent().getStringExtra("PRODUCT_ID");
         firebaseFirestore.collection("PRODUCTS").document(productID)
                 .get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
@@ -284,13 +277,22 @@ public class ProductDetailsActivity extends AppCompatActivity {
                                 @Override
                                 public void onComplete(@NonNull Task<QuerySnapshot> task) {
                                     if (task.isSuccessful()) {
-                                        Glide.with(getApplicationContext()).load(documentSnapshot.get("product_image")).apply(new RequestOptions().placeholder(R.drawable.placeholder)).into(productImagesDetails);
+                                        Glide.with(getApplicationContext()).load(Uri.parse(documentSnapshot.get("product_image").toString())).apply(new RequestOptions().placeholder(R.drawable.no_image)).into(productImagesDetails);
+
                                         productTitleCart.setText(documentSnapshot.get("product_title").toString());
                                         averageRatingMiniView.setText(documentSnapshot.get("average_ratings").toString());
                                         ProducttotalRatings.setText("("+(long) documentSnapshot.get("total_ratings") + " đánh giá)");
                                         productPrice.setText(vnMoney(Long.parseLong(documentSnapshot.get("product_price").toString())));
-                                        productOriginPrice = documentSnapshot.get("product_price").toString();
+
+
+                                        originalPrice.setText(productPrice.getText());
+                                        productPriceValue= Long.valueOf(documentSnapshot.get("product_price").toString());
+                                        MyRewardsAdapter rewardsAdapter = new MyRewardsAdapter(DBqueries.rewardModelList, true,coupanRecyclerview,selectedCoupan,productPriceValue,coupanTitle,coupanExpiryDate,coupanBody,discountedPrice);
+                                        rewardsAdapter.notifyDataSetChanged();
+                                        coupanRecyclerview.setAdapter(rewardsAdapter);
+
                                         cuttedPrice.setText(vnMoney(Long.parseLong(documentSnapshot.get("cutted_price").toString())));
+
                                         if ((boolean) documentSnapshot.get("COD")) {
                                             tvcodeIndicator.setVisibility(View.VISIBLE);
                                             codeIndicator.setVisibility(View.VISIBLE);
@@ -477,7 +479,7 @@ public class ProductDetailsActivity extends AppCompatActivity {
                                     } else {
                                         addWishList.setImageResource(R.drawable.heart);
                                         String error = task.getException().getMessage();
-                                        Toast.makeText(getApplicationContext(), error, Toast.LENGTH_SHORT).show();
+                                        Toasty.error(getApplicationContext(), error, Toasty.LENGTH_SHORT).show();
                                     }
                                     running_wishlist_query = false;
                                 }
@@ -510,7 +512,7 @@ public class ProductDetailsActivity extends AppCompatActivity {
 
                                     updateRating.put(initialRating + 1 + "_star", Long.parseLong(oldRating.getText().toString()) - 1);
                                     updateRating.put(starposition + 1 + "_star", Long.parseLong(finalRating.getText().toString()) + 1);
-                                    updateRating.put("average_ratings", calculateAverageRating((long) starposition - initialRating, false));
+                                    updateRating.put("average_ratings", calculateAverageRating((long) starposition - initialRating, true));
 
                                 } else {
                                     updateRating.put((starposition + 1) + "_star", (long) documentSnapshot.get((starposition + 1) + "_star") + 1);
@@ -546,14 +548,11 @@ public class ProductDetailsActivity extends AppCompatActivity {
                                                                     oldRating.setText(String.valueOf(Integer.parseInt(oldRating.getText().toString()) - 1));
                                                                     finalRating.setText(String.valueOf(Integer.parseInt(finalRating.getText().toString()) + 1));
 
-
                                                                 } else {
                                                                     DBqueries.myRatedIds.add(productID);
                                                                     DBqueries.myRating.add((long) starposition + 1);
-
                                                                     TextView rating = (TextView) ratingNumberContainer.getChildAt(5 - starposition - 1);
                                                                     rating.setText(String.valueOf(Integer.parseInt(rating.getText().toString()) + 1));
-
                                                                     totalRating.setText(((long) documentSnapshot.get("total_ratings") + 1) + "");
                                                                     ProducttotalRatings.setText("("+(long) documentSnapshot.get("total_ratings") + 1 + " đánh giá)");
 
@@ -636,6 +635,13 @@ public class ProductDetailsActivity extends AppCompatActivity {
             }
         });
 
+        coupanRedeemButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                checkCoupanPricedialog.show();
+            }
+        });
+
         signInDialog = new Dialog(ProductDetailsActivity.this);
         signInDialog.setContentView(R.layout.sign_in_dialog);
         signInDialog.setCancelable(true);
@@ -672,13 +678,11 @@ public class ProductDetailsActivity extends AppCompatActivity {
 
     @SuppressLint("NewApi")
     public static void setRating(int starPosition) {
-        if (starPosition > -1) {
-            for (int x = 0; x < rateNowContainer.getChildCount(); x++) {
-                ImageView starBtn = (ImageView) rateNowContainer.getChildAt(x);
-                starBtn.setImageTintList(ColorStateList.valueOf(Color.parseColor("#bebebe")));
-                if (x <= starPosition) {
-                    starBtn.setImageTintList(ColorStateList.valueOf(Color.parseColor("#ff0000")));
-                }
+        for (int x = 0; x < rateNowContainer.getChildCount(); x++) {
+            ImageView starBtn = (ImageView) rateNowContainer.getChildAt(x);
+            starBtn.setImageTintList(ColorStateList.valueOf(Color.parseColor("#bebebe")));
+            if (x <= starPosition) {
+                starBtn.setImageTintList(ColorStateList.valueOf(Color.parseColor("#ff0000")));
             }
         }
     }
@@ -687,6 +691,7 @@ public class ProductDetailsActivity extends AppCompatActivity {
         Double totalStars = Double.valueOf(0);
         for (int x = 1; x < 6; x++) {
             TextView ratingno = (TextView) ratingNumberContainer.getChildAt(5 - x);
+            Toasty.success(getApplicationContext(), ratingno+"",Toasty.LENGTH_SHORT).show();
             totalStars = totalStars + (Long.parseLong(ratingno.getText().toString()) * x);
         }
         totalStars = totalStars + currentUserRating;
@@ -701,6 +706,7 @@ public class ProductDetailsActivity extends AppCompatActivity {
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.search_and_cart_icon, menu);
         cartItem = menu.findItem(R.id.main_cart_ic);
+
         cartItem.setActionView(R.layout.badge_layout);
         ImageView badge_icon = cartItem.getActionView().findViewById(R.id.badge_icon);
         badge_icon.setImageResource(R.drawable.cart_2);
@@ -708,7 +714,7 @@ public class ProductDetailsActivity extends AppCompatActivity {
 
         if (currentUser != null) {
             if (DBqueries.cartLists.size() == 0) {
-                DBqueries.loadCartList(ProductDetailsActivity.this, new Dialog(ProductDetailsActivity.this), false, badge_count, new TextView(ProductDetailsActivity.this));
+                DBqueries.loadCartList(ProductDetailsActivity.this, loaddialog, false, badge_count, new TextView(ProductDetailsActivity.this));
             } else {
                 badge_count.setVisibility(View.VISIBLE);
                 if (DBqueries.cartLists.size() < 10) {

@@ -1,12 +1,22 @@
 package com.example.galaxytechstore;
 
 public class CategoryModel {
+    private String categoryId;
     private String categoryImage;
     private String categoryName;
 
-    public CategoryModel(String categoryImage, String categoryName) {
+    public CategoryModel(String categoryId, String categoryImage, String categoryName) {
+        this.categoryId = categoryId;
         this.categoryImage = categoryImage;
         this.categoryName = categoryName;
+    }
+
+    public String getCategoryId() {
+        return categoryId;
+    }
+
+    public void setCategoryId(String categoryId) {
+        this.categoryId = categoryId;
     }
 
     public String getCategoryImage() {

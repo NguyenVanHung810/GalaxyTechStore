@@ -7,7 +7,6 @@ import android.content.Intent;
 import android.graphics.Color;
 import android.os.Build;
 import android.os.Bundle;
-import android.os.Trace;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.Menu;
@@ -22,12 +21,9 @@ import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.RequestOptions;
-import com.example.galaxytechstore.ui.home.HomeFragment;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.android.material.appbar.AppBarLayout;
-import com.google.android.material.floatingactionbutton.FloatingActionButton;
-import com.google.android.material.snackbar.Snackbar;
 import com.google.android.material.navigation.NavigationView;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -41,10 +37,7 @@ import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.core.view.GravityCompat;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentTransaction;
-import androidx.navigation.NavController;
-import androidx.navigation.Navigation;
 import androidx.navigation.ui.AppBarConfiguration;
-import androidx.navigation.ui.NavigationUI;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
@@ -166,7 +159,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         if (showcart) {
             drawer.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED);
             getSupportActionBar().setDisplayShowHomeEnabled(true);
-            gotoFragment("My Cart", new MyCartFragment(), -2);
+            gotoFragment("Giỏ hàng", new MyCartFragment(), -2);
         } else {
             ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
                     this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
@@ -240,10 +233,10 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                     DBqueries.loadCartList(MainActivity.this, new Dialog(MainActivity.this), false, badge_count, new TextView(MainActivity.this));
                 } else {
                     badge_count.setVisibility(View.VISIBLE);
-                    if (DBqueries.cartLists.size() < 99) {
+                    if (DBqueries.cartLists.size() < 10) {
                         badge_count.setText(String.valueOf(DBqueries.cartLists.size()));
                     } else {
-                        badge_count.setText("99");
+                        badge_count.setText("10");
                     }
                 }
 
@@ -277,7 +270,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                     if (currentUser == null) {
                         signInDialog.show();
                     } else {
-                        gotoFragment("My Cart", new MyCartFragment(), Cart_Fragment);
+                        gotoFragment("Giỏ hàng", new MyCartFragment(), Cart_Fragment);
                     }
                 }
             });
@@ -300,14 +293,14 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 if (currentUser == null) {
                     signInDialog.show();
                 } else {
-                    gotoFragment("My Cart", new MyCartFragment(), Cart_Fragment);
+                    gotoFragment("Giỏ hàng", new MyCartFragment(), Cart_Fragment);
                 }
                 return true;
             case android.R.id.home:
                 if (showcart) {
                     mainActivity = null;
                     showcart = false;
-                    gotoFragment("My Cart", new MyCartFragment(), Cart_Fragment);
+                    gotoFragment("Giỏ hàng", new MyCartFragment(), Cart_Fragment);
                     finish();
                     return true;
                 }

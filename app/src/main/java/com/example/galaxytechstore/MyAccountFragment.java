@@ -31,53 +31,30 @@ public class MyAccountFragment extends Fragment {
 
 
     public MyAccountFragment() {
-        // Required empty public constructor
     }
 
     private FloatingActionButton settingsBtn;
     public final static int MANAGE_ADDRESS = 1;
     private Button viewAllAddressButton, signOutBtn;
-    private CircleImageView profileView, currentOrderImage;
-    private TextView name, email, currentOrderstatus, recentOrdersTitle, fullname, fulladdress, phonenumber;
-    private LinearLayout layoutContainer, recentOrdersContainer;
+    private CircleImageView profileView;
+    private TextView name, email, fullname, fulladdress, phonenumber;
     private Dialog loadingDialog;
-    private ImageView orderedIndicator, packedIndicator, shippedIndicator, deliveredIndicator;
-    private ProgressBar O_P_progress, P_S_progress, S_D_progress;
 
 
     @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View root =  inflater.inflate(R.layout.fragment_my_account, container, false);
-
-        // init
         viewAllAddressButton=root.findViewById(R.id.view_all_address_button);
         profileView=root.findViewById(R.id.profile_pic);
         name=root.findViewById(R.id.username);
         email=root.findViewById(R.id.user_email);
-        layoutContainer=root.findViewById(R.id.layout_container);
-        currentOrderImage=root.findViewById(R.id.current_order_image);
-        currentOrderstatus=root.findViewById(R.id.tv_current_order_status);
-
-        orderedIndicator=root.findViewById(R.id.ordered_indicator);
-        packedIndicator=root.findViewById(R.id.packed_indicator);
-        shippedIndicator=root.findViewById(R.id.shipped_indicator);
-        deliveredIndicator=root.findViewById(R.id.delivered_indicator);
-
-        O_P_progress=root.findViewById(R.id.order_packed_progress);
-        P_S_progress=root.findViewById(R.id.packed_shipped_progress);
-        S_D_progress=root.findViewById(R.id.shipped_delivered_progress);
-
-        recentOrdersTitle=root.findViewById(R.id.your_recent_orders_title);
-        recentOrdersContainer=root.findViewById(R.id.recent_orders_container);
 
         fullname=root.findViewById(R.id.name);
         fulladdress=root.findViewById(R.id.address);
         phonenumber=root.findViewById(R.id.phonenumber);
         signOutBtn=root.findViewById(R.id.sign_out);
         settingsBtn=root.findViewById(R.id.setting_btn);
-        // init
 
         ////////// Loading dialog
         loadingDialog = new Dialog(getContext());
@@ -88,86 +65,22 @@ public class MyAccountFragment extends Fragment {
         loadingDialog.show();
         //////////loading dialog
 
-        layoutContainer.getChildAt(1).setVisibility(View.GONE);
+
+        loadingDialog.show();
         loadingDialog.setOnDismissListener(new DialogInterface.OnDismissListener() {
             @Override
             public void onDismiss(DialogInterface dialogInterface) {
-
-                for(MyOrderItemModel orderItemModel:DBqueries.myOrderItemModelList){
-                    if(!orderItemModel.isCancellationrequested()){
-                        if(!orderItemModel.getOrderStatus().equals("Delivered") && !orderItemModel.getOrderStatus().equals("Cancelled")){
-                            layoutContainer.getChildAt(1).setVisibility(View.VISIBLE);
-                            Glide.with(getContext()).load(orderItemModel.getProductImage()).apply(new RequestOptions().placeholder(R.drawable.placeholder)).into(currentOrderImage);
-                            currentOrderstatus.setText(orderItemModel.getOrderStatus());
-
-                            switch (orderItemModel.getOrderStatus()){
-                                case "Ordered":
-                                    orderedIndicator.setImageTintList(ColorStateList.valueOf(getResources().getColor(R.color.md_green_500)));
-                                    break;
-                                case "Packed":
-                                    orderedIndicator.setImageTintList(ColorStateList.valueOf(getResources().getColor(R.color.md_green_500)));
-                                    packedIndicator.setImageTintList(ColorStateList.valueOf(getResources().getColor(R.color.md_green_500)));
-                                    O_P_progress.setProgress(100);
-                                    break;
-                                case "Shipped":
-                                    shippedIndicator.setImageTintList(ColorStateList.valueOf(getResources().getColor(R.color.md_green_500)));
-                                    orderedIndicator.setImageTintList(ColorStateList.valueOf(getResources().getColor(R.color.md_green_500)));
-                                    packedIndicator.setImageTintList(ColorStateList.valueOf(getResources().getColor(R.color.md_green_500)));
-                                    O_P_progress.setProgress(100);
-                                    P_S_progress.setProgress(100);
-                                    break;
-                                case "out for Delivery":
-                                    deliveredIndicator.setImageTintList(ColorStateList.valueOf(getResources().getColor(R.color.md_green_500)));
-                                    shippedIndicator.setImageTintList(ColorStateList.valueOf(getResources().getColor(R.color.md_green_500)));
-                                    orderedIndicator.setImageTintList(ColorStateList.valueOf(getResources().getColor(R.color.md_green_500)));
-                                    packedIndicator.setImageTintList(ColorStateList.valueOf(getResources().getColor(R.color.md_green_500)));
-                                    O_P_progress.setProgress(100);
-                                    P_S_progress.setProgress(100);
-                                    S_D_progress.setProgress(100);
-                                    break;
-                            }
-                        }
-                    }
+                loadingDialog.setOnDismissListener(null);
+                if(DBqueries.addressesModelList.size() == 0){
+                    fullname.setText("Không có địa chỉ");
+                    fulladdress.setText("-");
+                    phonenumber.setText("-");
+                }else {
+                    setAddress();
                 }
-                int i=0;
-                for(MyOrderItemModel myOrderItemModel:DBqueries.myOrderItemModelList){
-                    if(i<4) {
-                        if (myOrderItemModel.getOrderStatus().equals("Delivered")) {
-                            Glide.with(getContext()).load(myOrderItemModel.getProductImage()).apply(new RequestOptions().placeholder(R.drawable.placeholder)).into((CircleImageView) recentOrdersContainer.getChildAt(i));
-                            i++;
-                        }
-                    }else {
-                        break;
-                    }
-                }
-                if(i==0){
-                    recentOrdersTitle.setText("Không có đơn hàng nào gần đây");
-                }
-                if(i<3){
-                    for (int x=i ; x<4;x++){
-                        recentOrdersContainer.getChildAt(x).setVisibility(View.GONE);
-                    }
-                }
-                loadingDialog.show();
-                loadingDialog.setOnDismissListener(new DialogInterface.OnDismissListener() {
-                    @Override
-                    public void onDismiss(DialogInterface dialogInterface) {
-                        loadingDialog.setOnDismissListener(null);
-                        if(DBqueries.addressesModelList.size() == 0){
-                            fullname.setText("Không có địa chỉ");
-                            fulladdress.setText("-");
-                            phonenumber.setText("-");
-                        }else {
-                            setAddress();
-                        }
-                    }
-                });
-                DBqueries.loadAddresses(getContext(),loadingDialog,false);
-
             }
         });
-
-        DBqueries.loadOrders(getContext(),null,loadingDialog);
+        DBqueries.loadAddresses(getContext(),loadingDialog,false);
 
         viewAllAddressButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -200,14 +113,12 @@ public class MyAccountFragment extends Fragment {
                 startActivity(updateUserInfo);
             }
         });
-
         return root;
     }
 
     @Override
     public void onStart() {
         super.onStart();
-
         name.setText(DBqueries.fullname);
         email.setText(DBqueries.email);
         if(!DBqueries.profile.equals("")){
@@ -240,6 +151,5 @@ public class MyAccountFragment extends Fragment {
         String address = DBqueries.addressesModelList.get(DBqueries.selectedAddress).getAddress();
 
         fulladdress.setText(address+", "+ward+", "+district+", "+city+".");
-
     }
 }

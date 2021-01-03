@@ -23,7 +23,6 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
-import com.bumptech.glide.request.RequestOptions;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
@@ -33,6 +32,7 @@ import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 
+import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -176,9 +176,9 @@ public class CartAdapter extends RecyclerView.Adapter {
 
     public class CartItemViewholder extends RecyclerView.ViewHolder {
 
-        private ImageView productImage, freeCoupanIcon, cod;
+        private ImageView productImage;
         private LinearLayout deleteBtn, coupanRedemptionLayout;
-        private TextView productTitle, freeCoupans, productPrice, cuttedPrice, offersApplied, coupansApplied, productQuantity, coupanRedemptionBody;
+        private TextView productTitle, productPrice, cuttedPrice, offersApplied, coupansApplied, productQuantity, coupanRedemptionBody;
         private Button reedemBtn;
 
         public CartItemViewholder(@NonNull View itemView) {
@@ -194,7 +194,6 @@ public class CartAdapter extends RecyclerView.Adapter {
             coupanRedemptionLayout = itemView.findViewById(R.id.coupen_redemption_layout);
             reedemBtn = itemView.findViewById(R.id.coupan_redemption_btn);
             coupanRedemptionBody = itemView.findViewById(R.id.tv_coupan_redemption);
-            cod = itemView.findViewById(R.id.cod_indicator);
         }
 
         @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
@@ -207,16 +206,10 @@ public class CartAdapter extends RecyclerView.Adapter {
             checkCoupanPricedialog.setContentView(R.layout.coupan_redeem_dialog);
             checkCoupanPricedialog.getWindow().setLayout(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
 
-            if (codAvaiiable) {
-                cod.setVisibility(View.VISIBLE);
-            } else {
-                cod.setVisibility(View.INVISIBLE);
-            }
-
             if (inStock) {
-                productPrice.setText(convertToVietnameseMoney(Integer.parseInt(productPriceText)));
+                productPrice.setText(vnMoney(Integer.parseInt(productPriceText)));
                 productPrice.setTextColor(Color.parseColor("#000000"));
-                cuttedPrice.setText(convertToVietnameseMoney(Integer.parseInt(cuttedPriceText)));
+                cuttedPrice.setText(vnMoney(Integer.parseInt(cuttedPriceText)));
                 coupanRedemptionLayout.setVisibility(View.VISIBLE);
 
                 ImageView toogleRecyclerView = checkCoupanPricedialog.findViewById(R.id.toggle_recyclerview);
@@ -224,9 +217,9 @@ public class CartAdapter extends RecyclerView.Adapter {
                 selectedCoupan = checkCoupanPricedialog.findViewById(R.id.selected_coupan);
                 originalPrice = checkCoupanPricedialog.findViewById(R.id.original_price);
                 discountedPrice = checkCoupanPricedialog.findViewById(R.id.discounted_price);
-                coupanTitle = checkCoupanPricedialog.findViewById(R.id.coupan_title);
-                coupanExpiryDate = checkCoupanPricedialog.findViewById(R.id.coupan_validity);
-                coupanBody = checkCoupanPricedialog.findViewById(R.id.coupan_body);
+                coupanTitle = checkCoupanPricedialog.findViewById(R.id.coupen_title);
+                coupanExpiryDate = checkCoupanPricedialog.findViewById(R.id.coupen_validity);
+                coupanBody = checkCoupanPricedialog.findViewById(R.id.rewards_body);
                 applyCoupanBtn = checkCoupanPricedialog.findViewById(R.id.apply_btn);
                 removeCoupanBtn = checkCoupanPricedialog.findViewById(R.id.remove_btn);
                 applyORremoveBtnContainer = checkCoupanPricedialog.findViewById(R.id.apply_or_remove_btn_container);
@@ -256,16 +249,17 @@ public class CartAdapter extends RecyclerView.Adapter {
                                     rewardModel.setAlreadyUsed(true);
                                     coupanRedemptionLayout.setBackground(itemView.getContext().getResources().getDrawable(R.drawable.reward_gradient_background));
                                     coupanRedemptionBody.setText(rewardModel.getCoupanBody());
-                                    reedemBtn.setText("Coupan");
+                                    reedemBtn.setText("Phiếu giảm giá");
                                 }
                             }
                             cartItemModelList.get(position).setDiscountedPrice(discountedPrice.getText().toString().substring(3, discountedPrice.getText().length() - 2));
                             productPrice.setText(discountedPrice.getText());
-                            String offerDiscountedAmount = String.valueOf(Long.valueOf(productPriceText) - Long.valueOf(discountedPrice.getText().toString().substring(3, discountedPrice.getText().length() - 2)));
+                            String offerDiscountedAmount=String.valueOf(Long.valueOf(productPriceText)-Long.valueOf(discountedPrice.getText().toString().substring(3,discountedPrice.getText().length()-2)));
                             coupansApplied.setVisibility(View.VISIBLE);
-                            coupansApplied.setText("Coupan applied - Rs." + offerDiscountedAmount + "/-");
+                            coupansApplied.setText("Phiếu giảm giá đã áp dụng " + vnMoney(Integer.parseInt(offerDiscountedAmount)));
                             notifyItemChanged(cartItemModelList.size() - 1);
                             checkCoupanPricedialog.dismiss();
+                            DBqueries.rewardModelList.clear();
                         }
                     }
                 });
@@ -278,13 +272,13 @@ public class CartAdapter extends RecyclerView.Adapter {
                                 rewardModel.setAlreadyUsed(false);
                             }
                         }
-                        coupanTitle.setText("Coupan");
-                        coupanExpiryDate.setText("till xx-xx-xxxx");
-                        coupanBody.setText("Tap the icon on the top right corner to select your coupan.");
+                        coupanTitle.setText("Phiếu giảm giá");
+                        coupanExpiryDate.setText("Hạn đến xx-xx-xxxx");
+                        coupanBody.setText("Nhấn vào biểu tượng ở góc trên cùng bên phải để chọn phiếu giảm giá của bạn.");
                         coupansApplied.setVisibility(View.INVISIBLE);
                         coupanRedemptionLayout.setBackgroundColor(itemView.getContext().getResources().getColor(R.color.md_red_500));
-                        coupanRedemptionBody.setText("Apply your coupan here.");
-                        reedemBtn.setText("Redeem");
+                        coupanRedemptionBody.setText("Áp dụng phiếu giảm giá của bạn tại đây.");
+                        reedemBtn.setText("Áp dụng");
                         productPrice.setText("Rs." + productPriceText + "/-");
                         cartItemModelList.get(position).setSelectedCoupanID(null);
                         notifyItemChanged(cartItemModelList.size() - 1);
@@ -306,7 +300,7 @@ public class CartAdapter extends RecyclerView.Adapter {
                         if (rewardModel.getCoupenId().equals(cartItemModelList.get(position).getSelectedCoupanID())) {
                             coupanRedemptionLayout.setBackground(itemView.getContext().getResources().getDrawable(R.drawable.reward_gradient_background));
                             coupanRedemptionBody.setText(rewardModel.getCoupanBody());
-                            reedemBtn.setText("Coupan");
+                            reedemBtn.setText("Phiếu giảm giá");
 
                             coupanBody.setText(rewardModel.getCoupanBody());
                             if (rewardModel.getType().equals("Discount")) {
@@ -466,7 +460,7 @@ public class CartAdapter extends RecyclerView.Adapter {
                 if (offersAppliedNo > 0) {
                     offersApplied.setVisibility(View.VISIBLE);
                     String offerDiscountedAmount = String.valueOf(Long.valueOf(cuttedPriceText) - Long.valueOf(productPriceText));
-                    offersApplied.setText("offer applied -Rs." + offerDiscountedAmount + "/-");
+                    offersApplied.setText("Đề nghị được áp dụng" + offerDiscountedAmount + "đ");
                 } else {
                     offersApplied.setVisibility(View.INVISIBLE);
                 }
@@ -476,8 +470,6 @@ public class CartAdapter extends RecyclerView.Adapter {
                 productPrice.setTextColor(itemView.getResources().getColor(R.color.md_red_500));
                 cuttedPrice.setText("");
                 coupanRedemptionLayout.setVisibility(View.GONE);
-                freeCoupans.setVisibility(View.INVISIBLE);
-                freeCoupanIcon.setVisibility(View.INVISIBLE);
                 productQuantity.setVisibility(View.INVISIBLE);
                 coupansApplied.setVisibility(View.INVISIBLE);
                 offersApplied.setVisibility(View.INVISIBLE);
@@ -540,15 +532,15 @@ public class CartAdapter extends RecyclerView.Adapter {
 
         private void setTotalAmount(int totalItemText, int totalItemPriceText, String deliveryPriceText, int totalAmountText, int savedAmountText) {
             totalItems.setText("Giá (" + totalItemText + " sản phẩm)");
-            totalItemsPrice.setText(convertToVietnameseMoney(totalItemPriceText));
+            totalItemsPrice.setText(vnMoney(totalItemPriceText));
             if (deliveryPriceText.equals("FREE")) {
                 deliveryPrice.setText("FREE");
             } else {
-                deliveryPrice.setText(convertToVietnameseMoney(Integer.parseInt(deliveryPriceText)));
+                deliveryPrice.setText(vnMoney(Integer.parseInt(deliveryPriceText)));
             }
-            totalAmount.setText(convertToVietnameseMoney(totalAmountText));
-            cartTotal.setText(convertToVietnameseMoney(totalAmountText));
-            savedAmount.setText("Bạn đã lưu " + savedAmountText + " vào đơn hàng này.");
+            totalAmount.setText(vnMoney(totalAmountText));
+            cartTotal.setText(vnMoney(totalAmountText));
+            savedAmount.setText("Bạn đã tiết kiệm " + vnMoney(savedAmountText) + " từ đơn hàng này");
 
             LinearLayout parent = (LinearLayout) cartTotal.getParent().getParent();
             if (totalItemPriceText == 0) {
@@ -566,6 +558,11 @@ public class CartAdapter extends RecyclerView.Adapter {
         Locale locale = new Locale("vi", "VN");
         NumberFormat format = NumberFormat.getCurrencyInstance(locale);
         return format.format(t);
+    }
+
+    private String vnMoney(int s) {
+        DecimalFormat formatter = new DecimalFormat("###,###,###");
+        return formatter.format(s) + " đ";
     }
 
     private void showDialogRecyclerView() {

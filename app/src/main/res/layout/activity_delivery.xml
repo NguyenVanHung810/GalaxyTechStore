@@ -165,7 +165,7 @@
             android:text="Order ID 65413643264161"
             android:gravity="center"
             android:textColor="#000000"
-            android:textSize="16sp"
+            android:textSize="12dp"
             android:textStyle="bold"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
@@ -182,39 +182,27 @@
             android:gravity="center"
             android:text="Dự kiến giao hàng từ 2-3 ngày"
             android:textColor="#f44336"
-            android:textSize="20sp"
+            android:textSize="18dp"
             android:textStyle="bold"
             app:layout_constraintBottom_toTopOf="@+id/continue_shopping_btn"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/order_id" />
 
-        <ImageButton
+        <Button
             android:id="@+id/continue_shopping_btn"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_width="0dp"
+            android:layout_height="60dp"
             android:layout_marginStart="16dp"
             android:layout_marginEnd="16dp"
-            android:layout_marginBottom="8dp"
-            android:background="@android:color/transparent"
+            android:layout_marginBottom="32dp"
             android:padding="5dp"
-            android:src="@drawable/continue_shopping"
-            app:layout_constraintBottom_toTopOf="@+id/textView24"
+            android:text="Tiếp tục mua sắm"
+            app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.498"
             app:layout_constraintStart_toStartOf="parent" />
 
-        <TextView
-            android:id="@+id/textView24"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="70dp"
-            android:text="TIẾP TỤC MUA SẮM"
-            android:textColor="#f44336"
-            android:textStyle="bold"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent" />
     </androidx.constraintlayout.widget.ConstraintLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

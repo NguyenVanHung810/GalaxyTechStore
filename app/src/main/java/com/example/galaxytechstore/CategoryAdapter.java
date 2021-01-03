@@ -37,7 +37,7 @@ public class CategoryAdapter extends RecyclerView.Adapter<CategoryAdapter.ViewHo
     @Override
     public void onBindViewHolder(@NonNull CategoryAdapter.ViewHolder holder, int position) {
         CategoryModel categoryModel = categoryModels.get(position);
-        holder.setCategoryName(categoryModel.getCategoryName(), position);
+        holder.setCategoryName(categoryModel.getCategoryName(), position, categoryModel.getCategoryId());
         holder.setCategoryImage(categoryModel.getCategoryImage());
         if(lastposition < position) {
             Animation animation = AnimationUtils.loadAnimation(holder.itemView.getContext(), R.anim.fade_in);
@@ -71,15 +71,16 @@ public class CategoryAdapter extends RecyclerView.Adapter<CategoryAdapter.ViewHo
             }
         }
 
-        private void setCategoryName(final String name, final int position){
+        private void setCategoryName(final String name, final int position, final String id){
             cateName.setText(name);
             if(!name.equals("")){
                 itemView.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
                         if(position != 0){
-                            Intent categoryIntent = new Intent(itemView.getContext(),CategoryActivity.class);
+                            Intent categoryIntent = new Intent(itemView.getContext(), CategoryActivity.class);
                             categoryIntent.putExtra("CategoryName", name);
+                            categoryIntent.putExtra("Cate_Id", id);
                             itemView.getContext().startActivity(categoryIntent);
                         }
                     }

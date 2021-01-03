@@ -198,7 +198,7 @@ public class HomePageAdapter extends RecyclerView.Adapter {
                 viewAll.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        ViewAllActivity.wishlistModelList = viewAllList;
+                        ViewAllActivity.viewallModelList = viewAllList;
                         Intent viewAllActivity = new Intent(itemView.getContext(), ViewAllActivity.class);
                         viewAllActivity.putExtra("layout_code", 0);
                         viewAllActivity.putExtra("title", title);

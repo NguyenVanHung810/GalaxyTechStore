@@ -13,6 +13,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.RequestOptions;
 
+import java.text.DecimalFormat;
 import java.util.List;
 
 public class HorizontalProductScrollAdapter extends RecyclerView.Adapter<HorizontalProductScrollAdapter.ViewHolder> {
@@ -80,5 +81,10 @@ public class HorizontalProductScrollAdapter extends RecyclerView.Adapter<Horizon
                 }
             });
         }
+    }
+
+    private String vnMoney(Long s) {
+        DecimalFormat formatter = new DecimalFormat("###,###,###");
+        return formatter.format(s) + " đ";
     }
 }

@@ -1,44 +1,30 @@
 package com.example.galaxytechstore;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 
 import android.app.Dialog;
-import android.content.Context;
+import android.content.Intent;
 import android.content.res.ColorStateList;
 import android.graphics.Color;
 import android.os.Build;
 import android.os.Bundle;
 import android.view.MenuItem;
-import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
-import android.widget.ListAdapter;
 import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.bumptech.glide.Glide;
-import com.bumptech.glide.request.RequestOptions;
-import com.example.galaxytechstore.ui.Utility;
 import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.OnFailureListener;
-import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
-import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.firestore.DocumentReference;
-import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.firebase.firestore.FirebaseFirestoreException;
-import com.google.firebase.firestore.Transaction;
 
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
@@ -46,7 +32,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
-import static com.example.galaxytechstore.ProductDetailsActivity.setRating;
+import es.dmoral.toasty.Toasty;
 
 public class OrderDetailsActivity extends AppCompatActivity {
 
@@ -64,9 +50,10 @@ public class OrderDetailsActivity extends AppCompatActivity {
     private Button cancelOrderBtn;
     private Button changeoradd;
 
-    private ListView listView;
-    private ArrayList<OrderItemsModel> orderItemsModels;
-    private OrderItemsAdapter adapter;
+    public static ArrayList<ProductsInOrderModel> products;
+
+    private Button view;
+
 
     @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
     @Override
@@ -74,11 +61,25 @@ public class OrderDetailsActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_order_details);
 
+        position = getIntent().getIntExtra("position", -1);
+        final MyOrderItemModel orderItemsModel = DBqueries.myOrderItemModelList.get(position);
+        products = orderItemsModel.getProducts();
+
+        view = findViewById(R.id.view_details);
+
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayShowTitleEnabled(true);
         getSupportActionBar().setTitle("Chi tiết đơn hàng");
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+
+        view.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent pioIntent = new Intent(getApplicationContext(), ProductInOrderActivity.class);
+                startActivity(pioIntent);
+            }
+        });
 
         //////////loading dialog
         loadingDialog = new Dialog(OrderDetailsActivity.this);
@@ -136,20 +137,6 @@ public class OrderDetailsActivity extends AppCompatActivity {
         savedAmount = findViewById(R.id.saved_amount);
         totalAmount = findViewById(R.id.total_price);
         cancelOrderBtn = findViewById(R.id.cancel_btn);
-
-        listView = findViewById(R.id.product_list);
-
-        orderItemsModels = new ArrayList<>();
-        orderItemsModels.add(new OrderItemsModel("///", "Iphone 11", "12.000.000"));
-        orderItemsModels.add(new OrderItemsModel("///", "Iphone 11", "12.000.000"));
-        orderItemsModels.add(new OrderItemsModel("///", "Iphone 11", "12.000.000"));
-        orderItemsModels.add(new OrderItemsModel("///", "Iphone 11", "12.000.000"));
-        orderItemsModels.add(new OrderItemsModel("///", "Iphone 11", "12.000.000"));
-        orderItemsModels.add(new OrderItemsModel("///", "Iphone 11", "12.000.000"));
-
-        adapter = new OrderItemsAdapter(getApplicationContext(), R.layout.order_items_layout, orderItemsModels);
-        listView.setAdapter(adapter);
-        adapter.notifyDataSetChanged();
 
         position = getIntent().getIntExtra("position", -1);
 
@@ -245,8 +232,8 @@ public class OrderDetailsActivity extends AppCompatActivity {
                 P_S_progress.setProgress(100);
                 S_D_progress.setProgress(100);
 
-                deliveredTitle.setText("Out for Delivery");
-                deliveredBody.setText("Đơn đặt hàng của bạn đã được giao");
+                deliveredTitle.setText("Đang giao hàng");
+                deliveredBody.setText("Đơn hàng đang trên đường giao hàng.");
 
                 break;
             case "Delivered":
@@ -343,10 +330,10 @@ public class OrderDetailsActivity extends AppCompatActivity {
         }
 
 
-        if (model.isCancellationrequested()) {
+        if (model.getOrderStatus().equals("Cancelled")) {
             cancelOrderBtn.setVisibility(View.VISIBLE);
             cancelOrderBtn.setEnabled(false);
-            cancelOrderBtn.setText("Đang hủy bỏ");
+            cancelOrderBtn.setText("Đã hủy bỏ");
             cancelOrderBtn.setTextColor(getResources().getColor(R.color.colorPrimary));
             cancelOrderBtn.setBackgroundTintList(ColorStateList.valueOf(Color.parseColor("#ffffff")));
         } else {
@@ -368,34 +355,23 @@ public class OrderDetailsActivity extends AppCompatActivity {
                                 cancelDialog.dismiss();
                                 loadingDialog.show();
                                 Map<String, Object> map = new HashMap<>();
-                                map.put("Order_Id", model.getOrderId());
-                                map.put("Product_Id", model.getProductId());
-                                map.put("Order_Cancelled", false);
-                                FirebaseFirestore.getInstance().collection("CANCELLED_ORDERS").document(model.getOrderId()).set(map)
+                                map.put("Order_Status", "Cancelled");
+                                map.put("Cancelled_Date", FieldValue.serverTimestamp());
+
+                                FirebaseFirestore.getInstance().collection("ORDERS").document(model.getOrderId()).update(map)
                                         .addOnCompleteListener(new OnCompleteListener<Void>() {
                                             @Override
                                             public void onComplete(@NonNull Task<Void> task) {
                                                 if (task.isSuccessful()) {
-                                                    FirebaseFirestore.getInstance().collection("ORDERS").document(model.getOrderId()).collection("ORDER_ITEMS").document(model.getProductId()).update("Cancellation_requested", true)
-                                                            .addOnCompleteListener(new OnCompleteListener<Void>() {
-                                                                @Override
-                                                                public void onComplete(@NonNull Task<Void> task) {
-                                                                    if (task.isSuccessful()) {
-                                                                        model.setCancellationrequested(true);
-                                                                        cancelOrderBtn.setEnabled(false);
-                                                                        cancelOrderBtn.setText("Đang hủy bỏ");
-                                                                        cancelOrderBtn.setTextColor(getResources().getColor(R.color.colorPrimary));
-                                                                        cancelOrderBtn.setBackgroundTintList(ColorStateList.valueOf(Color.parseColor("#ffffff")));
-                                                                    } else {
-                                                                        String error = task.getException().getMessage();
-                                                                        Toast.makeText(OrderDetailsActivity.this, error, Toast.LENGTH_SHORT).show();
-                                                                    }
-                                                                    loadingDialog.dismiss();
-                                                                }
-                                                            });
-
+                                                    cancelOrderBtn.setEnabled(false);
+                                                    cancelOrderBtn.setText("Đã hủy bỏ");
+                                                    cancelOrderBtn.setTextColor(getResources().getColor(R.color.colorPrimary));
+                                                    cancelOrderBtn.setBackgroundTintList(ColorStateList.valueOf(Color.parseColor("#ffffff")));
+                                                    loadingDialog.dismiss();
+                                                    finish();
                                                 } else {
                                                     loadingDialog.dismiss();
+                                                    finish();
                                                     String error = task.getException().getMessage();
                                                     Toast.makeText(OrderDetailsActivity.this, error, Toast.LENGTH_SHORT).show();
                                                 }
@@ -437,15 +413,15 @@ public class OrderDetailsActivity extends AppCompatActivity {
 
         if (!model.getCuttedPrice().equals("")) {
             if (!model.getDiscountedPrice().equals("")) {
-                savedAmount.setText("You saved Rs." + (model.getProductQuantity()) * (Long.valueOf(model.getCuttedPrice()) - Long.valueOf(model.getDiscountedPrice())) + "/- on this order.");
+                savedAmount.setText("Bạn đã tiết kiệm được " + (model.getProductQuantity()) * (Long.valueOf(model.getCuttedPrice()) - Long.valueOf(model.getDiscountedPrice())) + " trên đơn hàng này.");
             } else {
-                savedAmount.setText("You saved Rs." + (model.getProductQuantity()) * (Long.valueOf(model.getCuttedPrice()) - Long.valueOf(model.getProductPrice())) + "/- on this order.");
+                savedAmount.setText("Bạn đã tiết kiệm được " + (model.getProductQuantity()) * (Long.valueOf(model.getCuttedPrice()) - Long.valueOf(model.getProductPrice())) + " trên đơn hàng này.");
             }
         } else {
             if (!model.getDiscountedPrice().equals("")) {
-                savedAmount.setText("You saved Rs." + (model.getProductQuantity()) * (Long.valueOf(model.getProductPrice()) - Long.valueOf(model.getDiscountedPrice())) + "/- on this order.");
+                savedAmount.setText("Bạn đã tiết kiệm được " + (model.getProductQuantity()) * (Long.valueOf(model.getProductPrice()) - Long.valueOf(model.getDiscountedPrice())) + " trên đơn hàng này.");
             } else {
-                savedAmount.setText("You saved Rs.0/- on this order.");
+                savedAmount.setText("Bạn đã tiết kiệm được 0 đ trên đơn hàng này.");
             }
         }
 

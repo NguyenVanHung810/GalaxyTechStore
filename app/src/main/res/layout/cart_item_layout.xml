@@ -30,7 +30,7 @@
         android:layout_marginTop="16dp"
         android:layout_marginEnd="16dp"
         android:layout_marginRight="16dp"
-        android:text="Pixel 2 (Black)"
+        android:text=""
         android:textColor="#000000"
         android:textSize="16dp"
         app:layout_constraintEnd_toEndOf="parent"
@@ -46,7 +46,7 @@
         android:layout_marginTop="16dp"
         android:layout_marginEnd="16dp"
         android:layout_marginRight="16dp"
-        android:text="200.000.000 đ"
+        android:text=""
         android:textColor="#000000"
         android:textSize="14dp"
         android:textStyle="bold"
@@ -61,7 +61,7 @@
         android:layout_marginStart="8dp"
         android:layout_marginLeft="8dp"
         android:textSize="14dp"
-        android:text="300.000.000 đ"
+        android:text=""
         android:textStyle="bold"
         android:textColor="@color/md_red_500"
         app:layout_constraintBottom_toBottomOf="@+id/product_price_cart"
@@ -88,7 +88,7 @@
         android:layout_marginEnd="16dp"
         android:layout_marginRight="16dp"
         android:gravity="right"
-        android:text="Offers applied"
+        android:text=""
         android:textColor="#07500C"
         android:textSize="12dp"
         app:layout_constraintEnd_toEndOf="parent"
@@ -102,7 +102,7 @@
         android:layout_marginEnd="16dp"
         android:layout_marginRight="16dp"
         android:gravity="right"
-        android:text="Coupen applied"
+        android:text=""
         android:textColor="#E65100"
         android:textSize="12dp"
         app:layout_constraintEnd_toEndOf="parent"
@@ -182,17 +182,6 @@
             android:drawablePadding="4dp"
             android:gravity="center"
             android:text="Xóa sản phẩm">
-
         </TextView>
-
     </LinearLayout>
-
-    <ImageView
-        android:id="@+id/cod_indicator"
-        android:layout_width="30dp"
-        android:layout_height="30dp"
-        android:visibility="gone"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:srcCompat="@mipmap/cod1" />
 </androidx.constraintlayout.widget.ConstraintLayout>

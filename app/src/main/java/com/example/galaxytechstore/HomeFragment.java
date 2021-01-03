@@ -1,4 +1,4 @@
-package com.example.galaxytechstore.ui.home;
+package com.example.galaxytechstore;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
@@ -17,6 +17,7 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
+import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
@@ -46,7 +47,6 @@ public class HomeFragment extends Fragment {
     private ConnectivityManager connectivityManager;
     private NetworkInfo networkInfo;
     public static SwipeRefreshLayout swipeRefreshLayout;
-    private HomeViewModel homeViewModel;
     private List<CategoryModel> categoryModelList = new ArrayList<>();
     private List<HomePageModel> homePageModelList = new ArrayList<>();
     private RecyclerView categoryRecyclerView;
@@ -70,21 +70,23 @@ public class HomeFragment extends Fragment {
 
         LinearLayoutManager layoutManager1 = new LinearLayoutManager(getActivity());
         layoutManager1.setOrientation(LinearLayoutManager.HORIZONTAL);
+        layoutManager1.onSaveInstanceState();
         categoryRecyclerView.setLayoutManager(layoutManager1);
 
         LinearLayoutManager layoutManager2 = new LinearLayoutManager(getActivity());
         layoutManager2.setOrientation(LinearLayoutManager.VERTICAL);
+        layoutManager2.onSaveInstanceState();
         homepageRecyclerView.setLayoutManager(layoutManager2);
 
-        categoryModelList.add(new CategoryModel("", ""));
-        categoryModelList.add(new CategoryModel("", ""));
-        categoryModelList.add(new CategoryModel("", ""));
-        categoryModelList.add(new CategoryModel("", ""));
-        categoryModelList.add(new CategoryModel("", ""));
-        categoryModelList.add(new CategoryModel("", ""));
-        categoryModelList.add(new CategoryModel("", ""));
-        categoryModelList.add(new CategoryModel("", ""));
-        categoryModelList.add(new CategoryModel("", ""));
+        categoryModelList.add(new CategoryModel("", "", ""));
+        categoryModelList.add(new CategoryModel("", "", ""));
+        categoryModelList.add(new CategoryModel("", "", ""));
+        categoryModelList.add(new CategoryModel("", "", ""));
+        categoryModelList.add(new CategoryModel("", "", ""));
+        categoryModelList.add(new CategoryModel("", "", ""));
+        categoryModelList.add(new CategoryModel("", "", ""));
+        categoryModelList.add(new CategoryModel("", "", ""));
+        categoryModelList.add(new CategoryModel("", "", ""));
 
         List<SliderModel> sliderModelList = new ArrayList<>();
         sliderModelList.add(new SliderModel("null", "#000000"));
@@ -102,7 +104,6 @@ public class HomeFragment extends Fragment {
 
         homePageModelList.add(new HomePageModel(0, sliderModelList));
         homePageModelList.add(new HomePageModel(2,"trending","#dfdfdf", horizontalProductScrollModelList, new ArrayList<WishlistModel>()));
-        homePageModelList.add(new HomePageModel(3,"trending","#dfdfdf", horizontalProductScrollModelList, new ArrayList<WishlistModel>()));
 
         categoryAdapter = new CategoryAdapter(categoryModelList);
         homePageAdapter = new HomePageAdapter(homePageModelList);
@@ -111,7 +112,7 @@ public class HomeFragment extends Fragment {
         networkInfo = connectivityManager.getActiveNetworkInfo();
 
         if(networkInfo != null && networkInfo.isConnected() == true) {
-            MainActivity.drawer.setDrawerLockMode(0);
+            MainActivity.drawer.setDrawerLockMode(DrawerLayout.LOCK_MODE_UNLOCKED);
             noInternet.setVisibility(View.GONE);
             retryBtn.setVisibility(View.GONE);
             categoryRecyclerView.setVisibility(View.VISIBLE);
@@ -137,7 +138,7 @@ public class HomeFragment extends Fragment {
             homepageRecyclerView.setAdapter(homePageAdapter);
         }
         else {
-            MainActivity.drawer.setDrawerLockMode(1);
+            MainActivity.drawer.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED);
             noInternet.setVisibility(View.VISIBLE);
             retryBtn.setVisibility(View.VISIBLE);
             categoryRecyclerView.setVisibility(View.GONE);
@@ -165,9 +166,10 @@ public class HomeFragment extends Fragment {
     }
 
     private void reloadPage(){
-        DBqueries.list.clear();
-        DBqueries.lists.clear();
+        networkInfo = connectivityManager.getActiveNetworkInfo();
+        DBqueries.clearData();
         if(networkInfo != null && networkInfo.isConnected() == true) {
+            MainActivity.drawer.setDrawerLockMode(DrawerLayout.LOCK_MODE_UNLOCKED);
             noInternet.setVisibility(View.GONE);
             retryBtn.setVisibility(View.GONE);
             categoryRecyclerView.setVisibility(View.VISIBLE);
@@ -176,12 +178,14 @@ public class HomeFragment extends Fragment {
             homePageAdapter = new HomePageAdapter(homePageModelList);
             categoryRecyclerView.setAdapter(categoryAdapter);
             homepageRecyclerView.setAdapter(homePageAdapter);
+
             DBqueries.loadCategories(categoryRecyclerView, getContext());
             loadedCategoriesNames.add("HOME");
             DBqueries.lists.add(new ArrayList<HomePageModel>());
-            DBqueries.loadFragmentData(homepageRecyclerView, getContext(), 0,"home");
+            DBqueries.loadFragmentData(homepageRecyclerView, getContext(), 0,"Home");
         }
         else {
+            MainActivity.drawer.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED);
             Toast.makeText(getContext(), "No internet Connection!", Toast.LENGTH_SHORT).show();
             categoryRecyclerView.setVisibility(View.GONE);
             homepageRecyclerView.setVisibility(View.GONE);

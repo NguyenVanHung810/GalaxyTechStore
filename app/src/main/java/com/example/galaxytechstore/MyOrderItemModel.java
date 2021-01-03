@@ -1,5 +1,6 @@
 package com.example.galaxytechstore;
 
+import java.util.ArrayList;
 import java.util.Date;
 
 public class MyOrderItemModel {
@@ -10,10 +11,11 @@ public class MyOrderItemModel {
     private String fullName,orderId,paymentMethod,pincode,userId;
     private int rating=0;
     private String deliveryPrice;
-    private boolean cancellationrequested;
+    private ArrayList<ProductsInOrderModel> products;
 
 
-    public MyOrderItemModel(String productId, String orderStatus, String address, String coupanId, String productPrice, String cuttedPrice, String discountedPrice, Date orderedDate, Date packedDate, Date shippedDate, Date delveredDate, Date cancelleddate, Long freeCoupans, Long productQuantity, String fullName, String orderId, String paymentMethod, String pincode, String userId,String productTitle,String productImage,String deliveryPrice,boolean cancellationrequested) {
+
+    public MyOrderItemModel(String productId, String orderStatus, String address, String coupanId, String productPrice, String cuttedPrice, String discountedPrice, Date orderedDate, Date packedDate, Date shippedDate, Date delveredDate, Date cancelleddate, Long freeCoupans, Long productQuantity, String fullName, String orderId, String paymentMethod, String pincode, String userId,String productTitle,String productImage,String deliveryPrice, ArrayList<ProductsInOrderModel> products) {
         this.productId = productId;
         this.orderStatus = orderStatus;
         this.address = address;
@@ -36,15 +38,15 @@ public class MyOrderItemModel {
         this.productTitle=productTitle;
         this.productImage=productImage;
         this.deliveryPrice=deliveryPrice;
-        this.cancellationrequested=cancellationrequested;
+        this.products = products;
     }
 
-    public boolean isCancellationrequested() {
-        return cancellationrequested;
+    public ArrayList<ProductsInOrderModel> getProducts() {
+        return products;
     }
 
-    public void setCancellationrequested(boolean cancellationrequested) {
-        this.cancellationrequested = cancellationrequested;
+    public void setProducts(ArrayList<ProductsInOrderModel> products) {
+        this.products = products;
     }
 
     public String getDeliveryPrice() {
