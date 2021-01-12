@@ -75,24 +75,31 @@ public class MyOrderAdapter extends RecyclerView.Adapter<MyOrderAdapter.ViewHold
         String paymentMethod = myOrderItemModelList.get(position).getPaymentMethod();
         String userId = myOrderItemModelList.get(position).getUserId();
         String productTitle = myOrderItemModelList.get(position).getProductTitle();
-        String orderStatus = myOrderItemModelList.get(position).getOrderStatus();
         String productImage = myOrderItemModelList.get(position).getProductImage();
+
+        String orderStatus = myOrderItemModelList.get(position).getOrderStatus();
+        String statusStr = null;
         Date date;
         switch (orderStatus) {
             case "Ordered":
                 date = myOrderItemModelList.get(position).getOrderedDate();
+                statusStr = "Đã đặt hàng";
                 break;
             case "Packed":
                 date = myOrderItemModelList.get(position).getPackedDate();
+                statusStr = "Đã đóng gói";
                 break;
             case "Shipped":
                 date = myOrderItemModelList.get(position).getShippedDate();
+                statusStr = "Đã vận chuyển";
                 break;
             case "Delivered":
+                statusStr = "Đã giao hàng";
                 date = myOrderItemModelList.get(position).getDelveredDate();
                 break;
             case "Cancelled":
                 date = myOrderItemModelList.get(position).getCancelleddate();
+                statusStr = "Đã hủy";
                 break;
             default:
                 date = myOrderItemModelList.get(position).getCancelleddate();
@@ -100,7 +107,7 @@ public class MyOrderAdapter extends RecyclerView.Adapter<MyOrderAdapter.ViewHold
 
         }
         int rating = myOrderItemModelList.get(position).getRating();
-        holder.setdata(productImage, productTitle, orderStatus, date, rating, productId, position);
+        holder.setdata(productImage, productTitle, orderStatus, date, rating, productId, position, statusStr);
     }
 
     @Override
@@ -111,28 +118,38 @@ public class MyOrderAdapter extends RecyclerView.Adapter<MyOrderAdapter.ViewHold
     public class ViewHolder extends RecyclerView.ViewHolder {
 
         private ImageView productImage, orderIndicator;
-        private TextView productTitle, deliveryStatus;
+        private TextView productTitle, Status, orderDate;
 
         public ViewHolder(@NonNull final View itemView) {
             super(itemView);
             productImage = itemView.findViewById(R.id.product_image_my_oders_item);
             orderIndicator = itemView.findViewById(R.id.delivery_indicator);
             productTitle = itemView.findViewById(R.id.product_title);
-            deliveryStatus = itemView.findViewById(R.id.order_delivered_date);
+            Status = itemView.findViewById(R.id.order_status);
+            orderDate = itemView.findViewById(R.id.order_delivered_date);
         }
 
         @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
-        private void setdata(String resource, String productTitleText, String orderStatus, Date date, final int rating, final String productId, final int position) {
+        private void setdata(String resource, String productTitleText, String orderStatus, Date date, final int rating, final String productId, final int position, String str) {
             SimpleDateFormat simpleDateFormat = new SimpleDateFormat("EEE, dd MMM YYYY hh:mm aa");
 
             Glide.with(itemView.getContext()).load(resource).apply(new RequestOptions().placeholder(R.drawable.no_image)).into(productImage);
             productTitle.setText(productTitleText);
             if (orderStatus.equals("Cancelled")) {
+                Status.setTextColor(itemView.getContext().getResources().getColor(R.color.md_red_500));
                 orderIndicator.setImageTintList(ColorStateList.valueOf(itemView.getContext().getResources().getColor(R.color.md_red_500)));
-            } else {
+            }
+            else if(orderStatus.equals("Delivered")){
+                Status.setTextColor(itemView.getContext().getResources().getColor(R.color.md_green_500));
                 orderIndicator.setImageTintList(ColorStateList.valueOf(itemView.getContext().getResources().getColor(R.color.md_green_500)));
             }
-            deliveryStatus.setText(orderStatus + " " + simpleDateFormat.format(date));
+            else {
+                Status.setTextColor(itemView.getContext().getResources().getColor(R.color.md_orange_500));
+                orderIndicator.setImageTintList(ColorStateList.valueOf(itemView.getContext().getResources().getColor(R.color.md_orange_500)));
+            }
+
+            Status.setText(str);
+            orderDate.setText("Ngày: "+simpleDateFormat.format(date));
 
             itemView.setOnClickListener(new View.OnClickListener() {
                 @Override

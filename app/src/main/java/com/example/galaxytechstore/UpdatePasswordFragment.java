@@ -136,7 +136,7 @@ public class UpdatePasswordFragment extends Fragment {
                                     confirmNewPass.setText(null);
                                     getActivity().finish();
 
-                                    Toasty.success(getContext(), "Password successfully updated!", Toast.LENGTH_SHORT,true).show();
+                                    Toasty.success(getContext(), "Mật khẩu đã được đổi thành công !", Toasty.LENGTH_SHORT,true).show();
                                 }else {
                                     String error=task.getException().getMessage();
                                     Toast.makeText(getContext(), error,Toast.LENGTH_SHORT).show();

@@ -4,7 +4,8 @@
     android:layout_width="match_parent"
     android:background="#ffffff"
     android:layout_marginTop="4dp"
-    android:layout_marginBottom="4dp"
+    android:layout_marginRight="6dp"
+    android:layout_marginLeft="6dp"
     android:layout_height="wrap_content"
     xmlns:tools="http://schemas.android.com/tools">
 
@@ -19,7 +20,8 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        tools:srcCompat="@tools:sample/avatars" />
+        android:scaleType="fitCenter"
+        android:src="@drawable/no_image" />
 
     <TextView
         android:id="@+id/product_title"
@@ -43,14 +45,14 @@
         android:layout_height="10dp"
         android:layout_marginStart="16dp"
         android:layout_marginLeft="16dp"
-        app:layout_constraintBottom_toBottomOf="@+id/order_delivered_date"
+        app:layout_constraintBottom_toBottomOf="@+id/order_status"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="@+id/order_delivered_date"
+        app:layout_constraintTop_toTopOf="@+id/order_status"
         app:srcCompat="@drawable/default_dot"
         app:tint="#04780C" />
 
     <TextView
-        android:id="@+id/order_delivered_date"
+        android:id="@+id/order_status"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
@@ -58,11 +60,31 @@
         android:layout_marginTop="16dp"
         android:layout_marginEnd="16dp"
         android:layout_marginRight="16dp"
-        android:text="Delivered on Mon, 15th Jan 2017"
+        android:text="Delivered"
+        android:textStyle="bold"
         android:textColor="#000000"
-        android:textSize="12dp"
+        android:textSize="16dp"
         app:layout_constraintEnd_toStartOf="@+id/product_image_my_oders_item"
         app:layout_constraintStart_toEndOf="@+id/delivery_indicator"
         app:layout_constraintTop_toBottomOf="@+id/product_title" />
+
+    <TextView
+        android:id="@+id/order_delivered_date"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:layout_marginLeft="8dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginEnd="16dp"
+        android:layout_marginRight="16dp"
+        android:layout_marginBottom="16dp"
+        android:text="dd/mm/yyyy"
+        android:textColor="#000000"
+        android:textSize="16dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toStartOf="@+id/product_image_my_oders_item"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toEndOf="@+id/delivery_indicator"
+        app:layout_constraintTop_toBottomOf="@+id/order_status" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

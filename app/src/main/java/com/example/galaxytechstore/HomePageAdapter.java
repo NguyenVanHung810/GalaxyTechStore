@@ -193,7 +193,7 @@ public class HomePageAdapter extends RecyclerView.Adapter {
         public void setHorizontalProductLayout(List<HorizontalProductScrollModel> horizontalProductScrollModelList, String title, String color, List<WishlistModel> viewAllList) {
             container.setBackgroundTintList(ColorStateList.valueOf(Color.parseColor(color)));
             layoutTitle.setText(title);
-            if (horizontalProductScrollModelList.size() > 3) {
+            if (horizontalProductScrollModelList.size() > 0) {
                 viewAll.setVisibility(View.VISIBLE);
                 viewAll.setOnClickListener(new View.OnClickListener() {
                     @Override

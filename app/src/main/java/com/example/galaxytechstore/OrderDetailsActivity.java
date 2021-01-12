@@ -348,7 +348,6 @@ public class OrderDetailsActivity extends AppCompatActivity {
                                 cancelDialog.dismiss();
                             }
                         });
-
                         cancelDialog.findViewById(R.id.yes_btn).setOnClickListener(new View.OnClickListener() {
                             @Override
                             public void onClick(View view) {
@@ -363,6 +362,7 @@ public class OrderDetailsActivity extends AppCompatActivity {
                                             @Override
                                             public void onComplete(@NonNull Task<Void> task) {
                                                 if (task.isSuccessful()) {
+                                                    Toasty.success(OrderDetailsActivity.this, "Hủy thành công", Toasty.LENGTH_SHORT, true).show();
                                                     cancelOrderBtn.setEnabled(false);
                                                     cancelOrderBtn.setText("Đã hủy bỏ");
                                                     cancelOrderBtn.setTextColor(getResources().getColor(R.color.colorPrimary));
@@ -383,6 +383,18 @@ public class OrderDetailsActivity extends AppCompatActivity {
                         cancelDialog.show();
                     }
                 });
+            }
+            else{
+                if(model.getOrderStatus().equals("Delivered")){
+                    cancelOrderBtn.setVisibility(View.VISIBLE);
+                    cancelOrderBtn.setEnabled(false);
+                    cancelOrderBtn.setText("Đã giao hàng");
+                    cancelOrderBtn.setTextColor(getResources().getColor(R.color.colorPrimary));
+                    cancelOrderBtn.setBackgroundTintList(ColorStateList.valueOf(Color.parseColor("#ffffff")));
+                }
+                else {
+                    cancelOrderBtn.setVisibility(View.INVISIBLE);
+                }
             }
         }
 

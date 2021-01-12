@@ -67,11 +67,11 @@ public class HorizontalProductScrollAdapter extends RecyclerView.Adapter<Horizon
             productPrice = (TextView) itemView.findViewById(R.id.horizontal_scroll_item_price);
         }
 
-        public void setData(String productID,String url, String title, String desc, String price) {
+        public void setData(String productID, String url, String title, String desc, String price) {
             Glide.with(itemView.getContext()).load(url).apply(new RequestOptions().placeholder(R.drawable.banner_placeholder)).into(productImage);
             productTitle.setText(title);
-            productDesc.setText(desc);
-            productPrice.setText(price);
+            productDesc.setText("Hàng chính hãng");
+            productPrice.setText(vnMoney(Integer.parseInt(("0"+price).trim())));
             itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
@@ -83,7 +83,7 @@ public class HorizontalProductScrollAdapter extends RecyclerView.Adapter<Horizon
         }
     }
 
-    private String vnMoney(Long s) {
+    private String vnMoney(int s) {
         DecimalFormat formatter = new DecimalFormat("###,###,###");
         return formatter.format(s) + " đ";
     }

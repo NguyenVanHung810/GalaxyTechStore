@@ -122,9 +122,9 @@ public class MyAccountFragment extends Fragment {
         name.setText(DBqueries.fullname);
         email.setText(DBqueries.email);
         if(!DBqueries.profile.equals("")){
-            Glide.with(getContext()).load(DBqueries.profile).apply(new RequestOptions().placeholder(R.drawable.user)).into(profileView);
+            Glide.with(getContext()).load(DBqueries.profile).apply(new RequestOptions().placeholder(R.drawable.user_1)).into(profileView);
         }else {
-            profileView.setImageResource(R.drawable.user);
+            profileView.setImageResource(R.drawable.user_1);
         }
 
         if(!loadingDialog.isShowing()){

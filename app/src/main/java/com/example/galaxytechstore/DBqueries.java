@@ -30,7 +30,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-    public class DBqueries {
+import es.dmoral.toasty.Toasty;
+
+public class DBqueries {
 
         public static boolean addressSelected = false;
         public static String email,fullname,profile, phone;
@@ -51,7 +53,7 @@ import java.util.Map;
 
         public static List<RewardModel> rewardModelList = new ArrayList<>();
 
-        public static int selectedAddress = -1;
+        public static int selectedAddress = 0;
         public static List<AddressesModel> addressesModelList = new ArrayList<>();
 
         public static List<MyOrderItemModel> myOrderItemModelList = new ArrayList<>();
@@ -308,7 +310,7 @@ import java.util.Map;
                             MyWishlistFragment.wishListAdapter.notifyDataSetChanged();
                         }
                         ProductDetailsActivity.ALREADY_ADDED_TO_WISHLIST = false;
-                        Toast.makeText(context, "Đã xóa thành công !!!", Toast.LENGTH_SHORT).show();
+                        Toasty.success(context, "Đã xóa thành công !!!", Toasty.LENGTH_SHORT).show();
                     } else {
                         if (ProductDetailsActivity.addWishList != null) {
                             ProductDetailsActivity.addWishList.setImageResource(R.drawable.like);

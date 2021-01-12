@@ -55,7 +55,7 @@
                     android:backgroundTint="#ED8080"
                     android:stateListAnimator="@null"
                     android:text="Đổi"
-                    android:textColor="@color/purple_500"
+                    android:textColor="@color/white"
                     android:textSize="20sp"
                     android:textStyle="bold" />
 
@@ -69,7 +69,7 @@
                     android:padding="4dp"
                     android:stateListAnimator="@null"
                     android:text="xóa"
-                    android:textColor="@color/md_red_500"
+                    android:textColor="@color/white"
                     android:textSize="20sp"
                     android:textStyle="bold" />
 

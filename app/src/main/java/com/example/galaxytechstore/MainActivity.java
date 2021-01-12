@@ -34,6 +34,7 @@ import com.mikhaellopez.circularimageview.CircularImageView;
 import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.ActionBarDrawerToggle;
+import androidx.coordinatorlayout.widget.CoordinatorLayout;
 import androidx.core.view.GravityCompat;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentTransaction;
@@ -46,7 +47,6 @@ import de.hdodenhof.circleimageview.CircleImageView;
 
 public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
 
-    private AppBarConfiguration mAppBarConfiguration;
     private FrameLayout frameLayout;
     public static Activity mainActivity;
     public static boolean resetMainActivity = false;
@@ -98,7 +98,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                                 addProfileIcon.setVisibility(View.VISIBLE);
                             } else {
                                 addProfileIcon.setVisibility(View.INVISIBLE);
-                                Glide.with(MainActivity.this).load(DBqueries.profile).apply(new RequestOptions().placeholder(R.drawable.user)).into(profileView);
+                                Glide.with(MainActivity.this).load(DBqueries.profile).apply(new RequestOptions().placeholder(R.drawable.user_1)).into(profileView);
                             }
                         } else {
                             String error = task.getException().getMessage();
@@ -110,11 +110,11 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 fullname.setText(DBqueries.fullname);
                 email.setText(DBqueries.email);
                 if (DBqueries.profile.equals("")) {
-                    profileView.setImageResource(R.drawable.placeholder);
+                    profileView.setImageResource(R.drawable.user_1);
                     addProfileIcon.setVisibility(View.VISIBLE);
                 } else {
                     addProfileIcon.setVisibility(View.INVISIBLE);
-                    Glide.with(MainActivity.this).load(DBqueries.profile).apply(new RequestOptions().placeholder(R.drawable.user)).into(profileView);
+                    Glide.with(MainActivity.this).load(DBqueries.profile).apply(new RequestOptions().placeholder(R.drawable.user_1)).into(profileView);
                 }
             }
             navigationView.getMenu().getItem(navigationView.getMenu().size() - 1).setEnabled(true);
@@ -207,12 +207,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         getSupportActionBar().setTitle(tt);
         invalidateOptionsMenu();
         setFragment(fragment, FragmentNo);
+        layoutParams.setScrollFlags(0);
         if (FragmentNo == Cart_Fragment || showcart) {
             navigationView.getMenu().getItem(3).setChecked(true);
-            layoutParams.setScrollFlags(0);
-        }
-        else {
-            layoutParams.setScrollFlags(scrollFlags);
         }
     }
 
@@ -312,14 +309,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
     private void setFragment(Fragment fragment, int FragmentNo) {
         if (FragmentNo != currentFragment) {
-            if (FragmentNo == MyRewards_Fragment) {
-                window.setStatusBarColor(Color.parseColor("#5b04b1"));
-                toolbar.setBackgroundColor(Color.parseColor("#5b04b1"));
-            }
-            else {
-                window.setStatusBarColor(Color.parseColor("#81d4fa"));
-                toolbar.setBackgroundColor(Color.parseColor("#81d4fa"));
-            }
+            window.setStatusBarColor(Color.parseColor("#81d4fa"));
+            toolbar.setBackgroundColor(Color.parseColor("#81d4fa"));
             currentFragment = FragmentNo;
             FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
             ft.setCustomAnimations(R.anim.fade_in, R.anim.fade_out);

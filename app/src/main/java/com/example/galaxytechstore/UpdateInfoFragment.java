@@ -22,9 +22,11 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.request.RequestOptions;
 import com.bumptech.glide.request.target.ImageViewTarget;
 import com.bumptech.glide.request.transition.Transition;
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -100,8 +102,15 @@ public class UpdateInfoFragment extends Fragment {
         user_photo = getArguments().getString("Photo");
         user_phone = getArguments().getString("Phone");
 
+        if(user_photo.equals("")){
+            Glide.with(getContext()).load(user_photo).apply(new RequestOptions().placeholder(R.drawable.user_1)).into(photo);
+            removePhotoBtn.setEnabled(false);
+        }
+        else {
+            Glide.with(getContext()).load(user_photo).apply(new RequestOptions().placeholder(R.drawable.user_1)).into(photo);
+            removePhotoBtn.setEnabled(true);
+        }
 
-        Glide.with(getContext()).load(user_photo).into(photo);
         name.setText(user_name);
         email.setText(user_email);
         phone.setText(user_phone);
@@ -109,13 +118,14 @@ public class UpdateInfoFragment extends Fragment {
         changePhotoBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Toasty.success(getContext(), "làm việc", Toasty.LENGTH_SHORT).show();
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
                     if (getContext().checkSelfPermission(Manifest.permission.READ_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED) {
                         Intent galleryIntent = new Intent(Intent.ACTION_PICK);
                         galleryIntent.setType("image/*");
                         startActivityForResult(galleryIntent, 1);
+                        Toasty.success(getContext(), "Đã mở thư viện", Toasty.LENGTH_SHORT).show();
                     } else {
+                        Toasty.error(getContext(), "Thư viên không làm việc", Toasty.LENGTH_SHORT).show();
                         getActivity().requestPermissions(new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}, 2);
                     }
                 } else {
@@ -201,46 +211,49 @@ public class UpdateInfoFragment extends Fragment {
             if (email.getText().toString().toLowerCase().trim().equals(user_email.toLowerCase().trim())) {  ///same email
                 loadingDialog.show();
                 updatePic(user);
-            } else {  //update email
+            } else {
                 passwordDialog.show();
                 doneBtn.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
-                        String userPass = password.getText().toString();
-                        passwordDialog.dismiss();
-                        loadingDialog.show();
-                        AuthCredential credential = EmailAuthProvider.getCredential(user_email, userPass);
-                        user.reauthenticate(credential).addOnCompleteListener(new OnCompleteListener<Void>() {
-                            @Override
-                            public void onComplete(@NonNull Task<Void> task) {
-                                if (task.isSuccessful()) {
-                                    user.updateEmail(email.getText().toString().trim()).addOnCompleteListener(new OnCompleteListener<Void>() {
-                                        @Override
-                                        public void onComplete(@NonNull Task<Void> task) {
-                                            if (task.isSuccessful()) {
-
-                                                /// update pic
-                                                updatePic(user);
-                                                /// update pic
-                                            } else {
-                                                loadingDialog.dismiss();
-                                                String error = task.getException().getMessage();
-                                                Toast.makeText(getContext(), error, Toast.LENGTH_SHORT).show();
+                        if(password.getText().toString().equals("")){
+                            passwordDialog.dismiss();
+                            Toasty.error(getContext(),"Vui lòng nhập mật khẩu !!!", Toasty.LENGTH_SHORT, true).show();
+                        }
+                        else {
+                            String userPass = password.getText().toString();
+                            passwordDialog.dismiss();
+                            loadingDialog.show();
+                            AuthCredential credential = EmailAuthProvider.getCredential(user_email, userPass);
+                            user.reauthenticate(credential).addOnCompleteListener(new OnCompleteListener<Void>() {
+                                @Override
+                                public void onComplete(@NonNull Task<Void> task) {
+                                    if (task.isSuccessful()) {
+                                        user.updateEmail(email.getText().toString().trim()).addOnCompleteListener(new OnCompleteListener<Void>() {
+                                            @Override
+                                            public void onComplete(@NonNull Task<Void> task) {
+                                                if (task.isSuccessful()) {
+                                                    updatePic(user);
+                                                } else {
+                                                    loadingDialog.dismiss();
+                                                    String error = task.getException().getMessage();
+                                                    Toasty.error(getContext(), error, Toasty.LENGTH_SHORT, true).show();
+                                                }
                                             }
-                                        }
-                                    });
-                                } else {
-                                    loadingDialog.dismiss();
-                                    String error = task.getException().getMessage();
-                                    Toast.makeText(getContext(), error, Toast.LENGTH_SHORT).show();
+                                        });
+                                    } else {
+                                        loadingDialog.dismiss();
+                                        String error = task.getException().getMessage();
+                                        Toasty.error(getContext(), error, Toast.LENGTH_SHORT, true).show();
+                                    }
                                 }
-                            }
-                        });
+                            });
+                        }
                     }
                 });
             }
         } else {
-            email.setError("Invalid Email!");
+            email.setError("Email không hợp lệ !!!");
         }
     }
 
