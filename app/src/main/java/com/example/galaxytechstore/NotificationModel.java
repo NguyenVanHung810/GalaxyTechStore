@@ -1,13 +1,24 @@
 package com.example.galaxytechstore;
 
 public class NotificationModel{
+
+    private String notiID;
     private String image,body;
     private boolean readed;
 
-    public NotificationModel(String image, String body, boolean readed) {
+    public NotificationModel(String notiID, String image, String body, boolean readed) {
+        this.notiID = notiID;
         this.image = image;
         this.body = body;
         this.readed = readed;
+    }
+
+    public String getNotiID() {
+        return notiID;
+    }
+
+    public void setNotiID(String notiID) {
+        this.notiID = notiID;
     }
 
     public String getImage() {

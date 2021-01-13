@@ -357,8 +357,8 @@ public class DBqueries {
                                                             if (task.isSuccessful()) {
 
                                                                 int index = 0;
-                                                                if (cartLists.size() >= 10) {
-                                                                    index = cartLists.size() - 10;
+                                                                if (cartLists.size() >= 100) {
+                                                                    index = cartLists.size() - 100;
                                                                 }
 
                                                                 if (task.getResult().getDocuments().size() < (long) documentSnapshot.get("stock_quantity")) {
@@ -458,7 +458,7 @@ public class DBqueries {
                             parent.setVisibility(View.GONE);
                             cartItemModelList.clear();
                         }
-                        Toast.makeText(context, "Đã xóa thành công !!!", Toast.LENGTH_SHORT).show();
+                        Toasty.success(context, "Đã xóa thành công !!!", Toasty.LENGTH_SHORT).show();
                     } else {
                         cartLists.add(index, removedProductID);
                         String error = task.getException().getMessage();
@@ -715,39 +715,40 @@ public class DBqueries {
         public static void checkNotifications(boolean remove,@Nullable final TextView notifycount){
             if(remove){
                 registration.remove();
-            }else {
+            }
+            else {
                 registration=firebaseFirestore.collection("USERS").document(FirebaseAuth.getInstance().getUid()).collection("USER_DATA").document("MY_NOTIFICATIONS")
-                        .addSnapshotListener(new EventListener<DocumentSnapshot>() {
+                        .collection("MY_ORDER_NOTIFICATIONS")
+                        .addSnapshotListener(new EventListener<QuerySnapshot>() {
                             @Override
-                            public void onEvent(@javax.annotation.Nullable DocumentSnapshot documentSnapshot, @javax.annotation.Nullable FirebaseFirestoreException e) {
-                                if(documentSnapshot != null && documentSnapshot.exists()) {
-                                    notificationModelList.clear();
-                                    int unread=0;
-                                    for (long x = 0; x < (long) documentSnapshot.get("list_size"); x++) {
-                                        notificationModelList.add(0,new NotificationModel(
-                                                documentSnapshot.getString("image_"+x)
-                                                ,documentSnapshot.getString("body_"+x)
-                                                ,documentSnapshot.getBoolean("readed_"+x)
-                                        ));
-                                        if(!documentSnapshot.getBoolean("readed_"+x)){
-                                            unread++;
-                                            if(notifycount != null){
-                                                if(unread>0) {
-                                                    notifycount.setVisibility(View.VISIBLE);
-                                                    if (unread < 99) {
-                                                        notifycount.setText(String.valueOf(unread));
-                                                    } else {
-                                                        notifycount.setText("99");
-                                                    }
-                                                }else {
-                                                    notifycount.setVisibility(View.INVISIBLE);
+                            public void onEvent(@Nullable QuerySnapshot value, @Nullable FirebaseFirestoreException error) {
+                                notificationModelList.clear();
+                                int unread=0;
+                                for(DocumentSnapshot documentSnapshot: value.getDocuments()){
+                                    notificationModelList.add(0,new NotificationModel(
+                                            documentSnapshot.getId()
+                                            ,documentSnapshot.getString("image")
+                                            ,documentSnapshot.getString("content")
+                                            ,documentSnapshot.getBoolean("readed")
+                                    ));
+                                    if(!documentSnapshot.getBoolean("readed")){
+                                        unread++;
+                                        if(notifycount != null){
+                                            if(unread>0) {
+                                                notifycount.setVisibility(View.VISIBLE);
+                                                if (unread < 99) {
+                                                    notifycount.setText(String.valueOf(unread));
+                                                } else {
+                                                    notifycount.setText("99");
                                                 }
+                                            }else {
+                                                notifycount.setVisibility(View.INVISIBLE);
                                             }
                                         }
                                     }
-                                    if(NotificationActivity.adapter != null){
-                                        NotificationActivity.adapter.notifyDataSetChanged();
-                                    }
+                                }
+                                if(NotificationActivity.adapter != null){
+                                    NotificationActivity.adapter.notifyDataSetChanged();
                                 }
                             }
                         });

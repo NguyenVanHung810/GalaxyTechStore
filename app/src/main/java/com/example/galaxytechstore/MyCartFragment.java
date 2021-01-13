@@ -53,7 +53,7 @@ public class MyCartFragment extends Fragment {
 
         cartItemsRecycleView = (RecyclerView) view.findViewById(R.id.cart_items_recyclerview);
         btn_continue = (Button) view.findViewById(R.id.cart_continue_btn);
-        cartTotal = (TextView) view.findViewById(R.id.total_cart_amount);
+        cartTotal = (TextView) view.findViewById(R.id.tcm);
 
         nocart_image = (ImageView) view.findViewById(R.id.no_cart_image);
         nocart_info = (TextView) view.findViewById(R.id.no_cart_info);
@@ -76,7 +76,6 @@ public class MyCartFragment extends Fragment {
         btn_continue.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                // thao tác trên delivery
                 DeliveryActivity.cartItemModelList = new ArrayList<>();
                 DeliveryActivity.fromCart = true;
 
@@ -118,6 +117,12 @@ public class MyCartFragment extends Fragment {
                 parent.setVisibility(View.VISIBLE);
             }
             loaddialog.dismiss();
+            if(DBqueries.cartItemModelList.size() <=0){
+                btn_continue.setVisibility(View.GONE);
+            }
+            else {
+                btn_continue.setVisibility(View.VISIBLE);
+            }
         }
     }
 
@@ -129,7 +134,6 @@ public class MyCartFragment extends Fragment {
                 for(RewardModel rewardModel: DBqueries.rewardModelList){
                     if(rewardModel.getCoupenId().equals(cartItemModel.getSelectedCoupanID())){
                         rewardModel.setAlreadyUsed(false);
-
                     }
                 }
                 cartItemModel.setSelectedCoupanID(null);

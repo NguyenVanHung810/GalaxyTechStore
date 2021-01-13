@@ -382,14 +382,14 @@ public class ProductDetailsActivity extends AppCompatActivity {
                                                                             if (DBqueries.cartItemModelList.size() != 0) {
                                                                                 DBqueries.cartItemModelList.add(0, new CartItemModel(CartItemModel.CART_ITEM,
                                                                                         productID,
-                                                                                        documentSnapshot.get("product_image_1").toString(),
+                                                                                        documentSnapshot.get("product_image").toString(),
                                                                                         documentSnapshot.get("product_title").toString(),
                                                                                         documentSnapshot.get("product_price").toString(),
                                                                                         documentSnapshot.get("cutted_price").toString(),
                                                                                         (long) 1,
                                                                                         (long) documentSnapshot.get("offers_applied"),
                                                                                         (long) 0,
-                                                                                        (long) documentSnapshot.get("max-quantity"),
+                                                                                        (long) documentSnapshot.get("max_quantity"),
                                                                                         (long) documentSnapshot.get("stock_quantity"),
                                                                                         inStock,
                                                                                         (boolean) documentSnapshot.get("COD"))

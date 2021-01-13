@@ -20,6 +20,7 @@ public class NotificationActivity extends AppCompatActivity {
     private RecyclerView recyclerView;
     public static NotificationAdapter adapter;
     private boolean runquerry = false;
+    private String id;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -44,12 +45,15 @@ public class NotificationActivity extends AppCompatActivity {
         for (int x = 0; x < DBqueries.notificationModelList.size(); x++) {
             if (!DBqueries.notificationModelList.get(x).isReaded()) {
                 runquerry = true;
+                id = DBqueries.notificationModelList.get(x).getNotiID();
             }
-            readMap.put("readed_" + x, true);
+            readMap.put("readed", true);
         }
 
         if (runquerry) {
             FirebaseFirestore.getInstance().collection("USERS").document(FirebaseAuth.getInstance().getUid()).collection("USER_DATA").document("MY_NOTIFICATIONS")
+                    .collection("MY_ORDER_NOTIFICATIONS")
+                    .document(id)
                     .update(readMap);
         }
     }

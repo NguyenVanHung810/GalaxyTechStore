@@ -329,7 +329,8 @@ public class CartAdapter extends RecyclerView.Adapter {
                         productQuantity.setTextColor(itemView.getContext().getResources().getColor(R.color.md_amber_500));
                         productQuantity.setBackgroundTintList(ColorStateList.valueOf(itemView.getContext().getResources().getColor(R.color.md_red_500)));
                     } else {
-                        productQuantity.setTextColor(itemView.getContext().getResources().getColor(android.R.color.black));
+                        productQuantity.setEnabled(false);
+                        productQuantity.setTextColor(itemView.getContext().getResources().getColor(R.color.white));
                         productQuantity.setBackgroundTintList(ColorStateList.valueOf(itemView.getContext().getResources().getColor(android.R.color.black)));
                     }
                 }
